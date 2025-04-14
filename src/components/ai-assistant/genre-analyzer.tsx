@@ -1,16 +1,9 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AudioFileUploader } from "@/components/ai-assistant/audio-file-uploader";
-import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/hooks/use-toast";
-import { Wand2 } from "lucide-react";
-import { AudioAnalysisPanel } from "@/components/ai-assistant/audio-analysis-panel";
-import { GenreAnalysisPanel } from "@/components/ai-assistant/genre-analysis-panel";
-import { MarketFitPanel } from "@/components/ai-assistant/market-fit-panel";
-import { RecommendationsPanel } from "@/components/ai-assistant/recommendations-panel";
+import { AudioUploadSection } from "@/components/ai-assistant/audio-upload-section";
+import { AnalysisTabs } from "@/components/ai-assistant/analysis-tabs";
 import { analyzeAudio, getMetadataSuggestions } from "@/services/google-api";
 
 export const GenreAnalyzer = () => {
@@ -56,85 +49,33 @@ export const GenreAnalyzer = () => {
     }
   };
   
+  const resetAnalysis = () => {
+    setAudioFile(null);
+    setAnalysisResults(null);
+    setAdditionalMetadata(null);
+  };
+  
   return (
     <div className="space-y-4">
       <Card>
         <div className="p-6 space-y-4">
-          <AudioFileUploader 
-            onFileSelect={handleFileSelected} 
-            file={audioFile}
+          <AudioUploadSection
+            audioFile={audioFile}
             isAnalyzing={isAnalyzing}
-            progress={isAnalyzing ? 60 : 0}
+            onFileSelected={handleFileSelected}
+            onAnalyze={handleAnalyze}
           />
-          
-          {audioFile && (
-            <div className="flex justify-end">
-              <Button 
-                onClick={handleAnalyze} 
-                disabled={isAnalyzing} 
-                className="bg-electric hover:bg-electric/90"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Spinner size="sm" className="mr-2" />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    Analyze with AI
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
         </div>
       </Card>
       
       {analysisResults && additionalMetadata && (
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="attributes">Audio Attributes</TabsTrigger>
-            <TabsTrigger value="genres">Genre Analysis</TabsTrigger>
-            <TabsTrigger value="market">Market Fit</TabsTrigger>
-            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="attributes" className="mt-4 space-y-4">
-            <AudioAnalysisPanel 
-              analysisResults={analysisResults}
-              onReset={() => {
-                setAudioFile(null);
-                setAnalysisResults(null);
-                setAdditionalMetadata(null);
-              }}
-              onApply={() => {
-                toast({
-                  title: "Applied Analysis",
-                  description: "Audio analysis has been applied to your track",
-                });
-              }}
-            />
-          </TabsContent>
-          
-          <TabsContent value="genres" className="mt-4 space-y-4">
-            <GenreAnalysisPanel 
-              additionalMetadata={additionalMetadata} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="market" className="mt-4 space-y-4">
-            <MarketFitPanel 
-              additionalMetadata={additionalMetadata}
-            />
-          </TabsContent>
-          
-          <TabsContent value="recommendations" className="mt-4 space-y-4">
-            <RecommendationsPanel 
-              additionalMetadata={additionalMetadata}
-            />
-          </TabsContent>
-        </Tabs>
+        <AnalysisTabs 
+          analysisResults={analysisResults}
+          additionalMetadata={additionalMetadata}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          resetAnalysis={resetAnalysis}
+        />
       )}
     </div>
   );
