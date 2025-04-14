@@ -27,8 +27,9 @@ export const TopBar = () => {
     <div className="flex items-center justify-between border-b border-secondary p-4 h-16">
       <div className="flex items-center gap-3">
         <SidebarTrigger asChild>
-          <Button variant="ghost" size="icon" className="lg:hidden">
+          <Button variant="ghost" size="icon">
             <Menu size={20} />
+            <span className="sr-only">Toggle sidebar</span>
           </Button>
         </SidebarTrigger>
         <h1 className="text-xl font-bold hidden md:block">
