@@ -1,6 +1,13 @@
 
 import { MetadataFormState } from "./types";
 
+// Define a consistent set of default genres that we'll use throughout the app
+export const DEFAULT_GENRES = [
+  "Pop", "Rock", "Hip Hop", "R&B", "Jazz", "Classical", "Electronic", 
+  "Dance", "Country", "Folk", "Latin", "Metal", "Blues", "Reggae", 
+  "Soul", "Funk", "Indie", "Alternative", "Gospel", "World"
+];
+
 export const initialFormState: MetadataFormState = {
   // Track Info defaults
   title: "Midnight Dreams",
@@ -90,12 +97,8 @@ export const initialFormState: MetadataFormState = {
     twitter: ""
   },
   
-  // Add default genres array
-  genres: [
-    "Pop", "Rock", "Hip Hop", "R&B", "Jazz", "Classical", "Electronic", 
-    "Dance", "Country", "Folk", "Latin", "Metal", "Blues", "Reggae", 
-    "Soul", "Funk", "Indie", "Alternative", "Gospel", "World"
-  ],
+  // Add default genres array - ensure this is always initialized
+  genres: DEFAULT_GENRES,
   
   // Additional AI fields defaults
   keywords: [],

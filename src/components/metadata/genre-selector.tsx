@@ -26,13 +26,18 @@ export function GenreSelector({
   onPrimaryGenreChange,
   onSecondaryGenreChange,
   error = false,
-  genreOptions = DEFAULT_GENRES
+  genreOptions
 }: GenreSelectorProps) {
-  const [availableGenres, setAvailableGenres] = useState<string[]>(genreOptions || DEFAULT_GENRES);
+  // Make sure we always have a valid array of genres
+  const [availableGenres, setAvailableGenres] = useState<string[]>(
+    Array.isArray(genreOptions) ? genreOptions : DEFAULT_GENRES
+  );
   
-  // Update available genres if genreOptions changes
+  // Update available genres if genreOptions changes, ensuring we always have a valid array
   useEffect(() => {
-    setAvailableGenres(genreOptions || DEFAULT_GENRES);
+    setAvailableGenres(
+      Array.isArray(genreOptions) ? genreOptions : DEFAULT_GENRES
+    );
   }, [genreOptions]);
 
   return (

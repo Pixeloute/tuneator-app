@@ -27,12 +27,12 @@ export function GenreSelect({
   value,
   onChange,
   placeholder,
-  genres = [], // Add default empty array to prevent undefined error
+  genres = [], // Ensure default empty array if genres is undefined
   disabled = false,
   error = false
 }: GenreSelectProps) {
   const [open, setOpen] = useState(false);
-  const [filteredGenres, setFilteredGenres] = useState(genres || []); // Ensure filtered list is never undefined
+  const [filteredGenres, setFilteredGenres] = useState<string[]>(genres || []); // Ensure filteredGenres is never undefined
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFilter = (searchValue: string) => {

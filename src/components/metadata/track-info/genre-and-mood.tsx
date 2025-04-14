@@ -40,6 +40,9 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
     updateForm('secondaryGenre', value);
   };
 
+  // Make sure we have a properly formed genres array
+  const genreOptions = Array.isArray(formState.genres) ? formState.genres : DEFAULT_GENRES;
+
   return (
     <div className="space-y-4">
       <GenreSelector
@@ -48,7 +51,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
         onPrimaryGenreChange={handlePrimaryGenreChange}
         onSecondaryGenreChange={handleSecondaryGenreChange}
         error={genreError}
-        genreOptions={formState.genres || DEFAULT_GENRES} // Ensure we always have a list of genres
+        genreOptions={genreOptions}
       />
       
       <FormFieldWithInfo
@@ -97,7 +100,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
       >
         <Input
           id="tags"
-          value={formState.tags?.join(', ') || ''} // Add null check here too
+          value={Array.isArray(formState.tags) ? formState.tags.join(', ') : ''}
           onChange={handleTagsChange}
           placeholder="e.g., summer, dance, remix"
         />
