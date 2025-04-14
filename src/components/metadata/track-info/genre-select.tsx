@@ -26,12 +26,14 @@ export function GenreSelect({
   error = false
 }: GenreSelectProps) {
   const [open, setOpen] = useState(false);
-  // Initialize with empty array if genres is undefined
+  // Make sure filteredGenres is initialized with a safe value
   const [filteredGenres, setFilteredGenres] = useState<string[]>(genres || []);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFilter = (searchValue: string) => {
-    const safeGenres = genres || [];
+    // Ensure we always have an array to work with
+    const safeGenres = Array.isArray(genres) ? genres : [];
+    
     if (!searchValue) {
       setFilteredGenres(safeGenres);
       return;

@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrackInfoTab } from "@/components/metadata/track-info-tab";
 import { ArtistDetailsTab } from "@/components/metadata/artist-details-tab";

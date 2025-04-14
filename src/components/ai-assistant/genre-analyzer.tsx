@@ -27,11 +27,12 @@ export const GenreAnalyzer = () => {
     try {
       // Perform audio analysis
       const results = await analyzeAudio(audioFile);
-      setAnalysisResults(results);
+      setAnalysisResults(results || {});
       
       // Get additional metadata suggestions
-      const additionalData = await getMetadataSuggestions(audioFile.name.replace(/\.[^/.]+$/, ""), "Unknown Artist");
-      setAdditionalMetadata(additionalData);
+      const fileName = audioFile.name.replace(/\.[^/.]+$/, "") || "Unknown Track";
+      const additionalData = await getMetadataSuggestions(fileName, "Unknown Artist");
+      setAdditionalMetadata(additionalData || {});
       
       toast({
         title: "Analysis Complete",
@@ -44,6 +45,10 @@ export const GenreAnalyzer = () => {
         description: "There was an error analyzing your track",
         variant: "destructive",
       });
+      
+      // Set empty objects instead of null in case of error
+      setAnalysisResults({});
+      setAdditionalMetadata({});
     } finally {
       setIsAnalyzing(false);
     }
@@ -68,10 +73,10 @@ export const GenreAnalyzer = () => {
         </div>
       </Card>
       
-      {analysisResults && additionalMetadata && (
+      {(analysisResults || additionalMetadata) && (
         <AnalysisTabs 
-          analysisResults={analysisResults}
-          additionalMetadata={additionalMetadata}
+          analysisResults={analysisResults || {}}
+          additionalMetadata={additionalMetadata || {}}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           resetAnalysis={resetAnalysis}

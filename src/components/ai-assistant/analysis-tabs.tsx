@@ -22,6 +22,10 @@ export const AnalysisTabs = ({
   setActiveTab,
   resetAnalysis
 }: AnalysisTabsProps) => {
+  // Ensure props are safe to use
+  const safeAnalysisResults = analysisResults || {};
+  const safeMetadata = additionalMetadata || {};
+  
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList className="grid w-full grid-cols-4">
@@ -34,7 +38,7 @@ export const AnalysisTabs = ({
       <TabsContent value="attributes" className="mt-4 space-y-4">
         <MetadataProvider>
           <AudioAnalysisPanel 
-            analysisResults={analysisResults}
+            analysisResults={safeAnalysisResults}
             onReset={resetAnalysis}
             onApply={() => {
               toast({
@@ -48,19 +52,19 @@ export const AnalysisTabs = ({
       
       <TabsContent value="genres" className="mt-4 space-y-4">
         <GenreAnalysisPanel 
-          additionalMetadata={additionalMetadata} 
+          additionalMetadata={safeMetadata} 
         />
       </TabsContent>
       
       <TabsContent value="market" className="mt-4 space-y-4">
         <MarketFitPanel 
-          additionalMetadata={additionalMetadata}
+          additionalMetadata={safeMetadata}
         />
       </TabsContent>
       
       <TabsContent value="recommendations" className="mt-4 space-y-4">
         <RecommendationsPanel 
-          additionalMetadata={additionalMetadata}
+          additionalMetadata={safeMetadata}
         />
       </TabsContent>
     </Tabs>

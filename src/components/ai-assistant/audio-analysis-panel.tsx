@@ -18,21 +18,34 @@ export const AudioAnalysisPanel = ({
   onReset,
   onApply 
 }: AudioAnalysisPanelProps) => {
-  // Try to use the metadata context, but provide fallback values if not available
-  const metadata = useMetadata();
-  const { updateForm, formState } = metadata || { updateForm: null, formState: {} };
-  const { attributesData } = processAnalysisResults(analysisResults);
+  // Try to use the metadata context, but provide fallback values
+  let updateForm: ((field: keyof MetadataFormState, value: any) => void) | null = null;
+  let formState: Partial<MetadataFormState> = {};
+  
+  try {
+    const metadata = useMetadata();
+    if (metadata) {
+      updateForm = metadata.updateForm;
+      formState = metadata.formState || {};
+    }
+  } catch (error) {
+    console.log("Metadata context not available");
+  }
+  
+  const { attributesData } = processAnalysisResults(analysisResults || {});
   
   // Generate a dynamic analysis description based on the top attributes
   const getAnalysisDescription = () => {
-    const sortedAttributes = [...attributesData].sort((a, b) => b.value - a.value);
+    const sortedAttributes = [...(attributesData || [])].sort((a, b) => b.value - a.value);
     const topAttributes = sortedAttributes.slice(0, 2);
     const midAttribute = sortedAttributes[2];
     
-    return `This track has high ${topAttributes[0]?.name.toLowerCase()} and ${topAttributes[1]?.name.toLowerCase()} with moderate ${midAttribute?.name.toLowerCase()}, making it suitable for various playlist types including ${getRecommendedPlaylists(sortedAttributes)}.`;
+    return `This track has high ${topAttributes[0]?.name?.toLowerCase() || 'energy'} and ${topAttributes[1]?.name?.toLowerCase() || 'danceability'} with moderate ${midAttribute?.name?.toLowerCase() || 'acousticness'}, making it suitable for various playlist types including ${getRecommendedPlaylists(sortedAttributes)}.`;
   };
   
   const getRecommendedPlaylists = (attributes: typeof attributesData) => {
+    if (!attributes || !Array.isArray(attributes)) return "electronic";
+    
     const playlists = [];
     
     if (attributes.find(a => a.name === "Energy")?.value || 0 > 60) {
@@ -66,7 +79,7 @@ export const AudioAnalysisPanel = ({
     
     if (updateForm && analysisResults) {
       // Apply genre information if available
-      if (analysisResults.genres && analysisResults.genres.length > 0) {
+      if (analysisResults.genres && Array.isArray(analysisResults.genres) && analysisResults.genres.length > 0) {
         // Update primary genre with first genre
         updateForm('genre', analysisResults.genres[0]);
         
@@ -82,7 +95,7 @@ export const AudioAnalysisPanel = ({
       }
       
       // Apply mood information if available
-      if (analysisResults.mood && analysisResults.mood.length > 0) {
+      if (analysisResults.mood && Array.isArray(analysisResults.mood) && analysisResults.mood.length > 0) {
         updateForm('mood', analysisResults.mood.join(', '));
       }
       
@@ -112,7 +125,7 @@ export const AudioAnalysisPanel = ({
           <h3 className="text-base font-medium">Audio Characteristics Visualization</h3>
         </CardHeader>
         <CardContent>
-          <AudioAttributesChart attributesData={attributesData} />
+          <AudioAttributesChart attributesData={attributesData || []} />
         </CardContent>
       </Card>
       

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Sparkles, Search, Database } from "lucide-react";
 import { InsightPulseFeed } from "@/components/metadata/insight-pulse-feed";
+import { MetadataProvider } from "@/contexts/metadata";
 
 const Metadata = () => {
   const [activeView, setActiveView] = useState<"single" | "batch" | "lookup">("single");
@@ -81,10 +82,14 @@ const Metadata = () => {
                         <MetadataForm />
                       </TabsContent>
                       <TabsContent value="health" className="mt-4">
-                        <HealthReport />
+                        <MetadataProvider>
+                          <HealthReport />
+                        </MetadataProvider>
                       </TabsContent>
                       <TabsContent value="validation" className="mt-4">
-                        <ValidationPanel />
+                        <MetadataProvider>
+                          <ValidationPanel />
+                        </MetadataProvider>
                       </TabsContent>
                     </Tabs>
                   </div>
@@ -97,11 +102,17 @@ const Metadata = () => {
                 </div>
                 
                 {/* Insight Pulse Feed added below the main content */}
-                <InsightPulseFeed />
+                <MetadataProvider>
+                  <InsightPulseFeed />
+                </MetadataProvider>
               </div>
             )}
             
-            {activeView === "batch" && <BatchEditor />}
+            {activeView === "batch" && (
+              <MetadataProvider>
+                <BatchEditor />
+              </MetadataProvider>
+            )}
             
             {activeView === "lookup" && (
               <div className="space-y-4">

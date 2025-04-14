@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -39,6 +40,9 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
     updateForm('secondaryGenre', value);
   };
 
+  // Ensure we have a valid tags array
+  const safeTags = Array.isArray(formState.tags) ? formState.tags : [];
+  
   // Ensure we have a valid genres array
   const genreOptions = Array.isArray(formState.genres) ? formState.genres : DEFAULT_GENRES;
 
@@ -60,7 +64,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
       >
         <Input
           id="subGenre"
-          value={formState.subGenre}
+          value={formState.subGenre || ''}
           onChange={(e) => updateForm('subGenre', e.target.value)}
           placeholder="e.g., Deep House, Trap"
         />
@@ -73,7 +77,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
       >
         <Input
           id="language"
-          value={formState.language}
+          value={formState.language || ''}
           onChange={(e) => updateForm('language', e.target.value)}
           placeholder="e.g., English, Spanish"
         />
@@ -86,7 +90,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
       >
         <Input
           id="mood"
-          value={formState.mood}
+          value={formState.mood || ''}
           onChange={(e) => updateForm('mood', e.target.value)}
           placeholder="e.g., Energetic, Relaxed, Melancholic"
         />
@@ -99,7 +103,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
       >
         <Input
           id="tags"
-          value={Array.isArray(formState.tags) ? formState.tags.join(', ') : ''}
+          value={safeTags.join(', ')}
           onChange={handleTagsChange}
           placeholder="e.g., summer, dance, remix"
         />
@@ -113,7 +117,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
         <div className="flex items-center space-x-2">
           <Switch
             id="explicit"
-            checked={formState.explicit}
+            checked={formState.explicit || false}
             onCheckedChange={(checked) => updateForm('explicit', checked)}
           />
           <Label htmlFor="explicit">Contains explicit content</Label>
