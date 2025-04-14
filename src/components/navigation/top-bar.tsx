@@ -28,8 +28,10 @@ export const TopBar = () => {
       <div className="flex items-center gap-3">
         <SidebarTrigger asChild>
           <Button variant="ghost" size="icon">
-            <Menu size={20} />
-            <span className="sr-only">Toggle sidebar</span>
+            <span className="flex items-center justify-center">
+              <Menu size={20} />
+              <span className="sr-only">Toggle sidebar</span>
+            </span>
           </Button>
         </SidebarTrigger>
         <h1 className="text-xl font-bold hidden md:block">
@@ -44,18 +46,22 @@ export const TopBar = () => {
           className="relative"
           onClick={handleNotificationClick}
         >
-          <Bell size={20} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-mint rounded-full"></span>
+          <span className="flex items-center justify-center relative">
+            <Bell size={20} />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-mint rounded-full"></span>
+          </span>
         </Button>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-muted text-sm">
-                  JD
-                </AvatarFallback>
-              </Avatar>
+              <span className="flex items-center justify-center">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-muted text-sm">
+                    JD
+                  </AvatarFallback>
+                </Avatar>
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
