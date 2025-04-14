@@ -1,12 +1,13 @@
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
 import { RoyaltyDashboard } from "@/components/analytics/royalty-dashboard";
 import { GeographicalInsights } from "@/components/analytics/geographical-insights";
 import { Button } from "@/components/ui/button";
-import { Download, Calendar, BarChart3, Share2 } from "lucide-react";
+import { BarChart3, Share2 } from "lucide-react";
+import { useState } from "react";
 
 const Analytics = () => {
   const [activeView, setActiveView] = useState<"royalties" | "geography">("royalties");
@@ -53,32 +54,6 @@ const Analytics = () => {
             ) : (
               <GeographicalInsights />
             )}
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Button variant="outline" className="flex items-center gap-2 justify-center py-6">
-                <Download className="h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-medium">Download Royalty Report</div>
-                  <p className="text-xs text-muted-foreground">Export complete royalty data as CSV</p>
-                </div>
-              </Button>
-              
-              <Button variant="outline" className="flex items-center gap-2 justify-center py-6">
-                <Calendar className="h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-medium">Schedule Monthly Report</div>
-                  <p className="text-xs text-muted-foreground">Get insights delivered to your inbox</p>
-                </div>
-              </Button>
-              
-              <Button variant="outline" className="flex items-center gap-2 justify-center py-6">
-                <BarChart3 className="h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-medium">Custom Analytics</div>
-                  <p className="text-xs text-muted-foreground">Build specialized reports and insights</p>
-                </div>
-              </Button>
-            </div>
           </main>
         </div>
       </div>

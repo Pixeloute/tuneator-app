@@ -1,29 +1,38 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } from "recharts";
-import { fetchStreamingRoyaltyData } from "@/services/google-api";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Music, TrendingUp, DollarSign, Users } from "lucide-react";
+import { fetchAllRoyaltyData, downloadRoyaltyReport, PlatformRoyaltyData } from "@/services/revenue-service";
+import { CustomAnalyticsModal } from "./custom-analytics-modal";
+import { ScheduleReportModal } from "./schedule-report-modal";
+import { toast } from "sonner";
+import { Calendar, BarChart3 } from "lucide-react";
 
 export function RoyaltyDashboard() {
   const [timeRange, setTimeRange] = useState<string>("6months");
-  const [platformData, setPlatformData] = useState<any>(null);
+  const [platformData, setPlatformData] = useState<PlatformRoyaltyData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>("overview");
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState<boolean>(false);
+  const [showScheduleModal, setShowScheduleModal] = useState<boolean>(false);
   
   useEffect(() => {
     const loadRoyaltyData = async () => {
       setIsLoading(true);
+      console.log(`Fetching royalty data for: all, timeRange: ${timeRange}`);
       try {
-        const data = await fetchStreamingRoyaltyData('all', timeRange);
-        setPlatformData(data);
+        const data = await fetchAllRoyaltyData(timeRange);
+        if (data) {
+          setPlatformData(data);
+        }
       } catch (error) {
         console.error("Failed to load royalty data:", error);
+        toast.error("Failed to load royalty data. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -32,14 +41,13 @@ export function RoyaltyDashboard() {
     loadRoyaltyData();
   }, [timeRange]);
   
-  // Format data for combined chart
   const getCombinedChartData = () => {
     if (!platformData) return [];
     
     const { spotify, apple, youtube, others } = platformData;
     const combinedData: any[] = [];
     
-    spotify.forEach((item: any, index: number) => {
+    spotify.forEach((item, index) => {
       combinedData.push({
         month: item.month,
         spotify: item.revenue,
@@ -52,14 +60,13 @@ export function RoyaltyDashboard() {
     return combinedData;
   };
   
-  // Format data for streams chart
   const getStreamsChartData = () => {
     if (!platformData) return [];
     
     const { spotify, apple, youtube } = platformData;
     const streamsData: any[] = [];
     
-    spotify.forEach((item: any, index: number) => {
+    spotify.forEach((item, index) => {
       streamsData.push({
         month: item.month,
         spotify: item.streams,
@@ -71,16 +78,15 @@ export function RoyaltyDashboard() {
     return streamsData;
   };
   
-  // Calculate total revenue
   const getTotalRevenue = () => {
     if (!platformData) return 0;
     
-    const platforms = ['spotify', 'apple', 'youtube', 'others'];
+    const platforms = ['spotify', 'apple', 'youtube', 'others'] as const;
     let total = 0;
     
     platforms.forEach(platform => {
       if (platformData[platform]) {
-        platformData[platform].forEach((item: any) => {
+        platformData[platform].forEach((item) => {
           total += item.revenue;
         });
       }
@@ -89,16 +95,15 @@ export function RoyaltyDashboard() {
     return total.toFixed(2);
   };
   
-  // Calculate total streams
   const getTotalStreams = () => {
     if (!platformData) return 0;
     
-    const platforms = ['spotify', 'apple', 'youtube', 'others'];
+    const platforms = ['spotify', 'apple', 'youtube', 'others'] as const;
     let total = 0;
     
     platforms.forEach(platform => {
       if (platformData[platform]) {
-        platformData[platform].forEach((item: any) => {
+        platformData[platform].forEach((item) => {
           total += item.streams;
         });
       }
@@ -107,11 +112,10 @@ export function RoyaltyDashboard() {
     return total.toLocaleString();
   };
   
-  // Calculate revenue growth
   const getRevenueGrowth = () => {
     if (!platformData || !platformData.spotify || platformData.spotify.length < 2) return 0;
     
-    const platforms = ['spotify', 'apple', 'youtube', 'others'];
+    const platforms = ['spotify', 'apple', 'youtube', 'others'] as const;
     let firstMonth = 0;
     let lastMonth = 0;
     
@@ -130,13 +134,28 @@ export function RoyaltyDashboard() {
     return growth.toFixed(1);
   };
   
+  const handleDownloadReport = async () => {
+    if (platformData) {
+      await downloadRoyaltyReport(platformData);
+    } else {
+      toast.error("No data available to download");
+    }
+  };
+  
   return (
     <Card className="w-full">
       <CardHeader>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <CardTitle>Royalty Dashboard</CardTitle>
-            <CardDescription>Track your earnings across streaming platforms</CardDescription>
+            <CardDescription>
+              Track your earnings across streaming platforms
+              {platformData && (
+                <span className="text-xs text-muted-foreground block mt-1">
+                  Last updated: {new Date(platformData.lastUpdated).toLocaleString()}
+                </span>
+              )}
+            </CardDescription>
           </div>
           
           <div className="flex items-center gap-2">
@@ -166,6 +185,14 @@ export function RoyaltyDashboard() {
             </div>
             <Skeleton className="h-[350px] w-full" />
           </>
+        ) : !platformData ? (
+          <div className="text-center py-8">
+            <h3 className="text-xl font-medium">No royalty data available</h3>
+            <p className="text-muted-foreground mt-2">
+              We couldn't retrieve your royalty data at this time. Please check your API connections
+              or try again later.
+            </p>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -215,7 +242,7 @@ export function RoyaltyDashboard() {
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Spotify Revenue</p>
                       <h3 className="text-2xl font-bold mt-1">
-                        ${platformData.spotify.reduce((sum: number, item: any) => sum + item.revenue, 0).toFixed(2)}
+                        ${platformData.spotify.reduce((sum, item) => sum + item.revenue, 0).toFixed(2)}
                       </h3>
                     </div>
                     <div className="h-12 w-12 rounded-full bg-[#1DB954]/10 flex items-center justify-center">
@@ -238,7 +265,7 @@ export function RoyaltyDashboard() {
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Apple Music</p>
                       <h3 className="text-2xl font-bold mt-1">
-                        ${platformData.apple.reduce((sum: number, item: any) => sum + item.revenue, 0).toFixed(2)}
+                        ${platformData.apple.reduce((sum, item) => sum + item.revenue, 0).toFixed(2)}
                       </h3>
                     </div>
                     <div className="h-12 w-12 rounded-full bg-[#FC3C44]/10 flex items-center justify-center">
@@ -479,7 +506,6 @@ export function RoyaltyDashboard() {
                               ...item,
                               total: item.spotify + item.apple + item.youtube + item.others
                             })),
-                            // Add projected months
                             { month: 'Jan', total: 1250, projected: true },
                             { month: 'Feb', total: 1320, projected: true },
                             { month: 'Mar', total: 1410, projected: true },
@@ -559,9 +585,50 @@ export function RoyaltyDashboard() {
                 </Card>
               </TabsContent>
             </Tabs>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleDownloadReport}>
+                <CardContent className="flex items-center gap-4 p-6">
+                  <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
+                    <DollarSign className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Download Royalty Report</h3>
+                    <p className="text-xs text-muted-foreground">Export complete royalty data as CSV</p>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowScheduleModal(true)}>
+                <CardContent className="flex items-center gap-4 p-6">
+                  <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
+                    <Calendar className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Schedule Monthly Report</h3>
+                    <p className="text-xs text-muted-foreground">Get insights delivered to your inbox</p>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowAnalyticsModal(true)}>
+                <CardContent className="flex items-center gap-4 p-6">
+                  <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
+                    <BarChart3 className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Custom Analytics</h3>
+                    <p className="text-xs text-muted-foreground">Build specialized reports and insights</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </>
         )}
       </CardContent>
+      
+      <CustomAnalyticsModal open={showAnalyticsModal} onOpenChange={setShowAnalyticsModal} />
+      <ScheduleReportModal open={showScheduleModal} onOpenChange={setShowScheduleModal} />
     </Card>
   );
 }
