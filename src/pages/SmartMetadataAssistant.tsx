@@ -79,6 +79,13 @@ const SmartMetadataAssistant = () => {
     setAudioFile(null);
   };
   
+  const handleEnrichmentComplete = () => {
+    toast({
+      title: "Metadata Enriched",
+      description: "AI has enhanced your track's metadata",
+    });
+  };
+  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -117,7 +124,9 @@ const SmartMetadataAssistant = () => {
                       resetAnalysis={resetAnalysis}
                     />
                   ) : (
-                    <MetadataEnrichmentPanel />
+                    <MetadataEnrichmentPanel 
+                      onEnrichmentComplete={handleEnrichmentComplete}
+                    />
                   )}
                 </div>
                 

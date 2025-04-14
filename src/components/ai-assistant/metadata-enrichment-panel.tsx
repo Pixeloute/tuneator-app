@@ -7,12 +7,14 @@ import { Progress } from "@/components/ui/progress";
 import { Label } from "@/components/ui/label";
 import { Wand2, Sparkles, Check, ArrowRight } from "lucide-react";
 import { getMetadataSuggestions } from "@/services/google-api";
+import { useToast } from "@/hooks/use-toast";
 
 interface MetadataEnrichmentPanelProps {
-  onEnrichmentComplete: () => void;
+  onEnrichmentComplete?: () => void;
 }
 
 export const MetadataEnrichmentPanel = ({ onEnrichmentComplete }: MetadataEnrichmentPanelProps) => {
+  const { toast } = useToast();
   const [selectedTrack, setSelectedTrack] = useState<string>("");
   const [enrichmentType, setEnrichmentType] = useState<string>("keywords");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -69,7 +71,15 @@ export const MetadataEnrichmentPanel = ({ onEnrichmentComplete }: MetadataEnrich
       clearInterval(progressInterval);
       setProgress(100);
       setIsProcessing(false);
-      onEnrichmentComplete();
+      if (onEnrichmentComplete) {
+        onEnrichmentComplete();
+      }
+      
+      // Show a toast notification even if no callback was provided
+      toast({
+        title: "Metadata Enriched",
+        description: "AI has enhanced your track's metadata",
+      });
     }
   };
   
