@@ -2,7 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
-import { useMetadata } from "@/contexts/metadata-context";
+import { useMetadata } from "@/contexts/metadata";
 
 export const MetadataHeader = () => {
   const { metadataQualityScore, handleAiAudit, handleSaveMetadata } = useMetadata();

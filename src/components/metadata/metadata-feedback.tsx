@@ -1,8 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProgressCircle } from "@/components/ui/progress-circle";
 import { AlertCircle, CheckCircle2, FileWarning, Info } from "lucide-react";
+import { IssueType } from "@/contexts/metadata";
 
 export type IssueType = {
   type: "error" | "warning" | "info" | "success";

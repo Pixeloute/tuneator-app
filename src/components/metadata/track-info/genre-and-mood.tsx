@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { MetadataFormState } from "@/contexts/metadata-context";
+import { MetadataFormState } from "@/contexts/metadata";
 import { FormFieldWithInfo } from "./form-field-with-info";
 import { GenreSelector } from "@/components/metadata/genre-selector";
 import { useState } from "react";

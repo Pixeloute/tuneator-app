@@ -10,9 +10,9 @@ import { CreditsTab } from "@/components/metadata/credits-tab";
 import { PlatformsTab } from "@/components/metadata/platforms-tab";
 import { MetadataFeedback } from "@/components/metadata/metadata-feedback";
 import { MetadataHeader } from "@/components/metadata/metadata-header";
-import { MetadataProvider, useMetadata } from "@/contexts/metadata-context";
+import { MetadataProvider, useMetadata } from "@/contexts/metadata";
 
-export type { MetadataFormState } from "@/contexts/metadata-context";
+export type { MetadataFormState } from "@/contexts/metadata";
 
 export const MetadataForm = () => {
   return (
