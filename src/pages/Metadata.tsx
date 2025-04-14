@@ -71,9 +71,9 @@ const Metadata = () => {
             {activeView === "single" && (
               <div className="space-y-6">
                 <div className="flex flex-col xl:flex-row gap-6">
-                  <div className="flex-[2] min-w-0">
+                  <div className="flex-1 min-w-0">
                     <Tabs defaultValue="editor">
-                      <TabsList className="grid w-full max-w-md grid-cols-3">
+                      <TabsList className="grid w-full max-w-full grid-cols-3">
                         <TabsTrigger value="editor">Editor</TabsTrigger>
                         <TabsTrigger value="health">Health Report</TabsTrigger>
                         <TabsTrigger value="validation">Validation</TabsTrigger>
