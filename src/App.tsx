@@ -1,9 +1,12 @@
+
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 
-import { ThemeProvider } from "@/components/theme-provider";
+// Create a theme provider component
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -17,6 +20,15 @@ import NotFound from "./pages/NotFound";
 import RoyaltyInsights from "./pages/RoyaltyInsights";
 
 const queryClient = new QueryClient();
+
+// Create a ThemeProvider component
+const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
+      {children}
+    </NextThemesProvider>
+  );
+};
 
 function App() {
   return (
