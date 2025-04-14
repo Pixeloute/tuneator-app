@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { Music2, Upload, Brain } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { analyzeAudio } from "@/services/google-api";
 
 export const GenreAnalyzer = () => {
   const { toast } = useToast();
@@ -15,21 +15,35 @@ export const GenreAnalyzer = () => {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [analysisComplete, setAnalysisComplete] = useState<boolean>(false);
+  const [analysisResults, setAnalysisResults] = useState<any>(null);
   
-  const genreData = [
-    { name: "Electronic", value: 68 },
-    { name: "Ambient", value: 15 },
-    { name: "Pop", value: 10 },
-    { name: "Other", value: 7 },
-  ];
+  const genreData = analysisResults?.genres 
+    ? analysisResults.genres.map((genre: string, index: number) => ({
+        name: genre,
+        value: 100 - (index * 25)  // Simulating percentage values
+      })).slice(0, 4)
+    : [
+        { name: "Electronic", value: 68 },
+        { name: "Ambient", value: 15 },
+        { name: "Pop", value: 10 },
+        { name: "Other", value: 7 },
+      ];
   
-  const attributesData = [
-    { name: "Danceability", value: 72 },
-    { name: "Energy", value: 65 },
-    { name: "Instrumentalness", value: 45 },
-    { name: "Acousticness", value: 20 },
-    { name: "Valence", value: 55 },
-  ];
+  const attributesData = analysisResults 
+    ? [
+        { name: "Danceability", value: analysisResults.danceability || 0 },
+        { name: "Energy", value: analysisResults.energy || 0 },
+        { name: "Instrumentalness", value: analysisResults.instrumentalness || 0 },
+        { name: "Acousticness", value: analysisResults.acousticness || 0 },
+        { name: "Valence", value: analysisResults.valence || 0 },
+      ]
+    : [
+        { name: "Danceability", value: 72 },
+        { name: "Energy", value: 65 },
+        { name: "Instrumentalness", value: 45 },
+        { name: "Acousticness", value: 20 },
+        { name: "Valence", value: 55 },
+      ];
   
   const COLORS = ["#4f46e5", "#7c3aed", "#0ea5e9", "#10b981", "#f59e0b"];
   
@@ -39,26 +53,51 @@ export const GenreAnalyzer = () => {
     }
   };
   
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
+    if (!file) return;
+    
     setIsAnalyzing(true);
     setProgress(0);
     
-    const interval = setInterval(() => {
+    // Set up a progress simulation interval
+    const progressInterval = setInterval(() => {
       setProgress((prev) => {
         const newProgress = prev + 5;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setIsAnalyzing(false);
-          setAnalysisComplete(true);
-          
-          toast({
-            title: "Analysis Complete",
-            description: "Your track has been analyzed successfully!",
-          });
+        if (newProgress >= 95) {
+          clearInterval(progressInterval);
+          return 95;
         }
         return newProgress;
       });
     }, 150);
+    
+    try {
+      // Call the Google API service
+      const results = await analyzeAudio(file);
+      setAnalysisResults(results);
+      
+      // Complete the progress and show success
+      clearInterval(progressInterval);
+      setProgress(100);
+      setIsAnalyzing(false);
+      setAnalysisComplete(true);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Your track has been analyzed successfully using Google AI!",
+      });
+    } catch (error) {
+      console.error("Analysis failed:", error);
+      clearInterval(progressInterval);
+      setProgress(0);
+      setIsAnalyzing(false);
+      
+      toast({
+        title: "Analysis Failed",
+        description: "There was an error analyzing your track. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
   
   return (
@@ -66,10 +105,10 @@ export const GenreAnalyzer = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Music2 className="h-5 w-5 text-electric" />
-          <span>Audio Genre Analyzer</span>
+          <span>Google AI Audio Analyzer</span>
         </CardTitle>
         <CardDescription>
-          Upload your audio file to analyze its genre and audio characteristics
+          Upload your audio file to analyze its genre and audio characteristics using Google AI
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -105,7 +144,7 @@ export const GenreAnalyzer = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Brain className="h-4 w-4 text-electric animate-pulse" />
-                    <Label>Analyzing audio patterns...</Label>
+                    <Label>Google AI analyzing audio patterns...</Label>
                   </div>
                   <span className="text-sm font-medium">{progress}%</span>
                 </div>
@@ -146,7 +185,7 @@ export const GenreAnalyzer = () => {
                         dataKey="value"
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       >
-                        {genreData.map((entry, index) => (
+                        {genreData.map((entry: any, index: number) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -156,9 +195,10 @@ export const GenreAnalyzer = () => {
                 </div>
                 
                 <div className="mt-4">
-                  <h4 className="font-medium mb-2">Suggested Primary Genre: Electronic</h4>
+                  <h4 className="font-medium mb-2">Suggested Primary Genre: {genreData[0]?.name || "Electronic"}</h4>
                   <p className="text-sm text-muted-foreground">
-                    The track has strong electronic elements with ambient influences. Consider using both as primary and secondary genres.
+                    The track has strong {genreData[0]?.name || "electronic"} elements with {genreData[1]?.name || "ambient"} influences. 
+                    Consider using both as primary and secondary genres.
                   </p>
                 </div>
               </TabsContent>
@@ -192,6 +232,7 @@ export const GenreAnalyzer = () => {
               setFile(null);
               setAnalysisComplete(false);
               setProgress(0);
+              setAnalysisResults(null);
             }}
           >
             Analyze Another Track

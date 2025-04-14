@@ -31,14 +31,14 @@ const SmartMetadataAssistant = () => {
             
             <Card className="border-l-4 border-l-electric">
               <CardHeader className="pb-2">
-                <CardTitle>AI-Powered Metadata Enrichment</CardTitle>
+                <CardTitle>Google AI-Powered Metadata Enrichment</CardTitle>
                 <CardDescription>
-                  Let our AI analyze your tracks and suggest improvements to maximize their discoverability and revenue potential
+                  Let our Google AI technology analyze your tracks and suggest improvements to maximize their discoverability and revenue potential
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Our AI assistant can help you optimize your metadata by analyzing audio content, identifying potential errors, 
+                  Our Google AI assistant can help you optimize your metadata by analyzing audio content, identifying potential errors, 
                   suggesting keywords, and ensuring compliance with platform requirements.
                 </p>
               </CardContent>
@@ -56,7 +56,7 @@ const SmartMetadataAssistant = () => {
                   onEnrichmentComplete={() => {
                     toast({
                       title: "Metadata Enriched",
-                      description: "Track metadata has been successfully enhanced",
+                      description: "Track metadata has been successfully enhanced with Google AI",
                     });
                   }}
                 />

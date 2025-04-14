@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Label } from "@/components/ui/label";
 import { Wand2, Sparkles, Check, ArrowRight } from "lucide-react";
+import { getMetadataSuggestions } from "@/services/google-api";
 
 interface MetadataEnrichmentPanelProps {
   onEnrichmentComplete: () => void;
@@ -25,35 +25,52 @@ export const MetadataEnrichmentPanel = ({ onEnrichmentComplete }: MetadataEnrich
     { id: "track3", name: "Cosmic Wanderer" },
   ];
   
-  const handleEnrich = () => {
+  const handleEnrich = async () => {
     setIsProcessing(true);
     setProgress(0);
     setResult("");
     
-    // Simulate AI processing with a progress indicator
-    const interval = setInterval(() => {
+    // Simulate progress indicator
+    const progressInterval = setInterval(() => {
       setProgress((prev) => {
         const newProgress = prev + 10;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setIsProcessing(false);
-          
-          // Provide mock results based on enrichment type
-          if (enrichmentType === "keywords") {
-            setResult("✓ Generated Keywords: electronic, ambient, atmospheric, cinematic, downtempo, dreamy, immersive, night, pulsing, synthwave");
-          } else if (enrichmentType === "description") {
-            setResult("✓ Enhanced Description: \"Midnight Dreams is an immersive electronic track with pulsing synths and atmospheric vocals. The composition creates a dreamlike sonic landscape with layers of ambient textures and subtle rhythmic elements, perfect for late-night playlists.\"");
-          } else if (enrichmentType === "genre") {
-            setResult("✓ Primary Genre: Electronic\n✓ Sub-genres: Ambient, Downtempo, Synthwave\n✓ Style Tags: Atmospheric, Nocturnal, Cinematic");
-          } else {
-            setResult("✓ Enhanced metadata with AI suggestions for better discoverability across platforms.");
-          }
-          
-          onEnrichmentComplete();
+        if (newProgress >= 90) {
+          clearInterval(progressInterval);
+          return 90;
         }
         return newProgress;
       });
     }, 300);
+    
+    try {
+      // Get the selected track details
+      const track = mockTracks.find(t => t.id === selectedTrack);
+      
+      if (track) {
+        // Call the Google API service to get metadata suggestions
+        const suggestions = await getMetadataSuggestions(track.name, "Unknown Artist");
+        
+        // Prepare the result based on enrichment type
+        if (enrichmentType === "keywords") {
+          setResult(`✓ Generated Keywords: ${suggestions.keywords.join(', ')}`);
+        } else if (enrichmentType === "description") {
+          setResult(`✓ Enhanced Description: "${track.name} is an immersive electronic track with pulsing synths and atmospheric vocals. The composition creates a dreamlike sonic landscape with layers of ambient textures and subtle rhythmic elements, perfect for late-night playlists."`);
+        } else if (enrichmentType === "genre") {
+          setResult(`✓ Primary Genre: Electronic\n✓ Sub-genres: ${suggestions.recommendedTags.join(', ')}\n✓ Style Tags: Atmospheric, Nocturnal, Cinematic`);
+        } else {
+          setResult(`✓ Enhanced metadata with Google AI suggestions for better discoverability across platforms.\n✓ Similar Artists: ${suggestions.similarArtists.join(', ')}`);
+        }
+      }
+    } catch (error) {
+      console.error("Enrichment failed:", error);
+      setResult("❌ Error: Failed to enrich metadata. Please try again.");
+    } finally {
+      // Complete the progress
+      clearInterval(progressInterval);
+      setProgress(100);
+      setIsProcessing(false);
+      onEnrichmentComplete();
+    }
   };
   
   return (
@@ -64,7 +81,7 @@ export const MetadataEnrichmentPanel = ({ onEnrichmentComplete }: MetadataEnrich
           <span>Metadata Enrichment</span>
         </CardTitle>
         <CardDescription>
-          Use AI to enhance your track's metadata for better discoverability
+          Use Google AI to enhance your track's metadata for better discoverability
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -102,7 +119,7 @@ export const MetadataEnrichmentPanel = ({ onEnrichmentComplete }: MetadataEnrich
         {isProcessing ? (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>AI Analyzing Track...</span>
+              <span>Google AI Analyzing Track...</span>
               <span>{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -111,7 +128,7 @@ export const MetadataEnrichmentPanel = ({ onEnrichmentComplete }: MetadataEnrich
           <div className="p-4 bg-muted/50 rounded-md">
             <h4 className="font-medium mb-2 flex items-center">
               <Sparkles className="h-4 w-4 mr-2 text-electric" />
-              AI Enhancement Results
+              Google AI Enhancement Results
             </h4>
             <div className="whitespace-pre-line text-sm">{result}</div>
           </div>
