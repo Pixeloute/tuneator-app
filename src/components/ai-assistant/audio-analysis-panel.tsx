@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { processAnalysisResults } from "@/components/ai-assistant/audio-analysis-utils";
 import { useMetadata } from "@/contexts/metadata";
+import { MetadataFormState } from "@/contexts/metadata/types";
 import { toast } from "@/hooks/use-toast";
 
 interface AudioAnalysisPanelProps {

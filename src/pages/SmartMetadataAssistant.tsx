@@ -47,6 +47,11 @@ const SmartMetadataAssistant = () => {
     setAnalysisResults(null);
   };
   
+  const handleAnalyze = () => {
+    setIsAnalyzing(true);
+    // This is a placeholder for the actual analysis logic
+  };
+  
   const handleAnalysisComplete = (results: any) => {
     setAnalysisResults(results);
     setActiveAnalysisTab("attributes");
@@ -96,6 +101,7 @@ const SmartMetadataAssistant = () => {
                   audioFile={audioFile}
                   isAnalyzing={isAnalyzing}
                   onFileSelected={handleFileSelected}
+                  onAnalyze={handleAnalyze}
                   onAnalysisComplete={handleAnalysisComplete}
                 />
                 
