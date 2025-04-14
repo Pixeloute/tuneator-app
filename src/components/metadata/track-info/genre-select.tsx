@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
+// Default genres list to use when none are provided
+const DEFAULT_GENRES = [
+  "Pop", "Rock", "Hip Hop", "R&B", "Jazz", "Classical", "Electronic", 
+  "Dance", "Country", "Folk", "Latin", "Metal", "Blues", "Reggae", 
+  "Soul", "Funk", "Indie", "Alternative", "Gospel", "World"
+];
+
 interface GenreSelectProps {
   id: string;
   value: string;
@@ -21,7 +28,7 @@ export function GenreSelect({
   value,
   onChange,
   placeholder,
-  genres = [], // Default empty array
+  genres,
   disabled = false,
   error = false
 }: GenreSelectProps) {
@@ -31,20 +38,27 @@ export function GenreSelect({
   
   // Initialize filtered genres when the component mounts or genres change
   useEffect(() => {
-    setFilteredGenres(Array.isArray(genres) ? [...genres] : []);
+    // Use the provided genres or fall back to default genres
+    const genresToUse = Array.isArray(genres) && genres.length > 0 
+      ? [...genres] 
+      : [...DEFAULT_GENRES];
+      
+    setFilteredGenres(genresToUse);
   }, [genres]);
 
   const handleFilter = (searchValue: string) => {
-    // Ensure we always have an array to work with
-    const safeGenres = Array.isArray(genres) ? genres : [];
+    // Make sure we have a valid array to filter
+    const genresToFilter = Array.isArray(genres) && genres.length > 0 
+      ? genres 
+      : DEFAULT_GENRES;
     
     if (!searchValue) {
-      setFilteredGenres(safeGenres);
+      setFilteredGenres(genresToFilter);
       return;
     }
     
     const searchLower = searchValue.toLowerCase();
-    const filtered = safeGenres.filter(genre => 
+    const filtered = genresToFilter.filter(genre => 
       genre.toLowerCase().includes(searchLower)
     );
     setFilteredGenres(filtered);

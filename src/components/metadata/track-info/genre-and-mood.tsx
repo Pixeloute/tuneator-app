@@ -43,8 +43,10 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
   // Ensure we have a valid tags array
   const safeTags = Array.isArray(formState.tags) ? formState.tags : [];
   
-  // Ensure we have a valid genres array
-  const genreOptions = Array.isArray(formState.genres) ? formState.genres : DEFAULT_GENRES;
+  // Ensure we have a valid genres array for the genre selector
+  const genreOptions = Array.isArray(formState.genres) && formState.genres.length > 0 
+    ? formState.genres 
+    : DEFAULT_GENRES;
 
   return (
     <div className="space-y-4">

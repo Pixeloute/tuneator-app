@@ -1,15 +1,6 @@
 
-import { useEffect, useState } from "react";
-import { Label } from "@/components/ui/label";
-import { GenreSelect } from "./track-info/genre-select";
-import { FormFieldWithInfo } from "./track-info/form-field-with-info";
-
-// Default list of common music genres if none are provided
-const DEFAULT_GENRES = [
-  "Pop", "Rock", "Hip Hop", "R&B", "Jazz", "Classical", "Electronic", 
-  "Dance", "Country", "Folk", "Latin", "Metal", "Blues", "Reggae", 
-  "Soul", "Funk", "Indie", "Alternative", "Gospel", "World"
-];
+import { FormFieldWithInfo } from "@/components/metadata/track-info/form-field-with-info";
+import { GenreSelect } from "@/components/metadata/track-info/genre-select";
 
 interface GenreSelectorProps {
   primaryGenre: string;
@@ -17,7 +8,7 @@ interface GenreSelectorProps {
   onPrimaryGenreChange: (value: string) => void;
   onSecondaryGenreChange: (value: string) => void;
   error?: boolean;
-  genreOptions?: string[];
+  genreOptions: string[];
 }
 
 export function GenreSelector({
@@ -26,34 +17,25 @@ export function GenreSelector({
   onPrimaryGenreChange,
   onSecondaryGenreChange,
   error = false,
-  genreOptions
+  genreOptions = [] // Default to empty array
 }: GenreSelectorProps) {
-  // Make sure we always have a valid array of genres
-  const [availableGenres, setAvailableGenres] = useState<string[]>(
-    Array.isArray(genreOptions) ? genreOptions : DEFAULT_GENRES
-  );
+  // Ensure genreOptions is always an array
+  const safeOptions = Array.isArray(genreOptions) ? genreOptions : [];
   
-  // Update available genres if genreOptions changes, ensuring we always have a valid array
-  useEffect(() => {
-    setAvailableGenres(
-      Array.isArray(genreOptions) ? genreOptions : DEFAULT_GENRES
-    );
-  }, [genreOptions]);
-
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormFieldWithInfo
-        id="primaryGenre"
+        id="genre"
         label="Primary Genre"
         required={true}
-        tooltip="The main genre category for the track."
+        tooltip="The main genre classification for this track."
       >
         <GenreSelect
-          id="primaryGenre"
-          value={primaryGenre || ''}
+          id="genre"
+          value={primaryGenre}
           onChange={onPrimaryGenreChange}
           placeholder="Select primary genre"
-          genres={availableGenres}
+          genres={safeOptions}
           error={error}
         />
       </FormFieldWithInfo>
@@ -61,14 +43,14 @@ export function GenreSelector({
       <FormFieldWithInfo
         id="secondaryGenre"
         label="Secondary Genre"
-        tooltip="Optional secondary genre for cross-genre tracks."
+        tooltip="Optional secondary genre classification."
       >
         <GenreSelect
           id="secondaryGenre"
-          value={secondaryGenre || ''}
+          value={secondaryGenre}
           onChange={onSecondaryGenreChange}
-          placeholder="Select secondary genre (optional)"
-          genres={availableGenres}
+          placeholder="Select secondary genre"
+          genres={safeOptions}
         />
       </FormFieldWithInfo>
     </div>
