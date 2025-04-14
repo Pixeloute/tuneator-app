@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { GenreDistributionChart } from "@/components/ai-assistant/genre-distribution-chart";
-import { Music, Tags } from "lucide-react";
+import { Music } from "lucide-react";
 
 interface GenreAnalysisPanelProps {
   additionalMetadata: any;
@@ -39,7 +39,13 @@ export const GenreAnalysisPanel = ({ additionalMetadata }: GenreAnalysisPanelPro
         </div>
       </CardHeader>
       <CardContent>
-        <GenreDistributionChart genreData={genreData} />
+        {genreData.length > 0 ? (
+          <GenreDistributionChart genreData={genreData} />
+        ) : (
+          <div className="h-40 flex items-center justify-center text-muted-foreground">
+            No genre data available
+          </div>
+        )}
         
         <div className="mt-4 space-y-2">
           <Label>Primary Genre</Label>
@@ -48,9 +54,13 @@ export const GenreAnalysisPanel = ({ additionalMetadata }: GenreAnalysisPanelPro
               <SelectValue placeholder="Select primary genre" />
             </SelectTrigger>
             <SelectContent>
-              {genreEntries.map(([genre]) => (
-                <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-              ))}
+              {genreEntries.length > 0 ? (
+                genreEntries.map(([genre]) => (
+                  <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                ))
+              ) : (
+                <SelectItem value="no-data" disabled>No genres available</SelectItem>
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -58,16 +68,22 @@ export const GenreAnalysisPanel = ({ additionalMetadata }: GenreAnalysisPanelPro
         <div className="mt-4">
           <Label className="mb-2 block">Recommended Tags</Label>
           <div className="flex flex-wrap gap-2">
-            {recommendedTags.map((tag: string) => (
-              <Badge key={tag} variant="outline" className="bg-muted">
-                {tag}
-              </Badge>
-            ))}
-            {moodTags.slice(0, 3).map((tag: string) => (
-              <Badge key={tag} variant="outline" className="bg-electric/10 text-electric border-electric/20">
-                {tag}
-              </Badge>
-            ))}
+            {recommendedTags.length > 0 ? (
+              <>
+                {recommendedTags.map((tag: string) => (
+                  <Badge key={tag} variant="outline" className="bg-muted">
+                    {tag}
+                  </Badge>
+                ))}
+                {moodTags.slice(0, 3).map((tag: string) => (
+                  <Badge key={tag} variant="outline" className="bg-electric/10 text-electric border-electric/20">
+                    {tag}
+                  </Badge>
+                ))}
+              </>
+            ) : (
+              <div className="text-sm text-muted-foreground">No tags available</div>
+            )}
           </div>
         </div>
       </CardContent>

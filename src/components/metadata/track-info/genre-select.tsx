@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,13 @@ export function GenreSelect({
   error = false
 }: GenreSelectProps) {
   const [open, setOpen] = useState(false);
-  // Make sure filteredGenres is initialized with a safe value
-  const [filteredGenres, setFilteredGenres] = useState<string[]>(genres || []);
+  const [filteredGenres, setFilteredGenres] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Initialize filtered genres when the component mounts or genres change
+  useEffect(() => {
+    setFilteredGenres(Array.isArray(genres) ? [...genres] : []);
+  }, [genres]);
 
   const handleFilter = (searchValue: string) => {
     // Ensure we always have an array to work with
@@ -88,7 +92,7 @@ export function GenreSelect({
           />
           <CommandEmpty>No genre found.</CommandEmpty>
           <CommandGroup className="max-h-60 overflow-y-auto">
-            {(filteredGenres || []).map((genre) => (
+            {filteredGenres.map((genre) => (
               <CommandItem
                 key={genre}
                 value={genre}

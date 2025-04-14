@@ -6,6 +6,23 @@ import { AudioUploadSection } from "@/components/ai-assistant/audio-upload-secti
 import { AnalysisTabs } from "@/components/ai-assistant/analysis-tabs";
 import { analyzeAudio, getMetadataSuggestions } from "@/services/google-api";
 
+// Default empty objects for analysis results to prevent undefined errors
+const DEFAULT_ANALYSIS = {
+  genres: [],
+  danceability: 0,
+  energy: 0,
+  instrumentalness: 0,
+  acousticness: 0,
+  valence: 0
+};
+
+const DEFAULT_METADATA = {
+  genres: [],
+  recommendedTags: [],
+  moodTags: [],
+  genreConfidence: {}
+};
+
 export const GenreAnalyzer = () => {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -20,19 +37,26 @@ export const GenreAnalyzer = () => {
   };
   
   const handleAnalyze = async () => {
-    if (!audioFile) return;
+    if (!audioFile) {
+      toast({
+        title: "No File Selected",
+        description: "Please select an audio file first",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsAnalyzing(true);
     
     try {
       // Perform audio analysis
       const results = await analyzeAudio(audioFile);
-      setAnalysisResults(results || {});
+      setAnalysisResults(results || DEFAULT_ANALYSIS);
       
       // Get additional metadata suggestions
       const fileName = audioFile.name.replace(/\.[^/.]+$/, "") || "Unknown Track";
       const additionalData = await getMetadataSuggestions(fileName, "Unknown Artist");
-      setAdditionalMetadata(additionalData || {});
+      setAdditionalMetadata(additionalData || DEFAULT_METADATA);
       
       toast({
         title: "Analysis Complete",
@@ -46,9 +70,9 @@ export const GenreAnalyzer = () => {
         variant: "destructive",
       });
       
-      // Set empty objects instead of null in case of error
-      setAnalysisResults({});
-      setAdditionalMetadata({});
+      // Set default objects instead of null in case of error
+      setAnalysisResults(DEFAULT_ANALYSIS);
+      setAdditionalMetadata(DEFAULT_METADATA);
     } finally {
       setIsAnalyzing(false);
     }
@@ -75,8 +99,8 @@ export const GenreAnalyzer = () => {
       
       {(analysisResults || additionalMetadata) && (
         <AnalysisTabs 
-          analysisResults={analysisResults || {}}
-          additionalMetadata={additionalMetadata || {}}
+          analysisResults={analysisResults || DEFAULT_ANALYSIS}
+          additionalMetadata={additionalMetadata || DEFAULT_METADATA}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           resetAnalysis={resetAnalysis}

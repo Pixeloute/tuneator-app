@@ -9,19 +9,11 @@ import { CreditsTab } from "@/components/metadata/credits-tab";
 import { PlatformsTab } from "./platforms";
 import { MetadataFeedback } from "@/components/metadata/metadata-feedback";
 import { MetadataHeader } from "@/components/metadata/metadata-header";
-import { MetadataProvider, useMetadata } from "@/contexts/metadata";
+import { useMetadata } from "@/contexts/metadata";
 
 export type { MetadataFormState } from "@/contexts/metadata";
 
 export const MetadataForm = () => {
-  return (
-    <MetadataProvider>
-      <MetadataFormContent />
-    </MetadataProvider>
-  );
-};
-
-const MetadataFormContent = () => {
   const { 
     formState, 
     metadataQualityScore, 
@@ -36,16 +28,16 @@ const MetadataFormContent = () => {
     <div className="space-y-6">
       <MetadataHeader />
       
-      <div className="flex flex-col xl:flex-row gap-6">
-        <div className="flex-[2] min-w-0">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full max-w-full">
-              <TabsTrigger value="track-info">Track Info</TabsTrigger>
-              <TabsTrigger value="artist-details">Artist Details</TabsTrigger>
-              <TabsTrigger value="release-info">Release Info</TabsTrigger>
-              <TabsTrigger value="publishing-rights">Publishing & Rights</TabsTrigger>
-              <TabsTrigger value="credits">Credits</TabsTrigger>
-              <TabsTrigger value="platforms">Platforms</TabsTrigger>
+            <TabsList className="flex w-full overflow-x-auto max-w-full">
+              <TabsTrigger value="track-info" className="flex-1">Track Info</TabsTrigger>
+              <TabsTrigger value="artist-details" className="flex-1">Artist Details</TabsTrigger>
+              <TabsTrigger value="release-info" className="flex-1">Release Info</TabsTrigger>
+              <TabsTrigger value="publishing-rights" className="flex-1">Publishing & Rights</TabsTrigger>
+              <TabsTrigger value="credits" className="flex-1">Credits</TabsTrigger>
+              <TabsTrigger value="platforms" className="flex-1">Platforms</TabsTrigger>
             </TabsList>
             
             <TabsContent value="track-info" className="mt-4">
@@ -92,7 +84,7 @@ const MetadataFormContent = () => {
           </Tabs>
         </div>
         
-        <div className="flex-1 xl:max-w-sm">
+        <div className="lg:col-span-1">
           <MetadataFeedback 
             score={metadataQualityScore} 
             issues={validationIssues} 

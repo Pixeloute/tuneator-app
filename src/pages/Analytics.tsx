@@ -5,7 +5,6 @@ import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
 import { RoyaltyDashboard } from "@/components/analytics/royalty-dashboard";
 import { GeographicalInsights } from "@/components/analytics/geographical-insights";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Download, Calendar, BarChart3, Share2 } from "lucide-react";
 
@@ -20,9 +19,9 @@ const Analytics = () => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 overflow-hidden">
           <TopBar />
-          <main className="p-4 md:p-6 space-y-6 pb-16">
+          <main className="container mx-auto p-4 md:p-6 space-y-6 pb-16">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold">Analytics & Insights</h1>

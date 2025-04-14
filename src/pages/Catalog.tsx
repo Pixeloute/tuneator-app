@@ -22,16 +22,20 @@ const Catalog = () => {
   };
 
   const filterTracks = (term: string) => {
+    // Safety check for mockTrackData
+    const safeTrackData = Array.isArray(mockTrackData) ? mockTrackData : [];
+    
     if (!term) {
-      setFilteredTracks(mockTrackData);
+      setFilteredTracks(safeTrackData);
       return;
     }
     
-    const filtered = mockTrackData.filter(track => 
-      track.title.toLowerCase().includes(term.toLowerCase()) ||
-      track.artist.toLowerCase().includes(term.toLowerCase()) ||
-      track.album.toLowerCase().includes(term.toLowerCase()) ||
-      track.isrc.toLowerCase().includes(term.toLowerCase())
+    const termLower = term.toLowerCase();
+    const filtered = safeTrackData.filter(track => 
+      (track.title || '').toLowerCase().includes(termLower) ||
+      (track.artist || '').toLowerCase().includes(termLower) ||
+      (track.album || '').toLowerCase().includes(termLower) ||
+      (track.isrc || '').toLowerCase().includes(termLower)
     );
     
     setFilteredTracks(filtered);
@@ -41,9 +45,9 @@ const Catalog = () => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 overflow-hidden">
           <TopBar />
-          <main className="p-4 md:p-6 space-y-6 pb-16">
+          <main className="container mx-auto p-4 md:p-6 space-y-6 pb-16">
             <CatalogHeader searchTerm={searchTerm} onSearch={handleSearch} />
             <CatalogTabs tracks={filteredTracks} />
           </main>

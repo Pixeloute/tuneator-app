@@ -13,12 +13,15 @@ interface AudioAnalysisPanelProps {
   onApply: () => void;
 }
 
+// Default data in case we can't process the results
+const DEFAULT_DESCRIPTION = "This track has balanced characteristics suitable for various playlists.";
+
 export const AudioAnalysisPanel = ({ 
   analysisResults,
   onReset,
   onApply 
 }: AudioAnalysisPanelProps) => {
-  // Try to use the metadata context, but provide fallback values
+  // Safely access metadata context
   let updateForm: ((field: keyof MetadataFormState, value: any) => void) | null = null;
   let formState: Partial<MetadataFormState> = {};
   
@@ -32,19 +35,30 @@ export const AudioAnalysisPanel = ({
     console.log("Metadata context not available");
   }
   
+  // Safely process analysis results
   const { attributesData } = processAnalysisResults(analysisResults || {});
   
   // Generate a dynamic analysis description based on the top attributes
   const getAnalysisDescription = () => {
-    const sortedAttributes = [...(attributesData || [])].sort((a, b) => b.value - a.value);
+    if (!attributesData || !Array.isArray(attributesData) || attributesData.length === 0) {
+      return DEFAULT_DESCRIPTION;
+    }
+    
+    const sortedAttributes = [...attributesData].sort((a, b) => b.value - a.value);
     const topAttributes = sortedAttributes.slice(0, 2);
     const midAttribute = sortedAttributes[2];
+    
+    if (!topAttributes[0] || !topAttributes[1] || !midAttribute) {
+      return DEFAULT_DESCRIPTION;
+    }
     
     return `This track has high ${topAttributes[0]?.name?.toLowerCase() || 'energy'} and ${topAttributes[1]?.name?.toLowerCase() || 'danceability'} with moderate ${midAttribute?.name?.toLowerCase() || 'acousticness'}, making it suitable for various playlist types including ${getRecommendedPlaylists(sortedAttributes)}.`;
   };
   
   const getRecommendedPlaylists = (attributes: typeof attributesData) => {
-    if (!attributes || !Array.isArray(attributes)) return "electronic";
+    if (!attributes || !Array.isArray(attributes) || attributes.length === 0) {
+      return "electronic";
+    }
     
     const playlists = [];
     
@@ -64,7 +78,7 @@ export const AudioAnalysisPanel = ({
       playlists.push("acoustic");
     }
     
-    return playlists.join(", ") || "electronic";
+    return playlists.length > 0 ? playlists.join(", ") : "electronic";
   };
   
   const handleApplyToMetadata = () => {
