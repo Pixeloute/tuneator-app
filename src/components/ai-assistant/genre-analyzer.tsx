@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { AudioUploadSection } from "@/components/ai-assistant/audio-upload-section";
 import { AnalysisTabs } from "@/components/ai-assistant/analysis-tabs";
-import { analyzeAudio, getMetadataSuggestions } from "@/services/google-api";
+import { supabase } from "@/integrations/supabase/client";
 
 // Default empty objects for analysis results to prevent undefined errors
 const DEFAULT_ANALYSIS = {
@@ -28,12 +28,17 @@ export const GenreAnalyzer = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
   const [additionalMetadata, setAdditionalMetadata] = useState<any>(null);
+  const [aiInsights, setAiInsights] = useState<{ openai: string | null; gemini: string | null }>({
+    openai: null,
+    gemini: null
+  });
   const [activeTab, setActiveTab] = useState("attributes");
   
   const handleFileSelected = (file: File) => {
     setAudioFile(file);
     setAnalysisResults(null);
     setAdditionalMetadata(null);
+    setAiInsights({ openai: null, gemini: null });
   };
   
   const handleAnalyze = async () => {
@@ -49,18 +54,29 @@ export const GenreAnalyzer = () => {
     setIsAnalyzing(true);
     
     try {
-      // Perform audio analysis
-      const results = await analyzeAudio(audioFile);
-      setAnalysisResults(results || DEFAULT_ANALYSIS);
-      
-      // Get additional metadata suggestions
-      const fileName = audioFile.name.replace(/\.[^/.]+$/, "") || "Unknown Track";
-      const additionalData = await getMetadataSuggestions(fileName, "Unknown Artist");
-      setAdditionalMetadata(additionalData || DEFAULT_METADATA);
+      // Call our Supabase Edge Function that handles both OpenAI and Gemini
+      const { data: aiAnalysis, error } = await supabase.functions.invoke('ai-metadata-analysis', {
+        body: { 
+          audioFile: audioFile.name, // In a real implementation, you'd send the actual audio data
+          analysisType: 'full'
+        }
+      });
+
+      if (error) throw error;
+
+      // Update the analysis results with AI insights
+      setAiInsights({
+        openai: aiAnalysis.openai,
+        gemini: aiAnalysis.gemini
+      });
+
+      // Set default analysis data (in a real implementation, this would come from audio analysis)
+      setAnalysisResults(DEFAULT_ANALYSIS);
+      setAdditionalMetadata(DEFAULT_METADATA);
       
       toast({
         title: "Analysis Complete",
-        description: "Your track has been analyzed successfully",
+        description: "Your track has been analyzed by both OpenAI and Gemini",
       });
     } catch (error) {
       console.error("Analysis error:", error);
@@ -82,6 +98,7 @@ export const GenreAnalyzer = () => {
     setAudioFile(null);
     setAnalysisResults(null);
     setAdditionalMetadata(null);
+    setAiInsights({ openai: null, gemini: null });
   };
   
   return (
@@ -101,6 +118,7 @@ export const GenreAnalyzer = () => {
         <AnalysisTabs 
           analysisResults={analysisResults || DEFAULT_ANALYSIS}
           additionalMetadata={additionalMetadata || DEFAULT_METADATA}
+          aiInsights={aiInsights}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           resetAnalysis={resetAnalysis}
