@@ -5,22 +5,27 @@ import { Progress } from "@/components/ui/progress";
 import { Label } from "@/components/ui/label";
 import { Upload, Brain } from "lucide-react";
 
-interface AudioFileUploaderProps {
+export interface AudioFileUploaderProps {
   onFileSelect: (file: File) => void;
-  isAnalyzing: boolean;
-  progress: number;
-  file: File | null;
+  onFileSelected?: (file: File) => void; // For backward compatibility
+  isAnalyzing?: boolean;
+  progress?: number;
+  file?: File | null;
 }
 
 export const AudioFileUploader = ({ 
   onFileSelect, 
-  isAnalyzing, 
-  progress, 
-  file 
+  onFileSelected, 
+  isAnalyzing = false, 
+  progress = 0, 
+  file = null 
 }: AudioFileUploaderProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      onFileSelect(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      // Support both callback props
+      onFileSelect(selectedFile);
+      if (onFileSelected) onFileSelected(selectedFile);
     }
   };
 

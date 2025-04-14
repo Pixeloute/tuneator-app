@@ -6,11 +6,14 @@ interface GenreData {
   value: number;
 }
 
-interface GenreDistributionChartProps {
+export interface GenreDistributionChartProps {
   genreData: GenreData[];
+  data?: GenreData[];
 }
 
-export const GenreDistributionChart = ({ genreData }: GenreDistributionChartProps) => {
+export const GenreDistributionChart = ({ genreData, data }: GenreDistributionChartProps) => {
+  // Use either provided genreData or data prop
+  const chartData = genreData || data || [];
   const COLORS = ["#4f46e5", "#7c3aed", "#0ea5e9", "#10b981", "#f59e0b"];
 
   return (
@@ -18,7 +21,7 @@ export const GenreDistributionChart = ({ genreData }: GenreDistributionChartProp
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={genreData}
+            data={chartData}
             cx="50%"
             cy="50%"
             innerRadius={60}
@@ -28,7 +31,7 @@ export const GenreDistributionChart = ({ genreData }: GenreDistributionChartProp
             dataKey="value"
             label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
           >
-            {genreData.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
@@ -37,9 +40,9 @@ export const GenreDistributionChart = ({ genreData }: GenreDistributionChartProp
       </ResponsiveContainer>
       
       <div className="mt-4">
-        <h4 className="font-medium mb-2">Suggested Primary Genre: {genreData[0]?.name || "Electronic"}</h4>
+        <h4 className="font-medium mb-2">Suggested Primary Genre: {chartData[0]?.name || "Electronic"}</h4>
         <p className="text-sm text-muted-foreground">
-          The track has strong {genreData[0]?.name || "electronic"} elements with {genreData[1]?.name || "ambient"} influences. 
+          The track has strong {chartData[0]?.name || "electronic"} elements with {chartData[1]?.name || "ambient"} influences. 
           Consider using both as primary and secondary genres.
         </p>
       </div>
