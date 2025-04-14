@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TrackInfoTab } from "@/components/metadata/track-info-tab";
@@ -23,6 +22,12 @@ export const MetadataForm = () => {
   } = useMetadata();
   
   const [activeTab, setActiveTab] = useState("track-info");
+
+  // Filter out "success" type issues before passing to MetadataFeedback
+  const filteredIssues = validationIssues.filter(
+    (issue): issue is { type: "warning" | "error" | "info"; message: string; } => 
+    issue.type !== "success"
+  );
 
   return (
     <div className="space-y-6">
@@ -87,7 +92,7 @@ export const MetadataForm = () => {
         <div className="lg:col-span-1">
           <MetadataFeedback 
             score={metadataQualityScore} 
-            issues={validationIssues} 
+            issues={filteredIssues} 
             onValidate={validateMetadata}
           />
         </div>
