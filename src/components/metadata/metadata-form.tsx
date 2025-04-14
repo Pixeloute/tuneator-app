@@ -37,10 +37,10 @@ const MetadataFormContent = () => {
     <div className="space-y-6">
       <MetadataHeader />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        <div className="xl:col-span-3">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid grid-cols-2 lg:grid-cols-6 w-full">
+            <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full">
               <TabsTrigger value="track-info">Track Info</TabsTrigger>
               <TabsTrigger value="artist-details">Artist Details</TabsTrigger>
               <TabsTrigger value="release-info">Release Info</TabsTrigger>
@@ -93,7 +93,7 @@ const MetadataFormContent = () => {
           </Tabs>
         </div>
         
-        <div className="lg:col-span-1">
+        <div className="xl:col-span-1">
           <MetadataFeedback 
             score={metadataQualityScore} 
             issues={validationIssues} 

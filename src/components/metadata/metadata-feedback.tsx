@@ -51,9 +51,9 @@ export const MetadataFeedback = ({ score, issues, onValidate }: MetadataFeedback
   const successCount = issues.filter(i => i.type === "success").length;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Card className="md:col-span-1">
-        <CardHeader>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader className="pb-4">
           <CardTitle>Metadata Quality</CardTitle>
           <CardDescription>Overall completeness score</CardDescription>
         </CardHeader>
@@ -103,8 +103,8 @@ export const MetadataFeedback = ({ score, issues, onValidate }: MetadataFeedback
         </CardContent>
       </Card>
       
-      <Card className="md:col-span-2">
-        <CardHeader>
+      <Card>
+        <CardHeader className="pb-4">
           <CardTitle>Validation Issues</CardTitle>
           <CardDescription>Items requiring attention</CardDescription>
         </CardHeader>

@@ -23,7 +23,7 @@ const Metadata = () => {
         <AppSidebar />
         <div className="flex-1">
           <TopBar />
-          <main className="p-4 md:p-6 space-y-6 pb-16">
+          <main className="p-4 md:p-6 space-y-6 pb-16 max-w-[1920px] mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h1 className="text-2xl font-bold">Metadata Management</h1>
               
