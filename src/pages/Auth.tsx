@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/contexts/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
 import { supabase } from "@/integrations/supabase/client";
-import { Google } from "lucide-react";
+import { Google as GoogleIcon } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -209,7 +209,7 @@ const Auth = () => {
                   onClick={handleGoogleSignIn}
                   disabled={isSubmitting}
                 >
-                  <Google className="mr-2 h-4 w-4" />
+                  <GoogleIcon className="mr-2 h-4 w-4" />
                   Sign in with Google
                 </Button>
               </CardContent>
@@ -318,7 +318,7 @@ const Auth = () => {
                   onClick={handleGoogleSignUp}
                   disabled={isSubmitting}
                 >
-                  <Google className="mr-2 h-4 w-4" />
+                  <GoogleIcon className="mr-2 h-4 w-4" />
                   Sign up with Google
                 </Button>
               </CardContent>
