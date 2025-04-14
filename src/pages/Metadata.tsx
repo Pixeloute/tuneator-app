@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/app-sidebar";
@@ -14,16 +13,12 @@ import { Link } from "react-router-dom";
 import { Sparkles, Search, Database } from "lucide-react";
 import { InsightPulseFeed } from "@/components/metadata/insight-pulse-feed";
 import { MetadataProvider } from "@/contexts/metadata";
-
 const Metadata = () => {
   const [activeView, setActiveView] = useState<"single" | "batch" | "lookup">("single");
-
   useEffect(() => {
     document.title = "TuneTrust - Metadata Management";
   }, []);
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <div className="flex-1">
@@ -33,33 +28,17 @@ const Metadata = () => {
               <h1 className="text-2xl font-bold">Metadata Management</h1>
               
               <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant={activeView === "single" ? "default" : "outline"}
-                  onClick={() => setActiveView("single")}
-                  className={activeView === "single" ? "bg-electric hover:bg-electric/90" : ""}
-                >
+                <Button variant={activeView === "single" ? "default" : "outline"} onClick={() => setActiveView("single")} className={activeView === "single" ? "bg-electric hover:bg-electric/90" : ""}>
                   Single Track
                 </Button>
-                <Button
-                  variant={activeView === "batch" ? "default" : "outline"}
-                  onClick={() => setActiveView("batch")}
-                  className={activeView === "batch" ? "bg-electric hover:bg-electric/90" : ""}
-                >
+                <Button variant={activeView === "batch" ? "default" : "outline"} onClick={() => setActiveView("batch")} className={activeView === "batch" ? "bg-electric hover:bg-electric/90" : ""}>
                   Batch Editor
                 </Button>
-                <Button
-                  variant={activeView === "lookup" ? "default" : "outline"}
-                  onClick={() => setActiveView("lookup")}
-                  className={activeView === "lookup" ? "bg-electric hover:bg-electric/90" : ""}
-                >
+                <Button variant={activeView === "lookup" ? "default" : "outline"} onClick={() => setActiveView("lookup")} className={activeView === "lookup" ? "bg-electric hover:bg-electric/90" : ""}>
                   <Search className="h-4 w-4 mr-2" />
                   Lookup
                 </Button>
-                <Button
-                  variant="outline"
-                  className="ml-2 border-electric text-electric"
-                  asChild
-                >
+                <Button variant="outline" className="ml-2 border-electric text-electric" asChild>
                   <Link to="/ai-assistant">
                     <Sparkles className="h-4 w-4 mr-2" />
                     AI Assistant
@@ -68,8 +47,7 @@ const Metadata = () => {
               </div>
             </div>
             
-            {activeView === "single" && (
-              <div className="space-y-6">
+            {activeView === "single" && <div className="space-y-6">
                 <div className="flex flex-col xl:flex-row gap-6">
                   <div className="flex-1 min-w-0">
                     <Tabs defaultValue="editor">
@@ -94,39 +72,28 @@ const Metadata = () => {
                     </Tabs>
                   </div>
                   
-                  <div className="flex-1 xl:max-w-sm">
-                    <div className="sticky top-4">
-                      {/* This is just a placeholder - the actual Metadata Health content comes from MetadataForm */}
-                    </div>
-                  </div>
+                  
                 </div>
                 
                 {/* Insight Pulse Feed added below the main content */}
                 <MetadataProvider>
                   <InsightPulseFeed />
                 </MetadataProvider>
-              </div>
-            )}
+              </div>}
             
-            {activeView === "batch" && (
-              <MetadataProvider>
+            {activeView === "batch" && <MetadataProvider>
                 <BatchEditor />
-              </MetadataProvider>
-            )}
+              </MetadataProvider>}
             
-            {activeView === "lookup" && (
-              <div className="space-y-4">
+            {activeView === "lookup" && <div className="space-y-4">
                 <p className="text-muted-foreground">
                   Search across multiple music industry platforms including Spotify, YouTube, MusicBrainz, and Discogs to enrich your metadata.
                 </p>
                 <ExternalLookupPanel />
-              </div>
-            )}
+              </div>}
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Metadata;
