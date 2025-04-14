@@ -55,21 +55,34 @@ export const AudioAnalysisPanel = ({
     if (updateForm && analysisResults) {
       // Apply genre information if available
       if (analysisResults.genres && analysisResults.genres.length > 0) {
-        updateForm('genres', analysisResults.genres.slice(0, 3));
+        // Update primary genre with first genre
+        updateForm('genre', analysisResults.genres[0]);
+        
+        // If there's a second genre, set it as secondary
+        if (analysisResults.genres.length > 1) {
+          updateForm('secondaryGenre', analysisResults.genres[1]);
+        }
+        
+        // Store full genres array if supported
+        if ('genres' in formState) {
+          updateForm('genres' as keyof MetadataFormState, analysisResults.genres.slice(0, 3));
+        }
       }
       
       // Apply mood information if available
       if (analysisResults.mood && analysisResults.mood.length > 0) {
-        updateForm('mood', analysisResults.mood.slice(0, 3));
+        updateForm('mood', analysisResults.mood.join(', '));
       }
       
-      // Add analysis description to the track notes
+      // Add analysis description to the track notes if supported
       const analysisNote = getAnalysisDescription();
-      const updatedNotes = formState.notes 
-        ? `${formState.notes}\n\nAI Analysis: ${analysisNote}`
-        : `AI Analysis: ${analysisNote}`;
-      
-      updateForm('notes', updatedNotes);
+      if ('notes' in formState) {
+        const updatedNotes = formState.notes 
+          ? `${formState.notes}\n\nAI Analysis: ${analysisNote}`
+          : `AI Analysis: ${analysisNote}`;
+        
+        updateForm('notes' as keyof MetadataFormState, updatedNotes);
+      }
       
       toast({
         title: "Analysis Applied",

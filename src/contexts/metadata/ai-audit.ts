@@ -19,7 +19,7 @@ export async function handleAiAudit(
   
   try {
     // First attempt to get AI-powered suggestions if track title exists
-    let enhancedMetadata = {};
+    let enhancedMetadata: Partial<MetadataFormState> = {};
     
     if (formState.title) {
       try {
@@ -32,17 +32,25 @@ export async function handleAiAudit(
         enhancedMetadata = {
           ...formState,
           // Only apply suggestions to empty fields
-          genres: formState.genres.length === 0 ? 
-            suggestions.recommendedTags.slice(0, 3) : formState.genres,
-          mood: formState.mood.length === 0 ? 
-            suggestions.moodTags.slice(0, 3) : formState.mood,
+          genre: formState.genre || suggestions.recommendedTags[0] || "",
+          secondaryGenre: formState.secondaryGenre || suggestions.recommendedTags[1] || "",
+          mood: formState.mood || suggestions.moodTags.slice(0, 3).join(', '),
           // Add missing identifiers if not present
           iswc: formState.iswc || "T-034.524.680-1",
           upc: formState.upc || "884385672382",
-          // Enhance keywords if they don't exist
-          keywords: formState.keywords.length === 0 ? 
-            suggestions.keywords : formState.keywords
         };
+        
+        // Add genres array if supported
+        if ('genres' in formState) {
+          (enhancedMetadata as any).genres = formState.genres?.length ? 
+            formState.genres : suggestions.recommendedTags.slice(0, 3);
+        }
+        
+        // Add keywords if supported
+        if ('keywords' in formState) {
+          (enhancedMetadata as any).keywords = formState.keywords?.length ? 
+            formState.keywords : suggestions.keywords;
+        }
       } catch (error) {
         console.error("Error getting AI suggestions:", error);
         // Fallback to basic enhancement if API fails
@@ -75,11 +83,11 @@ export async function handleAiAudit(
       newValidationIssues.push({ type: "success", message: "AI added missing UPC" });
     }
     
-    if (formState.genres.length === 0 && (enhancedMetadata as MetadataFormState).genres.length > 0) {
+    if (!formState.genre && (enhancedMetadata as MetadataFormState).genre) {
       newValidationIssues.push({ type: "success", message: "AI suggested genre tags based on track analysis" });
     }
     
-    if (formState.mood.length === 0 && (enhancedMetadata as MetadataFormState).mood.length > 0) {
+    if (!formState.mood && (enhancedMetadata as MetadataFormState).mood) {
       newValidationIssues.push({ type: "success", message: "AI suggested mood tags to improve playlist placement" });
     }
     
@@ -118,13 +126,24 @@ function getBasicEnhancements(formState: MetadataFormState): MetadataFormState {
   }
   
   // Add basic genre if missing
-  if (formState.genres.length === 0) {
-    enhancedForm.genres = ["Electronic", "Pop", "Ambient"];
+  if (!formState.genre) {
+    enhancedForm.genre = "Electronic";
+    enhancedForm.secondaryGenre = "Pop";
   }
   
   // Add basic mood if missing
-  if (formState.mood.length === 0) {
-    enhancedForm.mood = ["Energetic", "Uplifting", "Relaxed"];
+  if (!formState.mood) {
+    enhancedForm.mood = "Energetic, Uplifting, Relaxed";
+  }
+  
+  // Add genres array if supported
+  if ('genres' in formState && (!formState.genres || formState.genres.length === 0)) {
+    (enhancedForm as any).genres = ["Electronic", "Pop", "Ambient"];
+  }
+  
+  // Add keywords if supported
+  if ('keywords' in formState && (!formState.keywords || formState.keywords.length === 0)) {
+    (enhancedForm as any).keywords = ["electronic", "ambient", "atmospheric", "cinematic"];
   }
   
   return enhancedForm;

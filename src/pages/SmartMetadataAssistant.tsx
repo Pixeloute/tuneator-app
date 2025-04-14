@@ -16,6 +16,8 @@ const SmartMetadataAssistant = () => {
   const { toast } = useToast();
   const [activeTrack, setActiveTrack] = useState<string | null>(null);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [additionalMetadata, setAdditionalMetadata] = useState<any>({
     keywords: ["electronic", "ambient", "atmospheric", "cinematic", "downtempo", "dreamy"],
     similarArtists: ["Bonobo", "Jon Hopkins", "Tycho", "Four Tet", "Boards of Canada"],
@@ -40,9 +42,15 @@ const SmartMetadataAssistant = () => {
     });
   };
   
+  const handleFileSelected = (file: File) => {
+    setAudioFile(file);
+    setAnalysisResults(null);
+  };
+  
   const handleAnalysisComplete = (results: any) => {
     setAnalysisResults(results);
     setActiveAnalysisTab("attributes");
+    setIsAnalyzing(false);
     
     toast({
       title: "Analysis Complete",
@@ -53,6 +61,7 @@ const SmartMetadataAssistant = () => {
   const resetAnalysis = () => {
     setAnalysisResults(null);
     setActiveTrack(null);
+    setAudioFile(null);
   };
   
   const handleEnrichmentComplete = () => {
@@ -84,6 +93,9 @@ const SmartMetadataAssistant = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-6">
                 <AudioUploadSection 
+                  audioFile={audioFile}
+                  isAnalyzing={isAnalyzing}
+                  onFileSelected={handleFileSelected}
                   onAnalysisComplete={handleAnalysisComplete}
                 />
                 

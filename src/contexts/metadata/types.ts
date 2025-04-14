@@ -1,4 +1,3 @@
-
 export interface MetadataFormState {
   // Track Info
   title: string;
@@ -70,6 +69,11 @@ export interface MetadataFormState {
   
   // Platform
   socialLinks: Record<string, string>;
+  
+  // Additional fields needed for AI functionality
+  genres?: string[];
+  keywords?: string[];
+  notes?: string;
 }
 
 export interface MetadataContextProps {
