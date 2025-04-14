@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Search, Music, User, Disc, Youtube, Info, Database, ExternalLink, Copy } from "lucide-react";
-import apiService, { EnrichedMetadata } from "@/services/api-service";
+import apiService from "@/services/api-service";
+import type { EnrichedMetadata } from "@/services/types/shared-types";
 import { useToast } from "@/hooks/use-toast";
 
 export const ExternalLookupPanel = () => {
