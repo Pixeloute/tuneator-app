@@ -1,18 +1,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CheckCircle2, Clock, FileWarning, Info, Music2, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
-import { MetadataFeedback, IssueType } from "@/components/metadata/metadata-feedback";
+import { IssueType } from "@/components/metadata/metadata-feedback";
 import { RelatedRights } from "@/components/metadata/related-rights";
+import { BasicTrackInfo } from "@/components/metadata/basic-track-info";
+import { TechnicalMetadata } from "@/components/metadata/technical-metadata";
+import { MetadataFeedback } from "@/components/metadata/metadata-feedback";
 
 interface ContributorType {
   id: string;
@@ -74,7 +71,7 @@ export const MetadataForm = () => {
 
   const handleAiSuggestions = () => {
     // Simulate AI suggesting improvements
-    const newValidationIssues = [
+    const newValidationIssues: IssueType[] = [
       ...validationIssues.filter(issue => issue.type !== "success"),
       { type: "success", message: "AI suggested genre tags added" }
     ];
@@ -147,114 +144,25 @@ export const MetadataForm = () => {
       </TabsList>
       
       <TabsContent value="basic">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Track Information</CardTitle>
-                <CardDescription>Edit your track's basic information</CardDescription>
-              </div>
-              <Button variant="outline" size="sm" className="gap-1" onClick={handleAiSuggestions}>
-                <Wand2 className="h-4 w-4" />
-                <span>AI Enhance</span>
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="artist">Primary Artist</Label>
-                <Input
-                  id="artist"
-                  value={artist}
-                  onChange={(e) => setArtist(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="album">Album</Label>
-                <Input
-                  id="album"
-                  value={album}
-                  onChange={(e) => setAlbum(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
-                <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger id="language">
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="English">English</SelectItem>
-                    <SelectItem value="Spanish">Spanish</SelectItem>
-                    <SelectItem value="French">French</SelectItem>
-                    <SelectItem value="Japanese">Japanese</SelectItem>
-                    <SelectItem value="German">German</SelectItem>
-                    <SelectItem value="Instrumental">Instrumental</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="genre">Primary Genre</Label>
-                <Select value={genre} onValueChange={setGenre}>
-                  <SelectTrigger id="genre">
-                    <SelectValue placeholder="Select genre" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Electronic">Electronic</SelectItem>
-                    <SelectItem value="Rock">Rock</SelectItem>
-                    <SelectItem value="Hip Hop">Hip Hop</SelectItem>
-                    <SelectItem value="Pop">Pop</SelectItem>
-                    <SelectItem value="Jazz">Jazz</SelectItem>
-                    <SelectItem value="Classical">Classical</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="release">Release Date</Label>
-                <Input
-                  id="release"
-                  type="date"
-                  value={release}
-                  onChange={(e) => setRelease(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-              />
-            </div>
-            
-            <div className="flex items-center space-x-2 mt-4">
-              <Switch 
-                id="explicit" 
-                checked={explicit} 
-                onCheckedChange={setExplicit}
-              />
-              <Label htmlFor="explicit">Explicit Content</Label>
-            </div>
-          </CardContent>
-        </Card>
+        <BasicTrackInfo 
+          title={title}
+          setTitle={setTitle}
+          artist={artist}
+          setArtist={setArtist}
+          album={album}
+          setAlbum={setAlbum}
+          language={language}
+          setLanguage={setLanguage}
+          genre={genre}
+          setGenre={setGenre}
+          release={release}
+          setRelease={setRelease}
+          description={description}
+          setDescription={setDescription}
+          explicit={explicit}
+          setExplicit={setExplicit}
+          onAiSuggestions={handleAiSuggestions}
+        />
       </TabsContent>
       
       <TabsContent value="rights">
@@ -275,63 +183,12 @@ export const MetadataForm = () => {
       </TabsContent>
       
       <TabsContent value="technical">
-        <Card>
-          <CardHeader>
-            <CardTitle>Technical Metadata</CardTitle>
-            <CardDescription>Audio characteristics and technical specifications</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="bpm">Tempo (BPM)</Label>
-                <Input
-                  id="bpm"
-                  type="number"
-                  value={bpm}
-                  onChange={(e) => setBpm(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="key">Musical Key</Label>
-                <Select value={key} onValueChange={setKey}>
-                  <SelectTrigger id="key">
-                    <SelectValue placeholder="Select key" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="C Major">C Major</SelectItem>
-                    <SelectItem value="A Minor">A Minor</SelectItem>
-                    <SelectItem value="G Major">G Major</SelectItem>
-                    <SelectItem value="E Minor">E Minor</SelectItem>
-                    <SelectItem value="D Major">D Major</SelectItem>
-                    <SelectItem value="B Minor">B Minor</SelectItem>
-                    <SelectItem value="F Major">F Major</SelectItem>
-                    <SelectItem value="Unknown">Unknown</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex flex-col items-center p-4 border rounded-md">
-                  <Music2 className="h-8 w-8 text-muted-foreground mb-2" />
-                  <h3 className="text-sm font-medium">Audio Format</h3>
-                  <p className="text-sm text-muted-foreground">WAV 44.1kHz/24-bit</p>
-                </div>
-                <div className="flex flex-col items-center p-4 border rounded-md">
-                  <Clock className="h-8 w-8 text-muted-foreground mb-2" />
-                  <h3 className="text-sm font-medium">Duration</h3>
-                  <p className="text-sm text-muted-foreground">3:45</p>
-                </div>
-                <div className="flex flex-col items-center p-4 border rounded-md">
-                  <Calendar className="h-8 w-8 text-muted-foreground mb-2" />
-                  <h3 className="text-sm font-medium">Created</h3>
-                  <p className="text-sm text-muted-foreground">Aug 12, 2023</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <TechnicalMetadata 
+          bpm={bpm}
+          setBpm={setBpm}
+          key={key}
+          setKey={setKey}
+        />
       </TabsContent>
       
       <TabsContent value="validation">
