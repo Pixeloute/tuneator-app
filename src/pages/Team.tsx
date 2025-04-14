@@ -3,153 +3,157 @@ import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mail, Plus, User } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserPlus, Mail, ShieldCheck, ShieldAlert, Pencil, Trash2, Users, KeyRound } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: string;
-  avatar?: string;
-  lastActive: string;
-  status: "online" | "offline" | "away";
+  role: "Admin" | "Manager" | "Editor" | "Viewer";
+  status: "Active" | "Pending" | "Inactive";
+  avatarUrl?: string;
+  dateAdded: string;
+  permissions: string[];
 }
 
 const Team = () => {
-  useEffect(() => {
-    document.title = "Tuneator - Team";
-  }, []);
-
   const { toast } = useToast();
-  
-  const initialMembers: TeamMember[] = [
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<string>("");
+  const [activeView, setActiveView] = useState<"members" | "roles">("members");
+  const [members, setMembers] = useState<TeamMember[]>([
     {
       id: "1",
-      name: "Alex Johnson",
-      email: "alex@tuneator.com",
+      name: "Jane Smith",
+      email: "jane@company.com",
       role: "Admin",
-      lastActive: "Just now",
-      status: "online",
+      status: "Active",
+      avatarUrl: "",
+      dateAdded: "2023-04-12",
+      permissions: ["Full access", "Catalog management", "Royalty reporting", "User management"]
     },
     {
       id: "2",
-      name: "Sarah Williams",
-      email: "sarah@tuneator.com",
+      name: "John Doe",
+      email: "john@company.com",
       role: "Manager",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-      lastActive: "5 minutes ago",
-      status: "online",
+      status: "Active",
+      avatarUrl: "",
+      dateAdded: "2023-05-20",
+      permissions: ["Catalog management", "Metadata editing", "Asset uploads", "Royalty reporting"]
     },
     {
       id: "3",
-      name: "Michael Chen",
-      email: "michael@tuneator.com",
+      name: "Sarah Wilson",
+      email: "sarah@company.com",
       role: "Editor",
-      avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-      lastActive: "3 hours ago",
-      status: "away",
+      status: "Active",
+      avatarUrl: "",
+      dateAdded: "2023-06-15",
+      permissions: ["Metadata editing", "Asset uploads", "View royalties"]
     },
     {
       id: "4",
-      name: "Emily Davis",
-      email: "emily@tuneator.com",
+      name: "Mike Johnson",
+      email: "mike@company.com",
       role: "Viewer",
-      lastActive: "Yesterday",
-      status: "offline",
-    },
-    {
-      id: "5",
-      name: "James Wilson",
-      email: "james@tuneator.com",
-      role: "Editor",
-      avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-      lastActive: "2 days ago",
-      status: "offline",
-    },
-  ];
+      status: "Pending",
+      avatarUrl: "",
+      dateAdded: "2023-07-01",
+      permissions: ["View metadata", "View assets", "View royalties"]
+    }
+  ]);
   
-  const [members, setMembers] = useState<TeamMember[]>(initialMembers);
-  const [newMember, setNewMember] = useState({
-    name: "",
-    email: "",
-    role: "Viewer",
-  });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  useEffect(() => {
+    document.title = "Tuneator - Team Management";
+  }, []);
   
-  const handleAddMember = () => {
-    if (!newMember.name || !newMember.email) {
+  const handleInvite = () => {
+    if (!email || !role) {
       toast({
-        title: "Error",
-        description: "Name and email are required fields.",
+        title: "Missing Information",
+        description: "Please provide an email and select a role",
         variant: "destructive",
       });
       return;
     }
     
-    const member: TeamMember = {
+    const newMember: TeamMember = {
       id: Date.now().toString(),
-      name: newMember.name,
-      email: newMember.email,
-      role: newMember.role,
-      lastActive: "Just joined",
-      status: "offline",
+      name: email.split('@')[0],
+      email,
+      role: role as any,
+      status: "Pending",
+      dateAdded: new Date().toISOString().split('T')[0],
+      permissions: getRolePermissions(role as any)
     };
     
-    setMembers([...members, member]);
-    setNewMember({
-      name: "",
-      email: "",
-      role: "Viewer",
-    });
-    setIsDialogOpen(false);
+    setMembers([...members, newMember]);
+    setShowInviteDialog(false);
+    setEmail("");
+    setRole("");
     
     toast({
-      title: "Team member added",
-      description: `${member.name} has been added to your team.`,
+      title: "Invitation Sent",
+      description: `An invitation has been sent to ${email}`,
     });
   };
   
-  const handleInvite = (email: string) => {
-    toast({
-      title: "Invitation sent",
-      description: `An invitation has been sent to ${email}.`,
-    });
-  };
-  
-  const getStatusBadge = (status: TeamMember["status"]) => {
-    switch (status) {
-      case "online":
-        return <Badge variant="outline" className="bg-mint/10 text-mint border-mint/20">Online</Badge>;
-      case "offline":
-        return <Badge variant="outline" className="bg-muted/10 text-muted-foreground border-muted/20">Offline</Badge>;
-      case "away":
-        return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">Away</Badge>;
-    }
-  };
-  
-  const getRoleBadge = (role: string) => {
+  const getRolePermissions = (role: string): string[] => {
     switch (role) {
       case "Admin":
-        return <Badge className="bg-electric text-primary-foreground">Admin</Badge>;
+        return ["Full access", "Catalog management", "Royalty reporting", "User management"];
       case "Manager":
-        return <Badge className="bg-mint text-primary-foreground">Manager</Badge>;
+        return ["Catalog management", "Metadata editing", "Asset uploads", "Royalty reporting"];
       case "Editor":
-        return <Badge variant="secondary">Editor</Badge>;
+        return ["Metadata editing", "Asset uploads", "View royalties"];
       case "Viewer":
-        return <Badge variant="outline">Viewer</Badge>;
+        return ["View metadata", "View assets", "View royalties"];
+      default:
+        return [];
     }
   };
-
+  
+  const getRoleBadgeStyles = (role: string) => {
+    switch (role) {
+      case "Admin":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "Manager":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "Editor":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "Viewer":
+        return "bg-green-100 text-green-800 border-green-200";
+      default:
+        return "";
+    }
+  };
+  
+  const getStatusBadgeStyles = (status: string) => {
+    switch (status) {
+      case "Active":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "Pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "Inactive":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      default:
+        return "";
+    }
+  };
+  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -158,180 +162,338 @@ const Team = () => {
           <TopBar />
           <main className="p-4 md:p-6 space-y-6 pb-16">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <h1 className="text-2xl font-bold">Team Management</h1>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-electric hover:bg-electric/90 text-primary-foreground">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Team Member
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add Team Member</DialogTitle>
-                    <DialogDescription>
-                      Invite someone to join your Tuneator team.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        placeholder="Enter full name"
-                        value={newMember.name}
-                        onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="email@example.com"
-                        value={newMember.email}
-                        onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Role</Label>
-                      <Select
-                        value={newMember.role}
-                        onValueChange={(value) => setNewMember({ ...newMember, role: value })}
-                      >
-                        <SelectTrigger id="role">
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Admin">Admin</SelectItem>
-                          <SelectItem value="Manager">Manager</SelectItem>
-                          <SelectItem value="Editor">Editor</SelectItem>
-                          <SelectItem value="Viewer">Viewer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                      Cancel
+              <div>
+                <h1 className="text-2xl font-bold">Team Management</h1>
+                <p className="text-muted-foreground">Manage team members and access permissions</p>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={activeView === "members" ? "default" : "outline"}
+                  onClick={() => setActiveView("members")}
+                  className={activeView === "members" ? "bg-electric hover:bg-electric/90" : ""}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Team Members
+                </Button>
+                <Button
+                  variant={activeView === "roles" ? "default" : "outline"}
+                  onClick={() => setActiveView("roles")}
+                  className={activeView === "roles" ? "bg-electric hover:bg-electric/90" : ""}
+                >
+                  <KeyRound className="h-4 w-4 mr-2" />
+                  Roles & Permissions
+                </Button>
+                <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-mint hover:bg-mint/90">
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Invite Member
                     </Button>
-                    <Button 
-                      className="bg-electric hover:bg-electric/90 text-primary-foreground"
-                      onClick={handleAddMember}
-                    >
-                      Add Member
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Invite Team Member</DialogTitle>
+                      <DialogDescription>
+                        Send an invitation to a new team member to collaborate on your catalog.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="colleague@company.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="role">Role</Label>
+                        <Select value={role} onValueChange={setRole}>
+                          <SelectTrigger id="role">
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Admin">Admin</SelectItem>
+                            <SelectItem value="Manager">Manager</SelectItem>
+                            <SelectItem value="Editor">Editor</SelectItem>
+                            <SelectItem value="Viewer">Viewer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {role && (
+                        <div className="rounded-md bg-muted p-4">
+                          <h4 className="text-sm font-medium mb-2">This role has the following permissions:</h4>
+                          <ul className="text-xs space-y-1">
+                            {getRolePermissions(role).map((permission) => (
+                              <li key={permission} className="flex items-center gap-2">
+                                <ShieldCheck className="h-3.5 w-3.5 text-mint" />
+                                {permission}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleInvite} className="bg-mint hover:bg-mint/90">
+                        <Mail className="h-4 w-4 mr-2" />
+                        Send Invitation
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
             
-            <Tabs defaultValue="members">
-              <TabsList className="grid w-full max-w-md grid-cols-2">
-                <TabsTrigger value="members">Team Members</TabsTrigger>
-                <TabsTrigger value="permissions">Permissions</TabsTrigger>
-              </TabsList>
-              <TabsContent value="members" className="mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Team Members</CardTitle>
-                    <CardDescription>Manage your team and their access levels</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
+            {activeView === "members" ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Team Members</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Date Added</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {members.map((member) => (
-                        <div key={member.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-md bg-secondary/50 hover:bg-secondary transition-colors gap-4">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10">
-                              {member.avatar && <AvatarImage src={member.avatar} />}
-                              <AvatarFallback className="bg-muted">
-                                {member.name.split(' ').map(n => n[0]).join('')}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <h3 className="font-medium">{member.name}</h3>
-                              <p className="text-sm text-muted-foreground">{member.email}</p>
+                        <TableRow key={member.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar>
+                                <AvatarImage src={member.avatarUrl} />
+                                <AvatarFallback>{member.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="font-medium">{member.name}</div>
+                                <div className="text-sm text-muted-foreground">{member.email}</div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                            {getRoleBadge(member.role)}
-                            <span className="text-xs text-muted-foreground">{member.lastActive}</span>
-                            {getStatusBadge(member.status)}
-                            {member.status === "offline" && (
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="h-7 text-xs"
-                                onClick={() => handleInvite(member.email)}
-                              >
-                                <Mail className="h-3 w-3 mr-1" />
-                                Invite
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={getRoleBadgeStyles(member.role)}>
+                              {member.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={getStatusBadgeStyles(member.status)}>
+                              {member.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{member.dateAdded}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button variant="ghost" size="icon">
+                                <Pencil className="h-4 w-4" />
                               </Button>
-                            )}
-                          </div>
-                        </div>
+                              <Button variant="ghost" size="icon" className="text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="permissions" className="mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Role Permissions</CardTitle>
-                    <CardDescription>Configure access levels for your team</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div className="p-4 rounded-md bg-secondary/50">
-                        <h3 className="text-lg font-medium mb-2">Admin</h3>
-                        <p className="text-sm text-muted-foreground mb-3">Full access to all features and settings.</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                          <Badge variant="outline" className="justify-start">Upload Assets</Badge>
-                          <Badge variant="outline" className="justify-start">Edit Metadata</Badge>
-                          <Badge variant="outline" className="justify-start">Manage Team</Badge>
-                          <Badge variant="outline" className="justify-start">View Analytics</Badge>
-                          <Badge variant="outline" className="justify-start">Change Settings</Badge>
-                          <Badge variant="outline" className="justify-start">Delete Content</Badge>
-                        </div>
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            ) : (
+              <Tabs defaultValue="roles" className="space-y-4">
+                <TabsList className="grid w-full max-w-md grid-cols-2">
+                  <TabsTrigger value="roles">Role Definitions</TabsTrigger>
+                  <TabsTrigger value="permissions">Permission Matrix</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="roles" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ShieldCheck className="h-5 w-5 text-red-500" />
+                        Admin Role
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Administrators have full access to all features and settings within the application. 
+                        They can manage users, catalog, royalties, and all system settings.
+                      </p>
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium">Permissions:</h4>
+                        <ul className="text-sm space-y-1">
+                          {getRolePermissions("Admin").map((permission) => (
+                            <li key={permission} className="flex items-center gap-2">
+                              <ShieldCheck className="h-3.5 w-3.5 text-mint" />
+                              {permission}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      
-                      <div className="p-4 rounded-md bg-secondary/50">
-                        <h3 className="text-lg font-medium mb-2">Manager</h3>
-                        <p className="text-sm text-muted-foreground mb-3">Can manage content and view all data.</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                          <Badge variant="outline" className="justify-start">Upload Assets</Badge>
-                          <Badge variant="outline" className="justify-start">Edit Metadata</Badge>
-                          <Badge variant="outline" className="justify-start">View Team</Badge>
-                          <Badge variant="outline" className="justify-start">View Analytics</Badge>
-                          <Badge variant="outline" className="justify-start">View Settings</Badge>
-                        </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ShieldCheck className="h-5 w-5 text-purple-500" />
+                        Manager Role
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Managers can manage the catalog, edit metadata, upload assets, and view royalty reports.
+                        They cannot manage users or system settings.
+                      </p>
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium">Permissions:</h4>
+                        <ul className="text-sm space-y-1">
+                          {getRolePermissions("Manager").map((permission) => (
+                            <li key={permission} className="flex items-center gap-2">
+                              <ShieldCheck className="h-3.5 w-3.5 text-mint" />
+                              {permission}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      
-                      <div className="p-4 rounded-md bg-secondary/50">
-                        <h3 className="text-lg font-medium mb-2">Editor</h3>
-                        <p className="text-sm text-muted-foreground mb-3">Can edit content and view analytics.</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                          <Badge variant="outline" className="justify-start">Upload Assets</Badge>
-                          <Badge variant="outline" className="justify-start">Edit Metadata</Badge>
-                          <Badge variant="outline" className="justify-start">View Analytics</Badge>
+                    </CardContent>
+                  </Card>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <ShieldCheck className="h-5 w-5 text-blue-500" />
+                          Editor Role
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Editors can edit metadata, upload assets, and view royalty data.
+                          They cannot manage users, system settings, or the catalog structure.
+                        </p>
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium">Permissions:</h4>
+                          <ul className="text-sm space-y-1">
+                            {getRolePermissions("Editor").map((permission) => (
+                              <li key={permission} className="flex items-center gap-2">
+                                <ShieldCheck className="h-3.5 w-3.5 text-mint" />
+                                {permission}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </div>
-                      
-                      <div className="p-4 rounded-md bg-secondary/50">
-                        <h3 className="text-lg font-medium mb-2">Viewer</h3>
-                        <p className="text-sm text-muted-foreground mb-3">Read-only access to content and analytics.</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                          <Badge variant="outline" className="justify-start">View Assets</Badge>
-                          <Badge variant="outline" className="justify-start">View Metadata</Badge>
-                          <Badge variant="outline" className="justify-start">View Analytics</Badge>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <ShieldCheck className="h-5 w-5 text-green-500" />
+                          Viewer Role
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Viewers have read-only access to metadata, assets, and royalty information.
+                          They cannot make any changes to the data.
+                        </p>
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium">Permissions:</h4>
+                          <ul className="text-sm space-y-1">
+                            {getRolePermissions("Viewer").map((permission) => (
+                              <li key={permission} className="flex items-center gap-2">
+                                <ShieldCheck className="h-3.5 w-3.5 text-mint" />
+                                {permission}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="permissions" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Permission Matrix</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="min-w-[180px]">Permission</TableHead>
+                              <TableHead className="text-center">Admin</TableHead>
+                              <TableHead className="text-center">Manager</TableHead>
+                              <TableHead className="text-center">Editor</TableHead>
+                              <TableHead className="text-center">Viewer</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {[
+                              { name: "Manage Users", admin: true, manager: false, editor: false, viewer: false },
+                              { name: "Manage Roles", admin: true, manager: false, editor: false, viewer: false },
+                              { name: "Manage Catalog", admin: true, manager: true, editor: false, viewer: false },
+                              { name: "Edit Metadata", admin: true, manager: true, editor: true, viewer: false },
+                              { name: "Upload Assets", admin: true, manager: true, editor: true, viewer: false },
+                              { name: "Delete Assets", admin: true, manager: true, editor: false, viewer: false },
+                              { name: "View Royalties", admin: true, manager: true, editor: true, viewer: true },
+                              { name: "Export Reports", admin: true, manager: true, editor: false, viewer: false },
+                              { name: "System Settings", admin: true, manager: false, editor: false, viewer: false },
+                              { name: "API Access", admin: true, manager: true, editor: false, viewer: false },
+                            ].map((permission, index) => (
+                              <TableRow key={index}>
+                                <TableCell className="font-medium">{permission.name}</TableCell>
+                                <TableCell className="text-center">
+                                  {permission.admin ? (
+                                    <ShieldCheck className="h-4 w-4 text-mint mx-auto" />
+                                  ) : (
+                                    <ShieldAlert className="h-4 w-4 text-muted-foreground mx-auto" />
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {permission.manager ? (
+                                    <ShieldCheck className="h-4 w-4 text-mint mx-auto" />
+                                  ) : (
+                                    <ShieldAlert className="h-4 w-4 text-muted-foreground mx-auto" />
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {permission.editor ? (
+                                    <ShieldCheck className="h-4 w-4 text-mint mx-auto" />
+                                  ) : (
+                                    <ShieldAlert className="h-4 w-4 text-muted-foreground mx-auto" />
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {permission.viewer ? (
+                                    <ShieldCheck className="h-4 w-4 text-mint mx-auto" />
+                                  ) : (
+                                    <ShieldAlert className="h-4 w-4 text-muted-foreground mx-auto" />
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            )}
           </main>
         </div>
       </div>
