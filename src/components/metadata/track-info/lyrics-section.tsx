@@ -14,7 +14,7 @@ export const LyricsSection = ({ formState, updateForm }: LyricsSectionProps) => 
       <FormFieldWithInfo
         id="lyrics"
         label="Lyrics"
-        tooltipText="Full lyrics of the track. This helps with searchability on platforms."
+        tooltip="Full lyrics of the track. This helps with searchability on platforms."
         renderInput={() => (
           <Textarea
             id="lyrics"

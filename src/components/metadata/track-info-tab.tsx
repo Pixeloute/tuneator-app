@@ -1,6 +1,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { MetadataFormState } from "./metadata-form";
+import { MetadataFormState } from "@/contexts/metadata";
 import { TrackDetails } from "./track-info/track-details";
 import { GenreAndMood } from "./track-info/genre-and-mood";
 import { LyricsSection } from "./track-info/lyrics-section";
@@ -25,7 +25,7 @@ export const TrackInfoTab = ({ formState, updateForm }: TrackInfoTabProps) => {
         </div>
         
         <div className="mt-4">
-          <AiSuggestionsButton formState={formState} updateForm={updateForm} />
+          <AiSuggestionsButton />
         </div>
       </CardContent>
     </Card>

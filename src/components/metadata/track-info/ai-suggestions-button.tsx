@@ -3,8 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useMetadata } from "@/contexts/metadata";
+import { MetadataFormState } from "@/contexts/metadata";
 
-export const AiSuggestionsButton = () => {
+interface AiSuggestionsButtonProps {
+  formState?: MetadataFormState;
+  updateForm?: (field: keyof MetadataFormState, value: any) => void;
+}
+
+export const AiSuggestionsButton = ({ formState, updateForm }: AiSuggestionsButtonProps) => {
   const { handleAiAudit } = useMetadata();
 
   return (
