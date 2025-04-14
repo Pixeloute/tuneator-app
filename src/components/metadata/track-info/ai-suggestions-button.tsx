@@ -2,8 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { useMetadata } from "@/contexts/metadata";
-import { MetadataFormState } from "@/contexts/metadata";
+import { useMetadata, MetadataFormState } from "@/contexts/metadata";
 
 interface AiSuggestionsButtonProps {
   formState?: MetadataFormState;
@@ -13,9 +12,19 @@ interface AiSuggestionsButtonProps {
 export const AiSuggestionsButton = ({ formState, updateForm }: AiSuggestionsButtonProps) => {
   const { handleAiAudit } = useMetadata();
 
+  const handleAiSuggestions = () => {
+    toast({
+      title: "AI Analysis Started",
+      description: "Analyzing track metadata for suggestions...",
+    });
+    
+    // Call the context method for AI audit
+    handleAiAudit();
+  };
+
   return (
     <Button 
-      onClick={handleAiAudit} 
+      onClick={handleAiSuggestions} 
       variant="outline" 
       size="sm" 
       className="flex items-center space-x-2"

@@ -3,6 +3,8 @@ import { AudioAttributesChart } from "@/components/ai-assistant/audio-attributes
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { processAnalysisResults } from "@/components/ai-assistant/audio-analysis-utils";
+import { useMetadata } from "@/contexts/metadata";
+import { toast } from "@/hooks/use-toast";
 
 interface AudioAnalysisPanelProps {
   analysisResults: any;
@@ -15,6 +17,7 @@ export const AudioAnalysisPanel = ({
   onReset,
   onApply 
 }: AudioAnalysisPanelProps) => {
+  const { updateForm, formState } = useMetadata();
   const { attributesData } = processAnalysisResults(analysisResults);
   
   // Generate a dynamic analysis description based on the top attributes
@@ -48,6 +51,35 @@ export const AudioAnalysisPanel = ({
     return playlists.join(", ") || "electronic";
   };
   
+  const handleApplyToMetadata = () => {
+    if (updateForm && analysisResults) {
+      // Apply genre information if available
+      if (analysisResults.genres && analysisResults.genres.length > 0) {
+        updateForm('genres', analysisResults.genres.slice(0, 3));
+      }
+      
+      // Apply mood information if available
+      if (analysisResults.mood && analysisResults.mood.length > 0) {
+        updateForm('mood', analysisResults.mood.slice(0, 3));
+      }
+      
+      // Add analysis description to the track notes
+      const analysisNote = getAnalysisDescription();
+      const updatedNotes = formState.notes 
+        ? `${formState.notes}\n\nAI Analysis: ${analysisNote}`
+        : `AI Analysis: ${analysisNote}`;
+      
+      updateForm('notes', updatedNotes);
+      
+      toast({
+        title: "Analysis Applied",
+        description: "Audio analysis has been applied to your track metadata",
+      });
+      
+      onApply();
+    }
+  };
+  
   return (
     <div className="space-y-4">
       <Card>
@@ -76,7 +108,7 @@ export const AudioAnalysisPanel = ({
         <Button 
           variant="default" 
           className="bg-electric hover:bg-electric/90"
-          onClick={onApply}
+          onClick={handleApplyToMetadata}
         >
           Apply to Metadata
         </Button>

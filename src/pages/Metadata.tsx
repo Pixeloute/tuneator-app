@@ -9,6 +9,8 @@ import { HealthReport } from "@/components/metadata/health-report";
 import { ValidationPanel } from "@/components/metadata/validation-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Sparkles } from "lucide-react";
 
 const Metadata = () => {
   const [activeView, setActiveView] = useState<"single" | "batch">("single");
@@ -41,6 +43,16 @@ const Metadata = () => {
                   className={activeView === "batch" ? "bg-electric hover:bg-electric/90" : ""}
                 >
                   Batch Editor
+                </Button>
+                <Button
+                  variant="outline"
+                  className="ml-2 border-electric text-electric"
+                  asChild
+                >
+                  <Link to="/ai-assistant">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    AI Assistant
+                  </Link>
                 </Button>
               </div>
             </div>
