@@ -11,6 +11,10 @@ export const mockTrackData: TrackData[] = [
     metadataScore: 95,
     status: "complete",
     release: "2023-09-15",
+    genre: "Electronic",
+    duration: "3:42",
+    writers: ["Jane Smith", "David Johnson"],
+    producers: ["Alex Rodriguez"]
   },
   {
     id: "2",
@@ -21,6 +25,10 @@ export const mockTrackData: TrackData[] = [
     metadataScore: 68,
     status: "warning",
     release: "2023-09-15",
+    genre: "Electronic/Pop",
+    duration: "4:15",
+    writers: ["Jane Smith", "Mark Wilson"],
+    producers: ["Alex Rodriguez"]
   },
   {
     id: "3",
@@ -31,6 +39,10 @@ export const mockTrackData: TrackData[] = [
     metadataScore: 92,
     status: "complete",
     release: "2023-09-15",
+    genre: "Electronic",
+    duration: "3:56",
+    writers: ["Jane Smith"],
+    producers: ["Alex Rodriguez", "Sarah Lee"]
   },
   {
     id: "4",
@@ -41,6 +53,10 @@ export const mockTrackData: TrackData[] = [
     metadataScore: 88,
     status: "complete",
     release: "2023-09-15",
+    genre: "Synth Pop",
+    duration: "4:22",
+    writers: ["Jane Smith", "Michael Brown"],
+    producers: ["Alex Rodriguez"]
   },
   {
     id: "5",
@@ -51,6 +67,10 @@ export const mockTrackData: TrackData[] = [
     metadataScore: 76,
     status: "warning",
     release: "2023-05-22",
+    genre: "Electronic/Ambient",
+    duration: "5:10",
+    writers: ["Jane Smith", "Robert Taylor"],
+    producers: ["Chris Martin"]
   },
   {
     id: "6",
@@ -61,6 +81,10 @@ export const mockTrackData: TrackData[] = [
     metadataScore: 55,
     status: "incomplete",
     release: "2023-05-22",
+    genre: "Electronic/Hip Hop",
+    duration: "3:30",
+    writers: ["Jane Smith", "Kevin James"],
+    producers: ["Chris Martin"]
   },
   {
     id: "7",
@@ -71,5 +95,9 @@ export const mockTrackData: TrackData[] = [
     metadataScore: 82,
     status: "complete",
     release: "2023-05-22",
+    genre: "Electronic/Dance",
+    duration: "4:05",
+    writers: ["Jane Smith", "Lisa Johnson"],
+    producers: ["Chris Martin", "Daniel White"]
   },
 ];
