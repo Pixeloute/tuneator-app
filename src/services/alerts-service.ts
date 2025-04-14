@@ -11,11 +11,18 @@ export const alertsService = {
     let query = supabase.from('insight_alerts').select('*').order('created_at', { ascending: false });
     
     if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined) {
-          query = query.eq(key, value);
-        }
-      });
+      // Handle each filter separately to avoid deep type instantiation
+      if (filters.type !== undefined) {
+        query = query.eq('type', filters.type);
+      }
+      
+      if (filters.severity !== undefined) {
+        query = query.eq('severity', filters.severity);
+      }
+      
+      if (filters.is_read !== undefined) {
+        query = query.eq('is_read', filters.is_read);
+      }
     }
 
     const { data, error } = await query;
