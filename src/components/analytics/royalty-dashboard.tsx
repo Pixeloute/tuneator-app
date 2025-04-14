@@ -138,9 +138,7 @@ export function RoyaltyDashboard() {
                 </CardContent>
               </Card>
               
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShow
-
-ScheduleModal(true)}>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowScheduleModal(true)}>
                 <CardContent className="flex items-center gap-4 p-6">
                   <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
                     <Calendar className="h-6 w-6" />
