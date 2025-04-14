@@ -1,8 +1,13 @@
+import { supabase } from "@/integrations/supabase/client";
 
-// YouTube API Integration for Tuneator
-// Documentation: https://developers.google.com/youtube/v3/docs
-
-const YOUTUBE_API_KEY = 'AIzaSyAAYKx9JatdsiDM6dPIT90nN-WI7EQ3maE';
+const callApi = async (endpoint: string, params: Record<string, string>) => {
+  const { data, error } = await supabase.functions.invoke('api-proxy', {
+    body: { service: 'youtube', endpoint, params }
+  });
+  
+  if (error) throw error;
+  return data;
+};
 
 // Types for YouTube API responses
 export interface YouTubeVideo {
@@ -38,11 +43,12 @@ export interface YouTubeChannel {
 // Search for videos on YouTube
 export const searchYouTubeVideos = async (query: string): Promise<YouTubeVideo[]> => {
   try {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`
-    );
-    
-    const data = await response.json();
+    const data = await callApi('search', {
+      part: 'snippet',
+      maxResults: '5',
+      q: query,
+      type: 'video'
+    });
     
     if (data.error) {
       console.error('YouTube API error:', data.error);
@@ -66,11 +72,10 @@ export const searchYouTubeVideos = async (query: string): Promise<YouTubeVideo[]
 // Get video details from YouTube
 export const getVideoDetails = async (videoId: string): Promise<YouTubeVideo | null> => {
   try {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`
-    );
-    
-    const data = await response.json();
+    const data = await callApi('videos', {
+      part: 'snippet,statistics',
+      id: videoId
+    });
     
     if (data.error || !data.items || data.items.length === 0) {
       return null;
@@ -97,11 +102,10 @@ export const getVideoDetails = async (videoId: string): Promise<YouTubeVideo | n
 // Get channel details from YouTube
 export const getChannelDetails = async (channelId: string): Promise<YouTubeChannel | null> => {
   try {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${YOUTUBE_API_KEY}`
-    );
-    
-    const data = await response.json();
+    const data = await callApi('channels', {
+      part: 'snippet,statistics',
+      id: channelId
+    });
     
     if (data.error || !data.items || data.items.length === 0) {
       return null;

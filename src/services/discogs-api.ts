@@ -1,3 +1,13 @@
+import { supabase } from "@/integrations/supabase/client";
+
+const callApi = async (endpoint: string, params: Record<string, string> = {}) => {
+  const { data, error } = await supabase.functions.invoke('api-proxy', {
+    body: { service: 'discogs', endpoint, params }
+  });
+  
+  if (error) throw error;
+  return data;
+};
 
 // Discogs API Integration for Tuneator
 // Documentation: https://www.discogs.com/developers
@@ -45,11 +55,11 @@ export interface DiscogsMaster {
 // Search for artists on Discogs
 export const searchDiscogsArtists = async (query: string): Promise<DiscogsArtist[]> => {
   try {
-    const response = await fetch(
-      `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=artist&token=${DISCOGS_USER_TOKEN}`
-    );
+    const data = await callApi('database/search', {
+      q: query,
+      type: 'artist'
+    });
     
-    const data = await response.json();
     return data.results || [];
   } catch (error) {
     console.error('Error searching Discogs artists:', error);
@@ -89,11 +99,11 @@ export const getArtistReleases = async (artistId: number): Promise<DiscogsReleas
 // Search for releases on Discogs
 export const searchReleases = async (query: string): Promise<DiscogsRelease[]> => {
   try {
-    const response = await fetch(
-      `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&token=${DISCOGS_USER_TOKEN}`
-    );
+    const data = await callApi('database/search', {
+      q: query,
+      type: 'release'
+    });
     
-    const data = await response.json();
     return data.results || [];
   } catch (error) {
     console.error('Error searching Discogs releases:', error);

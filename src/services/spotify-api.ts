@@ -1,3 +1,13 @@
+import { supabase } from "@/integrations/supabase/client";
+
+const callApi = async (endpoint: string, params: Record<string, string> = {}) => {
+  const { data, error } = await supabase.functions.invoke('api-proxy', {
+    body: { service: 'spotify', endpoint, params }
+  });
+  
+  if (error) throw error;
+  return data;
+};
 
 // Spotify API Integration for Tuneator
 // Documentation: https://developer.spotify.com/documentation/web-api
@@ -54,16 +64,12 @@ const getSpotifyToken = async (): Promise<string> => {
 // Search for tracks on Spotify
 export const searchSpotifyTracks = async (query: string): Promise<SpotifyTrack[]> => {
   try {
-    const token = await getSpotifyToken();
-    if (!token) return [];
-    
-    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+    const data = await callApi('search', { 
+      q: query,
+      type: 'track',
+      limit: '5'
     });
     
-    const data = await response.json();
     return data.tracks?.items || [];
   } catch (error) {
     console.error('Error searching Spotify tracks:', error);
