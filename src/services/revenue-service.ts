@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { SpotifyTrack } from "./spotify-api";
 import { toast } from "sonner";
@@ -35,16 +34,13 @@ export const fetchAllRoyaltyData = async (timeRange: string): Promise<PlatformRo
       return null;
     }
     
-    // Convert dates to readable format for display
-    const processedData = {
+    return {
       spotify: data.spotify || [],
       apple: data.apple || [],
       youtube: data.youtube || [],
       others: data.others || [],
       lastUpdated: new Date().toISOString()
     };
-    
-    return processedData;
   } catch (error) {
     console.error("Error in fetchAllRoyaltyData:", error);
     toast.error("An unexpected error occurred while loading royalty data.");
