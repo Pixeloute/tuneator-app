@@ -5,7 +5,7 @@ const GOOGLE_CLIENT_ID = '398818993881-o6vjol3adss3onrmpu1fph34pn8hllgu.apps.goo
 const GOOGLE_CLIENT_SECRET = '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';
 
 // Define the interfaces for Google API responses
-interface GoogleAnalysisResponse {
+export interface GoogleAnalysisResponse {
   genres?: string[];
   mood?: string[];
   tempo?: number;
