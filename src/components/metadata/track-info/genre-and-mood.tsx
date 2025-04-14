@@ -7,6 +7,13 @@ import { FormFieldWithInfo } from "./form-field-with-info";
 import { GenreSelector } from "@/components/metadata/genre-selector";
 import { useState } from "react";
 
+// Default list of common music genres
+const DEFAULT_GENRES = [
+  "Pop", "Rock", "Hip Hop", "R&B", "Jazz", "Classical", "Electronic", 
+  "Dance", "Country", "Folk", "Latin", "Metal", "Blues", "Reggae", 
+  "Soul", "Funk", "Indie", "Alternative", "Gospel", "World"
+];
+
 interface GenreAndMoodProps {
   formState: MetadataFormState;
   updateForm: (field: keyof MetadataFormState, value: any) => void;
@@ -41,6 +48,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
         onPrimaryGenreChange={handlePrimaryGenreChange}
         onSecondaryGenreChange={handleSecondaryGenreChange}
         error={genreError}
+        genreOptions={formState.genres || DEFAULT_GENRES} // Ensure we always have a list of genres
       />
       
       <FormFieldWithInfo
@@ -89,7 +97,7 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
       >
         <Input
           id="tags"
-          value={formState.tags.join(', ')}
+          value={formState.tags?.join(', ') || ''} // Add null check here too
           onChange={handleTagsChange}
           placeholder="e.g., summer, dance, remix"
         />

@@ -88,5 +88,16 @@ export const initialFormState: MetadataFormState = {
     instagram: "https://instagram.com/electricsound",
     tiktok: "",
     twitter: ""
-  }
+  },
+  
+  // Add default genres array
+  genres: [
+    "Pop", "Rock", "Hip Hop", "R&B", "Jazz", "Classical", "Electronic", 
+    "Dance", "Country", "Folk", "Latin", "Metal", "Blues", "Reggae", 
+    "Soul", "Funk", "Indie", "Alternative", "Gospel", "World"
+  ],
+  
+  // Additional AI fields defaults
+  keywords: [],
+  notes: ""
 };
