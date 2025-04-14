@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 // Create a theme provider component
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -34,22 +35,24 @@ function App() {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/metadata" element={<Metadata />} />
-            <Route path="/catalog" element={<Catalog />} />
-            <Route path="/assets" element={<Assets />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/royalty-insights" element={<RoyaltyInsights />} />
-            <Route path="/ai-assistant" element={<SmartMetadataAssistant />} />
-            <Route path="/team" element={<Team />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/metadata" element={<Metadata />} />
+              <Route path="/catalog" element={<Catalog />} />
+              <Route path="/assets" element={<Assets />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/royalty-insights" element={<RoyaltyInsights />} />
+              <Route path="/ai-assistant" element={<SmartMetadataAssistant />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+          </ThemeProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </BrowserRouter>
   );
