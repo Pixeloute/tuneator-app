@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -116,7 +115,6 @@ export const BatchEditor = () => {
     toast({
       title: "Bulk Update Applied",
       description: `Updated ${selectedCount} tracks with new ${bulkField} value.`,
-      icon: <CheckCircle2 className="h-4 w-4 text-mint" />,
     });
   };
 

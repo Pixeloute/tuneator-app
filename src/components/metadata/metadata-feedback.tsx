@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ProgressCircle } from "@/components/ui/progress-circle";
 import { AlertCircle, CheckCircle2, FileWarning, Info } from "lucide-react";
 
-type IssueType = {
+export type IssueType = {
   type: "error" | "warning" | "info" | "success";
   message: string;
 };

@@ -11,7 +11,7 @@ import { Calendar, CheckCircle2, Clock, FileWarning, Info, Music2, Wand2 } from 
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { MetadataFeedback } from "@/components/metadata/metadata-feedback";
+import { MetadataFeedback, IssueType } from "@/components/metadata/metadata-feedback";
 import { RelatedRights } from "@/components/metadata/related-rights";
 
 interface ContributorType {
@@ -42,7 +42,7 @@ export const MetadataForm = () => {
     { id: "2", name: "John Smith", role: "Songwriter", share: 50 },
   ]);
   const [metadataQualityScore, setMetadataQualityScore] = useState(78);
-  const [validationIssues, setValidationIssues] = useState([
+  const [validationIssues, setValidationIssues] = useState<IssueType[]>([
     { type: "warning", message: "ISWC code missing" },
     { type: "info", message: "Consider adding more detailed contributor roles" }
   ]);
@@ -107,7 +107,7 @@ export const MetadataForm = () => {
   };
 
   const validateMetadata = () => {
-    const newIssues = [];
+    const newIssues: IssueType[] = [];
     
     // Validate ISRC format
     if (isrc && !/^[A-Z]{2}[A-Z0-9]{3}\d{7}$/.test(isrc)) {
