@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileUp, Image as ImageIcon, FileMusic, Video, FileText, Upload, X } from "lucide-react";
@@ -123,7 +122,6 @@ export const AssetUploadCard = () => {
     const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
     
-    // Update file status to uploading
     setFiles(prev => {
       const newFiles = [...prev];
       newFiles[index].status = "uploading";
@@ -131,29 +129,31 @@ export const AssetUploadCard = () => {
     });
     
     try {
-      // Upload file to Supabase Storage
+      let uploadProgress = 0;
+      const updateProgress = (progress: number) => {
+        uploadProgress = progress;
+        setFiles(prev => {
+          const newFiles = [...prev];
+          newFiles[index].progress = progress;
+          return newFiles;
+        });
+      };
+      
       const { error: uploadError, data } = await supabase.storage
         .from('assets')
         .upload(filePath, file, {
-          onUploadProgress: (progress) => {
-            const percent = Math.round((progress.loaded / progress.total) * 100);
-            setFiles(prev => {
-              const newFiles = [...prev];
-              newFiles[index].progress = percent;
-              return newFiles;
-            });
-          }
+          cacheControl: '3600'
         });
       
       if (uploadError) throw uploadError;
       
-      // Get file metadata
+      updateProgress(100);
+      
       let fileType: "audio" | "image" | "video" | "document" = "document";
       if (file.type.startsWith('audio/')) fileType = "audio";
       else if (file.type.startsWith('image/')) fileType = "image";
       else if (file.type.startsWith('video/')) fileType = "video";
       
-      // Create asset record in the database
       const { error: assetError } = await supabase
         .from('assets')
         .insert({
@@ -168,7 +168,6 @@ export const AssetUploadCard = () => {
       
       if (assetError) throw assetError;
       
-      // Update file status to success
       setFiles(prev => {
         const newFiles = [...prev];
         newFiles[index].status = "success";
@@ -180,7 +179,6 @@ export const AssetUploadCard = () => {
         description: `${file.name} has been uploaded successfully.`,
       });
       
-      // Remove the file from the list after a success timeout
       setTimeout(() => {
         removeFile(index);
       }, 3000);
@@ -188,7 +186,6 @@ export const AssetUploadCard = () => {
     } catch (error: any) {
       console.error("Upload error:", error);
       
-      // Update file status to error
       setFiles(prev => {
         const newFiles = [...prev];
         newFiles[index].status = "error";
