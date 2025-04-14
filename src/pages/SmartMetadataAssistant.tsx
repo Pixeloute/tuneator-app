@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/app-sidebar";
@@ -12,6 +11,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { MetadataProvider } from "@/contexts/metadata";
+import { analyzeAudio } from "@/services/google-api";
 
 const SmartMetadataAssistant = () => {
   const { toast } = useToast();
@@ -48,33 +48,35 @@ const SmartMetadataAssistant = () => {
     setAnalysisResults(null);
   };
   
-  const handleAnalyze = () => {
-    setIsAnalyzing(true);
-    // This is a placeholder for the actual analysis logic
-  };
-  
-  const handleAnalysisComplete = (results: any) => {
-    setAnalysisResults(results);
-    setActiveAnalysisTab("attributes");
-    setIsAnalyzing(false);
+  const handleAnalyze = async () => {
+    if (!audioFile) return;
     
-    toast({
-      title: "Analysis Complete",
-      description: "AI analysis has finished processing your track",
-    });
+    setIsAnalyzing(true);
+    try {
+      const results = await analyzeAudio(audioFile);
+      setAnalysisResults(results);
+      setActiveAnalysisTab("attributes");
+      
+      toast({
+        title: "Analysis Complete",
+        description: "AI analysis has finished processing your track",
+      });
+    } catch (error) {
+      console.error("Analysis error:", error);
+      toast({
+        title: "Analysis Failed",
+        description: "There was an error analyzing your track",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
   
   const resetAnalysis = () => {
     setAnalysisResults(null);
     setActiveTrack(null);
     setAudioFile(null);
-  };
-  
-  const handleEnrichmentComplete = () => {
-    toast({
-      title: "Metadata Enriched",
-      description: "AI has enhanced your track's metadata",
-    });
   };
   
   return (
@@ -104,7 +106,6 @@ const SmartMetadataAssistant = () => {
                     isAnalyzing={isAnalyzing}
                     onFileSelected={handleFileSelected}
                     onAnalyze={handleAnalyze}
-                    onAnalysisComplete={handleAnalysisComplete}
                   />
                   
                   {analysisResults ? (
@@ -116,9 +117,7 @@ const SmartMetadataAssistant = () => {
                       resetAnalysis={resetAnalysis}
                     />
                   ) : (
-                    <MetadataEnrichmentPanel 
-                      onEnrichmentComplete={handleEnrichmentComplete}
-                    />
+                    <MetadataEnrichmentPanel />
                   )}
                 </div>
                 
