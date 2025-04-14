@@ -10,8 +10,8 @@ export interface FormFieldWithInfoProps {
   tooltip?: string;
   tooltipText?: string; // Added for backward compatibility
   required?: boolean;
-  children: ReactNode;
-  renderInput?: () => ReactNode; // Add this for LyricsSection
+  children?: ReactNode; // Make children optional since we can use renderInput instead
+  renderInput?: () => ReactNode;
   // Allow any other props to pass through
   [key: string]: any;
 }
