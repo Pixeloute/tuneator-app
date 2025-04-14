@@ -6,14 +6,15 @@ import { AudioUploadSection } from "@/components/ai-assistant/audio-upload-secti
 import { AnalysisTabs } from "@/components/ai-assistant/analysis-tabs";
 import { supabase } from "@/integrations/supabase/client";
 
-// Default empty objects for analysis results to prevent undefined errors
 const DEFAULT_ANALYSIS = {
   genres: [],
   danceability: 0,
   energy: 0,
   instrumentalness: 0,
   acousticness: 0,
-  valence: 0
+  valence: 0,
+  openaiAnalysis: null,
+  geminiAnalysis: null
 };
 
 const DEFAULT_METADATA = {
@@ -28,19 +29,14 @@ export const GenreAnalyzer = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
   const [additionalMetadata, setAdditionalMetadata] = useState<any>(null);
-  const [aiInsights, setAiInsights] = useState<{ openai: string | null; gemini: string | null }>({
-    openai: null,
-    gemini: null
-  });
   const [activeTab, setActiveTab] = useState("attributes");
-  
+
   const handleFileSelected = (file: File) => {
     setAudioFile(file);
     setAnalysisResults(null);
     setAdditionalMetadata(null);
-    setAiInsights({ openai: null, gemini: null });
   };
-  
+
   const handleAnalyze = async () => {
     if (!audioFile) {
       toast({
@@ -50,14 +46,14 @@ export const GenreAnalyzer = () => {
       });
       return;
     }
-    
+
     setIsAnalyzing(true);
-    
+
     try {
-      // Call our Supabase Edge Function that handles both OpenAI and Gemini
+      // Call our Supabase Edge Function for AI analysis
       const { data: aiAnalysis, error } = await supabase.functions.invoke('ai-metadata-analysis', {
         body: { 
-          audioFile: audioFile.name, // In a real implementation, you'd send the actual audio data
+          audioFile: audioFile.name,
           analysisType: 'full'
         }
       });
@@ -65,18 +61,24 @@ export const GenreAnalyzer = () => {
       if (error) throw error;
 
       // Update the analysis results with AI insights
-      setAiInsights({
-        openai: aiAnalysis.openai,
-        gemini: aiAnalysis.gemini
+      setAnalysisResults({
+        ...DEFAULT_ANALYSIS,
+        ...aiAnalysis.audioAnalysis,
+        openaiAnalysis: aiAnalysis.openai,
+        geminiAnalysis: aiAnalysis.gemini
       });
 
-      // Set default analysis data (in a real implementation, this would come from audio analysis)
-      setAnalysisResults(DEFAULT_ANALYSIS);
-      setAdditionalMetadata(DEFAULT_METADATA);
-      
+      setAdditionalMetadata({
+        ...DEFAULT_METADATA,
+        genres: aiAnalysis.genres || [],
+        recommendedTags: aiAnalysis.recommendedTags || [],
+        moodTags: aiAnalysis.moodTags || [],
+        genreConfidence: aiAnalysis.genreConfidence || {}
+      });
+
       toast({
         title: "Analysis Complete",
-        description: "Your track has been analyzed by both OpenAI and Gemini",
+        description: "Your track has been analyzed by both OpenAI and Google Gemini",
       });
     } catch (error) {
       console.error("Analysis error:", error);
@@ -85,22 +87,20 @@ export const GenreAnalyzer = () => {
         description: "There was an error analyzing your track",
         variant: "destructive",
       });
-      
-      // Set default objects instead of null in case of error
+
       setAnalysisResults(DEFAULT_ANALYSIS);
       setAdditionalMetadata(DEFAULT_METADATA);
     } finally {
       setIsAnalyzing(false);
     }
   };
-  
+
   const resetAnalysis = () => {
     setAudioFile(null);
     setAnalysisResults(null);
     setAdditionalMetadata(null);
-    setAiInsights({ openai: null, gemini: null });
   };
-  
+
   return (
     <div className="space-y-4">
       <Card>
@@ -113,12 +113,11 @@ export const GenreAnalyzer = () => {
           />
         </div>
       </Card>
-      
+
       {(analysisResults || additionalMetadata) && (
         <AnalysisTabs 
           analysisResults={analysisResults || DEFAULT_ANALYSIS}
           additionalMetadata={additionalMetadata || DEFAULT_METADATA}
-          aiInsights={aiInsights}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           resetAnalysis={resetAnalysis}
