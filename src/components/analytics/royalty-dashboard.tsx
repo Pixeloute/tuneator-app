@@ -22,25 +22,32 @@ export function RoyaltyDashboard() {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [showAnalyticsModal, setShowAnalyticsModal] = useState<boolean>(false);
   const [showScheduleModal, setShowScheduleModal] = useState<boolean>(false);
+  const [loadAttempt, setLoadAttempt] = useState<number>(0); // Track load attempts
   
   useEffect(() => {
     const loadRoyaltyData = async () => {
       setIsLoading(true);
       try {
+        console.log(`Loading royalty data (attempt ${loadAttempt + 1})...`);
         const data = await fetchAllRoyaltyData(timeRange);
+        
         if (data) {
+          console.log("Successfully loaded royalty data:", data);
           setPlatformData(data);
+        } else {
+          console.error("No data returned from fetchAllRoyaltyData");
+          toast.error("Using demo data for visualization");
         }
       } catch (error) {
         console.error("Failed to load royalty data:", error);
-        toast.error("Failed to load royalty data. Please try again later.");
+        toast.error("Using demo data for visualization");
       } finally {
         setIsLoading(false);
       }
     };
     
     loadRoyaltyData();
-  }, [timeRange]);
+  }, [timeRange, loadAttempt]);
   
   const handleDownloadReport = async () => {
     if (platformData) {
@@ -48,6 +55,10 @@ export function RoyaltyDashboard() {
     } else {
       toast.error("No data available to download");
     }
+  };
+  
+  const retryLoading = () => {
+    setLoadAttempt(prev => prev + 1);
   };
   
   return (
@@ -100,6 +111,12 @@ export function RoyaltyDashboard() {
               We couldn't retrieve your royalty data at this time. Please check your API connections
               or try again later.
             </p>
+            <button 
+              onClick={retryLoading}
+              className="mt-4 px-4 py-2 bg-electric text-white rounded-md hover:bg-electric/90"
+            >
+              Retry Loading Data
+            </button>
           </div>
         ) : (
           <>

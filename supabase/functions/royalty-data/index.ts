@@ -21,8 +21,15 @@ serve(async (req) => {
   }
 
   try {
-    // Get request body
-    const { timeRange } = await req.json();
+    // Get request body or use default timeRange if there's an error
+    let timeRange = "6months";
+    try {
+      const body = await req.json();
+      timeRange = body.timeRange || timeRange;
+    } catch (error) {
+      console.error("Error parsing request body:", error);
+      // Continue with default timeRange
+    }
     
     // Generate realistic demo data
     const spotifyData = generateMonthlyData(timeRange, {
@@ -73,7 +80,7 @@ function generateMonthlyData(timeRange: string, config: {
   baseStreams: number,
   growthRate: number
 }): RoyaltyData[] {
-  const months = parseInt(timeRange.replace('months', ''));
+  const months = parseInt(timeRange.replace('months', '')) || 6;
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const currentDate = new Date();
