@@ -1,11 +1,13 @@
 
+import { Json } from "@/integrations/supabase/types";
+
 export interface InsightAlert {
   id: string;
   track_id: string;
   type: 'metadata' | 'streaming' | 'royalties';
   severity: 'info' | 'moderate' | 'critical';
   message: string;
-  details: Record<string, any>;
+  details: Json;
   created_at: string;
   is_read: boolean;
 }
