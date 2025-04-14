@@ -1,4 +1,3 @@
-
 // Consolidated API Service for Tuneator
 // This service brings together all the music industry APIs
 
@@ -6,7 +5,7 @@ import spotifyApi from './spotify-api';
 import youtubeApi from './youtube-api';
 import musicbrainzApi from './musicbrainz-api';
 import discogsApi from './discogs-api';
-import { googleApi } from './google-api'; // Using the existing Google API integration
+import googleApi from './google-api'; // Fixed import
 
 // Types for metadata enrichment
 export interface EnrichedMetadata {

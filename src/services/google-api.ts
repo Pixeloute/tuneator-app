@@ -172,9 +172,11 @@ export const fetchGeographicalInsights = async (): Promise<any> => {
   }
 };
 
-export default {
+const googleApi = {
   analyzeAudio,
   getMetadataSuggestions,
   fetchStreamingRoyaltyData,
   fetchGeographicalInsights
 };
+
+export default googleApi;

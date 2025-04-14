@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,7 +6,7 @@ import { ArtistDetailsTab } from "@/components/metadata/artist-details-tab";
 import { ReleaseInfoTab } from "@/components/metadata/release-info-tab";
 import { PublishingRightsTab } from "@/components/metadata/publishing-rights-tab";
 import { CreditsTab } from "@/components/metadata/credits-tab";
-import { PlatformsTab } from "@/components/metadata/platforms-tab";
+import { PlatformsTab } from "./platforms";
 import { MetadataFeedback } from "@/components/metadata/metadata-feedback";
 import { MetadataHeader } from "@/components/metadata/metadata-header";
 import { MetadataProvider, useMetadata } from "@/contexts/metadata";
