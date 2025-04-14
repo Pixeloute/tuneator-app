@@ -7,13 +7,14 @@ import { MetadataForm } from "@/components/metadata/metadata-form";
 import { BatchEditor } from "@/components/metadata/batch-editor";
 import { HealthReport } from "@/components/metadata/health-report";
 import { ValidationPanel } from "@/components/metadata/validation-panel";
+import { ExternalLookupPanel } from "@/components/metadata/external-lookup-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Search, Database } from "lucide-react";
 
 const Metadata = () => {
-  const [activeView, setActiveView] = useState<"single" | "batch">("single");
+  const [activeView, setActiveView] = useState<"single" | "batch" | "lookup">("single");
 
   useEffect(() => {
     document.title = "TuneTrust - Metadata Management";
@@ -29,7 +30,7 @@ const Metadata = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h1 className="text-2xl font-bold">Metadata Management</h1>
               
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant={activeView === "single" ? "default" : "outline"}
                   onClick={() => setActiveView("single")}
@@ -45,6 +46,14 @@ const Metadata = () => {
                   Batch Editor
                 </Button>
                 <Button
+                  variant={activeView === "lookup" ? "default" : "outline"}
+                  onClick={() => setActiveView("lookup")}
+                  className={activeView === "lookup" ? "bg-electric hover:bg-electric/90" : ""}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Lookup
+                </Button>
+                <Button
                   variant="outline"
                   className="ml-2 border-electric text-electric"
                   asChild
@@ -57,7 +66,7 @@ const Metadata = () => {
               </div>
             </div>
             
-            {activeView === "single" ? (
+            {activeView === "single" && (
               <Tabs defaultValue="editor">
                 <TabsList className="grid w-full max-w-md grid-cols-3">
                   <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -74,8 +83,17 @@ const Metadata = () => {
                   <ValidationPanel />
                 </TabsContent>
               </Tabs>
-            ) : (
-              <BatchEditor />
+            )}
+            
+            {activeView === "batch" && <BatchEditor />}
+            
+            {activeView === "lookup" && (
+              <div className="space-y-4">
+                <p className="text-muted-foreground">
+                  Search across multiple music industry platforms including Spotify, YouTube, MusicBrainz, and Discogs to enrich your metadata.
+                </p>
+                <ExternalLookupPanel />
+              </div>
             )}
           </main>
         </div>
