@@ -54,7 +54,11 @@ export const RevenueChartCard = ({ data }: RevenueChartCardProps) => {
                               <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
                               {entry.name}:
                             </span>
-                            <span className="font-medium">${entry.value?.toFixed(2)}</span>
+                            <span className="font-medium">
+                              ${typeof entry.value === 'number' 
+                                ? entry.value.toFixed(2) 
+                                : entry.value}
+                            </span>
                           </div>
                         ))}
                       </div>

@@ -27,30 +27,30 @@ const Index = () => {
     {
       id: "1",
       name: "Midnight Dreams.wav",
-      type: "audio",
+      type: "audio" as const,
       date: "2 days ago",
-      status: "complete",
+      status: "complete" as const,
     },
     {
       id: "2",
       name: "Album Cover - Neon Horizons.jpg",
-      type: "image",
+      type: "image" as const,
       date: "3 days ago",
-      status: "complete",
+      status: "complete" as const,
     },
     {
       id: "3",
       name: "Electric Sound - Promo Video.mp4",
-      type: "video",
+      type: "video" as const,
       date: "5 days ago",
-      status: "warning",
+      status: "warning" as const,
     },
     {
       id: "4",
       name: "Urban Pulse.wav",
-      type: "audio",
+      type: "audio" as const,
       date: "1 week ago",
-      status: "incomplete",
+      status: "incomplete" as const,
     },
   ];
   
@@ -102,7 +102,7 @@ const Index = () => {
   const royaltyEvents = [
     {
       id: "1",
-      type: "payment",
+      type: "payment" as const,
       title: "Quarterly royalty payment received",
       date: "June 15, 2023",
       amount: "1,245.78",
@@ -110,7 +110,7 @@ const Index = () => {
     },
     {
       id: "2",
-      type: "usage",
+      type: "usage" as const,
       title: "New streams detected for 'Midnight Dreams'",
       date: "June 10, 2023",
       source: "Apple Music",
@@ -118,7 +118,7 @@ const Index = () => {
     },
     {
       id: "3",
-      type: "registration",
+      type: "registration" as const,
       title: "PRO registration completed",
       date: "June 5, 2023",
       source: "ASCAP",
