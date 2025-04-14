@@ -50,7 +50,7 @@ export function GenreSelector({
       >
         <GenreSelect
           id="primaryGenre"
-          value={primaryGenre}
+          value={primaryGenre || ''}
           onChange={onPrimaryGenreChange}
           placeholder="Select primary genre"
           genres={availableGenres}
@@ -65,7 +65,7 @@ export function GenreSelector({
       >
         <GenreSelect
           id="secondaryGenre"
-          value={secondaryGenre}
+          value={secondaryGenre || ''}
           onChange={onSecondaryGenreChange}
           placeholder="Select secondary genre (optional)"
           genres={availableGenres}

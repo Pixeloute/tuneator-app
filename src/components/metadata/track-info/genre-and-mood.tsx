@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -22,10 +21,10 @@ interface GenreAndMoodProps {
 export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
   const [genreError, setGenreError] = useState(false);
   
-  // Handle tags change
+  // Handle tags change with null checks
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tagsString = e.target.value;
-    const tagsArray = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag);
+    const tagsArray = tagsString.split(',').map(tag => tag.trim()).filter(Boolean);
     updateForm('tags', tagsArray);
   };
   
@@ -40,14 +39,14 @@ export function GenreAndMood({ formState, updateForm }: GenreAndMoodProps) {
     updateForm('secondaryGenre', value);
   };
 
-  // Make sure we have a properly formed genres array
+  // Ensure we have a valid genres array
   const genreOptions = Array.isArray(formState.genres) ? formState.genres : DEFAULT_GENRES;
 
   return (
     <div className="space-y-4">
       <GenreSelector
-        primaryGenre={formState.genre}
-        secondaryGenre={formState.secondaryGenre}
+        primaryGenre={formState.genre || ''}
+        secondaryGenre={formState.secondaryGenre || ''}
         onPrimaryGenreChange={handlePrimaryGenreChange}
         onSecondaryGenreChange={handleSecondaryGenreChange}
         error={genreError}

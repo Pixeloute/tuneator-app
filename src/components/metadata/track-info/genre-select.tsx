@@ -3,13 +3,7 @@ import { useState, useRef } from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { 
-  Command, 
-  CommandEmpty, 
-  CommandGroup, 
-  CommandInput, 
-  CommandItem 
-} from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface GenreSelectProps {
@@ -17,7 +11,7 @@ interface GenreSelectProps {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
-  genres: string[];
+  genres?: string[];
   disabled?: boolean;
   error?: boolean;
 }
@@ -27,22 +21,23 @@ export function GenreSelect({
   value,
   onChange,
   placeholder,
-  genres = [], // Ensure default empty array if genres is undefined
+  genres = [], // Ensure default empty array
   disabled = false,
   error = false
 }: GenreSelectProps) {
   const [open, setOpen] = useState(false);
-  const [filteredGenres, setFilteredGenres] = useState<string[]>(genres || []); // Ensure filteredGenres is never undefined
+  const [filteredGenres, setFilteredGenres] = useState<string[]>(genres);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFilter = (searchValue: string) => {
+    const genreList = genres || [];
     if (!searchValue) {
-      setFilteredGenres(genres || []); // Add null check here too
+      setFilteredGenres(genreList);
       return;
     }
     
     const searchLower = searchValue.toLowerCase();
-    const filtered = (genres || []).filter(genre => // Add null check when filtering
+    const filtered = genreList.filter(genre => 
       genre.toLowerCase().includes(searchLower)
     );
     setFilteredGenres(filtered);
@@ -70,7 +65,7 @@ export function GenreSelect({
           disabled={disabled}
         >
           <div className="flex items-center gap-2 truncate">
-            {value ? value : placeholder}
+            {value || placeholder}
             {value && (
               <X 
                 className="h-4 w-4 shrink-0 opacity-50 hover:opacity-100" 
@@ -90,7 +85,7 @@ export function GenreSelect({
           />
           <CommandEmpty>No genre found.</CommandEmpty>
           <CommandGroup className="max-h-60 overflow-y-auto">
-            {filteredGenres.map((genre) => (
+            {(filteredGenres || []).map((genre) => (
               <CommandItem
                 key={genre}
                 value={genre}
