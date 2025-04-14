@@ -5,6 +5,7 @@ import { GenreAnalysisPanel } from "@/components/ai-assistant/genre-analysis-pan
 import { MarketFitPanel } from "@/components/ai-assistant/market-fit-panel";
 import { RecommendationsPanel } from "@/components/ai-assistant/recommendations-panel";
 import { toast } from "@/hooks/use-toast";
+import { MetadataProvider } from "@/contexts/metadata";
 
 interface AnalysisTabsProps {
   analysisResults: any;
@@ -31,16 +32,18 @@ export const AnalysisTabs = ({
       </TabsList>
       
       <TabsContent value="attributes" className="mt-4 space-y-4">
-        <AudioAnalysisPanel 
-          analysisResults={analysisResults}
-          onReset={resetAnalysis}
-          onApply={() => {
-            toast({
-              title: "Applied Analysis",
-              description: "Audio analysis has been applied to your track",
-            });
-          }}
-        />
+        <MetadataProvider>
+          <AudioAnalysisPanel 
+            analysisResults={analysisResults}
+            onReset={resetAnalysis}
+            onApply={() => {
+              toast({
+                title: "Applied Analysis",
+                description: "Audio analysis has been applied to your track",
+              });
+            }}
+          />
+        </MetadataProvider>
       </TabsContent>
       
       <TabsContent value="genres" className="mt-4 space-y-4">

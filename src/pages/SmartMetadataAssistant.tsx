@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { MetadataProvider } from "@/contexts/metadata";
 
 const SmartMetadataAssistant = () => {
   const { toast } = useToast();
@@ -95,38 +96,40 @@ const SmartMetadataAssistant = () => {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-6">
-                <AudioUploadSection 
-                  audioFile={audioFile}
-                  isAnalyzing={isAnalyzing}
-                  onFileSelected={handleFileSelected}
-                  onAnalyze={handleAnalyze}
-                  onAnalysisComplete={handleAnalysisComplete}
-                />
+            <MetadataProvider>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-6">
+                  <AudioUploadSection 
+                    audioFile={audioFile}
+                    isAnalyzing={isAnalyzing}
+                    onFileSelected={handleFileSelected}
+                    onAnalyze={handleAnalyze}
+                    onAnalysisComplete={handleAnalysisComplete}
+                  />
+                  
+                  {analysisResults ? (
+                    <AnalysisTabs 
+                      analysisResults={analysisResults}
+                      additionalMetadata={additionalMetadata}
+                      activeTab={activeAnalysisTab}
+                      setActiveTab={setActiveAnalysisTab}
+                      resetAnalysis={resetAnalysis}
+                    />
+                  ) : (
+                    <MetadataEnrichmentPanel 
+                      onEnrichmentComplete={handleEnrichmentComplete}
+                    />
+                  )}
+                </div>
                 
-                {analysisResults ? (
-                  <AnalysisTabs 
-                    analysisResults={analysisResults}
-                    additionalMetadata={additionalMetadata}
-                    activeTab={activeAnalysisTab}
-                    setActiveTab={setActiveAnalysisTab}
-                    resetAnalysis={resetAnalysis}
+                <div>
+                  <SmartSuggestionsList 
+                    activeTrack={activeTrack}
+                    onSelectTrack={handleTrackSelect}
                   />
-                ) : (
-                  <MetadataEnrichmentPanel 
-                    onEnrichmentComplete={handleEnrichmentComplete}
-                  />
-                )}
+                </div>
               </div>
-              
-              <div>
-                <SmartSuggestionsList 
-                  activeTrack={activeTrack}
-                  onSelectTrack={handleTrackSelect}
-                />
-              </div>
-            </div>
+            </MetadataProvider>
           </main>
         </div>
       </div>

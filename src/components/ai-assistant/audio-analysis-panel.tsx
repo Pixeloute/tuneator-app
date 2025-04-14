@@ -18,7 +18,9 @@ export const AudioAnalysisPanel = ({
   onReset,
   onApply 
 }: AudioAnalysisPanelProps) => {
-  const { updateForm, formState } = useMetadata();
+  // Try to use the metadata context, but provide fallback values if not available
+  const metadata = useMetadata();
+  const { updateForm, formState } = metadata || { updateForm: null, formState: {} };
   const { attributesData } = processAnalysisResults(analysisResults);
   
   // Generate a dynamic analysis description based on the top attributes
@@ -53,6 +55,15 @@ export const AudioAnalysisPanel = ({
   };
   
   const handleApplyToMetadata = () => {
+    if (!updateForm) {
+      toast({
+        title: "Cannot Apply Analysis",
+        description: "Metadata context is not available",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (updateForm && analysisResults) {
       // Apply genre information if available
       if (analysisResults.genres && analysisResults.genres.length > 0) {
