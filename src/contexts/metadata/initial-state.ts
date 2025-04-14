@@ -1,4 +1,3 @@
-
 import { MetadataFormState } from "./types";
 
 // Define a consistent set of default genres that we'll use throughout the app
@@ -71,7 +70,7 @@ export const initialFormState: MetadataFormState = {
   isrc: "USRC17607839",
   bowi: "",
   
-  // Credits defaults
+  // Credits defaults - ensure arrays are initialized
   composers: [
     { id: "1", name: "John Smith", role: "Songwriter", share: 50 },
     { id: "2", name: "Jane Doe", role: "Composer", share: 50 }

@@ -21,23 +21,24 @@ export function GenreSelect({
   value,
   onChange,
   placeholder,
-  genres = [], // Ensure default empty array
+  genres = [], // Default empty array
   disabled = false,
   error = false
 }: GenreSelectProps) {
   const [open, setOpen] = useState(false);
-  const [filteredGenres, setFilteredGenres] = useState<string[]>(genres);
+  // Initialize with empty array if genres is undefined
+  const [filteredGenres, setFilteredGenres] = useState<string[]>(genres || []);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFilter = (searchValue: string) => {
-    const genreList = genres || [];
+    const safeGenres = genres || [];
     if (!searchValue) {
-      setFilteredGenres(genreList);
+      setFilteredGenres(safeGenres);
       return;
     }
     
     const searchLower = searchValue.toLowerCase();
-    const filtered = genreList.filter(genre => 
+    const filtered = safeGenres.filter(genre => 
       genre.toLowerCase().includes(searchLower)
     );
     setFilteredGenres(filtered);

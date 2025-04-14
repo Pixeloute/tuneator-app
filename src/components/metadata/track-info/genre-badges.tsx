@@ -12,7 +12,7 @@ export function GenreBadges({ primaryGenre, secondaryGenre }: GenreBadgesProps) 
   return (
     <div className="flex flex-wrap gap-2 mt-2">
       <Badge variant="secondary" className="bg-electric/20">
-        {primaryGenre}
+        {primaryGenre || ''}
       </Badge>
       {secondaryGenre && (
         <Badge variant="outline">
