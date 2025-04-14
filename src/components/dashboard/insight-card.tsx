@@ -59,8 +59,10 @@ export const InsightCard = ({
           className="w-full"
           onClick={handleAction}
         >
-          <Link className="h-4 w-4 mr-2" />
-          {actionText}
+          <span className="flex items-center">
+            <Link className="h-4 w-4 mr-2" />
+            {actionText}
+          </span>
         </Button>
       </CardContent>
     </Card>
