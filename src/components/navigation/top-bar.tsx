@@ -1,8 +1,8 @@
 
-import { Bell, Menu, Settings, User } from "lucide-react";
+import { Bell, Menu, Settings, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,15 +12,39 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 export const TopBar = () => {
   const { toast } = useToast();
+  const { user, signOut } = useAuth();
 
   const handleNotificationClick = () => {
     toast({
       title: "New notification",
       description: "Your 'Summer Vibes' track metadata has been improved!",
     });
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  const getInitials = () => {
+    if (!user) return "?";
+    
+    // Try to get initials from user metadata if available
+    const metadata = user.user_metadata;
+    if (metadata?.first_name && metadata?.last_name) {
+      return `${metadata.first_name.charAt(0)}${metadata.last_name.charAt(0)}`;
+    }
+    
+    // Fallback to email
+    return user.email ? user.email.charAt(0).toUpperCase() : "?";
   };
 
   return (
@@ -40,45 +64,58 @@ export const TopBar = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="relative"
-          onClick={handleNotificationClick}
-        >
-          <span className="flex items-center justify-center relative">
-            <Bell size={20} />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-mint rounded-full"></span>
-          </span>
-        </Button>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <span className="flex items-center justify-center">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-muted text-sm">
-                    JD
-                  </AvatarFallback>
-                </Avatar>
+        {user ? (
+          <>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative"
+              onClick={handleNotificationClick}
+            >
+              <span className="flex items-center justify-center relative">
+                <Bell size={20} />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-mint rounded-full"></span>
               </span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <span className="flex items-center justify-center">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-muted text-sm">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  {user.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : (
+          <Button asChild className="bg-electric hover:bg-electric/90">
+            <Link to="/auth">Sign In</Link>
+          </Button>
+        )}
       </div>
     </div>
   );
