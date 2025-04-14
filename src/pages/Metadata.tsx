@@ -69,7 +69,6 @@ const Metadata = () => {
             
             {activeView === "single" && (
               <div className="space-y-6">
-                <InsightPulseFeed />
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
                     <Tabs defaultValue="editor">
@@ -90,6 +89,9 @@ const Metadata = () => {
                     </Tabs>
                   </div>
                 </div>
+                
+                {/* Insight Pulse Feed added below the main content */}
+                <InsightPulseFeed />
               </div>
             )}
             
@@ -111,4 +113,3 @@ const Metadata = () => {
 };
 
 export default Metadata;
-
