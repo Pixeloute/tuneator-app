@@ -69,8 +69,8 @@ const Metadata = () => {
             
             {activeView === "single" && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="md:col-span-2">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                  <div className="xl:col-span-2">
                     <Tabs defaultValue="editor">
                       <TabsList className="grid w-full max-w-md grid-cols-3">
                         <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -87,6 +87,13 @@ const Metadata = () => {
                         <ValidationPanel />
                       </TabsContent>
                     </Tabs>
+                  </div>
+                  
+                  <div className="xl:col-span-1">
+                    {/* Metadata Health card will now take the full width of its column */}
+                    <div className="h-full">
+                      {/* This is just a placeholder - the actual Metadata Health content comes from MetadataForm */}
+                    </div>
                   </div>
                 </div>
                 
@@ -113,4 +120,3 @@ const Metadata = () => {
 };
 
 export default Metadata;
-
