@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +9,7 @@ import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/h
 import { Info, Wand2 } from "lucide-react";
 import { validateBPM, validateFilename } from "@/lib/metadata-validator";
 import { MetadataFormState } from "./metadata-form";
+import { GenreSelector } from "./genre-selector";
 
 interface TrackInfoTabProps {
   formState: MetadataFormState;
@@ -20,6 +20,7 @@ export const TrackInfoTab = ({ formState, updateForm }: TrackInfoTabProps) => {
   // Local validation states
   const [bpmError, setBpmError] = useState("");
   const [fileNameError, setFileNameError] = useState("");
+  const [genreError, setGenreError] = useState(false);
   
   // Handle BPM validation
   const handleBpmChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +53,17 @@ export const TrackInfoTab = ({ formState, updateForm }: TrackInfoTabProps) => {
     updateForm('tags', tagsArray);
   };
   
+  // Handle primary genre change
+  const handlePrimaryGenreChange = (value: string) => {
+    updateForm('genre', value);
+    setGenreError(!value);
+  };
+  
+  // Handle secondary genre change
+  const handleSecondaryGenreChange = (value: string) => {
+    updateForm('secondaryGenre', value);
+  };
+  
   // Get AI suggestions for track info
   const getAiSuggestions = () => {
     // Simulate AI suggestions
@@ -66,6 +78,7 @@ export const TrackInfoTab = ({ formState, updateForm }: TrackInfoTabProps) => {
         case "Electronic":
           suggestedMood = "Energetic, Uplifting";
           break;
+        case "Hip-Hop":
         case "Hip-Hop/Rap":
           suggestedMood = "Confident, Rhythmic";
           break;
@@ -232,33 +245,13 @@ export const TrackInfoTab = ({ formState, updateForm }: TrackInfoTabProps) => {
           </div>
           
           <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="genre" className="text-sm font-medium">
-                  Genre <span className="text-destructive">*</span>
-                </Label>
-                <HoverCard>
-                  <HoverCardTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-80">
-                    <p className="text-xs">
-                      Primary genre of the track. Required for distribution.
-                    </p>
-                  </HoverCardContent>
-                </HoverCard>
-              </div>
-              <Input
-                id="genre"
-                value={formState.genre}
-                onChange={(e) => updateForm('genre', e.target.value)}
-                className={!formState.genre ? "border-destructive" : ""}
-                placeholder="e.g., Electronic, Pop, Hip-Hop"
-              />
-              {!formState.genre && (
-                <p className="text-xs text-destructive">Required field</p>
-              )}
-            </div>
+            <GenreSelector
+              primaryGenre={formState.genre}
+              secondaryGenre={formState.secondaryGenre}
+              onPrimaryGenreChange={handlePrimaryGenreChange}
+              onSecondaryGenreChange={handleSecondaryGenreChange}
+              error={genreError}
+            />
             
             <div className="space-y-2">
               <div className="flex items-center gap-2">

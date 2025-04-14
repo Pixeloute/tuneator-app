@@ -1,4 +1,3 @@
-
 import { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { IssueType } from "@/components/metadata/metadata-feedback";
 import { calculateMetadataScore } from "@/lib/metadata-validator";
@@ -20,6 +19,7 @@ export interface MetadataFormState {
   language: string;
   vocalType: string;
   genre: string;
+  secondaryGenre: string;
   subGenre: string;
   explicit: boolean;
   version: string;
@@ -102,6 +102,7 @@ const initialFormState: MetadataFormState = {
   language: "English",
   vocalType: "Lead Vocals",
   genre: "Electronic",
+  secondaryGenre: "",
   subGenre: "House",
   explicit: false,
   version: "Original Mix",
@@ -208,6 +209,7 @@ export const MetadataProvider = ({ children }: { children: ReactNode }) => {
     // Check required fields
     if (!formState.title.trim()) newIssues.push({ type: "error", message: "Title is required" });
     if (!formState.artistName.trim()) newIssues.push({ type: "error", message: "Artist name is required" });
+    if (!formState.genre.trim()) newIssues.push({ type: "error", message: "Primary genre is required" });
     
     // Check optional but recommended fields
     if (!formState.iswc) newIssues.push({ type: "warning", message: "ISWC code missing" });
