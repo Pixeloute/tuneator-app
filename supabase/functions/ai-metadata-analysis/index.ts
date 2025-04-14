@@ -23,13 +23,14 @@ async function analyzeWithOpenAI(audioData: any) {
         messages: [
           {
             role: 'system',
-            content: 'You are a music metadata analysis expert. Analyze the audio file and provide detailed insights about genre, mood, and musical characteristics. Focus on providing actionable insights for metadata enhancement.'
+            content: 'You are a music metadata analysis expert. Provide concise, actionable insights about genre, mood, and musical characteristics. Focus on metadata enhancement recommendations.'
           },
           {
             role: 'user',
-            content: `Analyze this audio file metadata and provide insights: ${JSON.stringify(audioData)}`
+            content: `Analyze this audio file metadata and provide specific, actionable insights: ${JSON.stringify(audioData)}`
           }
         ],
+        max_tokens: 500
       }),
     })
     
@@ -37,7 +38,7 @@ async function analyzeWithOpenAI(audioData: any) {
     return data.choices[0].message.content
   } catch (error) {
     console.error('OpenAI API error:', error)
-    return null
+    return `OpenAI Analysis Error: ${error.message}`
   }
 }
 
@@ -52,12 +53,12 @@ async function analyzeWithGemini(audioData: any) {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `As a music metadata expert, analyze this audio file metadata and provide insights about its genre, mood, and musical characteristics: ${JSON.stringify(audioData)}`
+            text: `Act as an expert music metadata analyst. Provide detailed, actionable insights about this audio file's genre, mood, and musical characteristics. Focus on metadata enhancement suggestions: ${JSON.stringify(audioData)}`
           }]
         }],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 500,
         },
         safetySettings: [
           {
@@ -72,7 +73,7 @@ async function analyzeWithGemini(audioData: any) {
     return data.candidates[0].content.parts[0].text
   } catch (error) {
     console.error('Gemini API error:', error)
-    return null
+    return `Gemini Analysis Error: ${error.message}`
   }
 }
 
@@ -85,8 +86,11 @@ serve(async (req) => {
   try {
     const { audioFile, analysisType } = await req.json()
 
-    // Run both AI analyses in parallel
-    const [openAIResult, geminiResult] = await Promise.all([
+    // Enhanced logging for tracking analysis
+    console.log(`Analyzing audio file: ${audioFile} with type: ${analysisType}`)
+
+    // Run both AI analyses in parallel with improved timeout handling
+    const [openAIResult, geminiResult] = await Promise.allSettled([
       analyzeWithOpenAI(audioFile),
       analyzeWithGemini(audioFile)
     ])
@@ -102,8 +106,8 @@ serve(async (req) => {
 
     const results = {
       audioAnalysis: mockAudioAnalysis,
-      openai: openAIResult,
-      gemini: geminiResult,
+      openai: openAIResult.status === 'fulfilled' ? openAIResult.value : null,
+      gemini: geminiResult.status === 'fulfilled' ? geminiResult.value : null,
       genres: ["Electronic", "Ambient", "Pop"],
       recommendedTags: ["chillout", "electronic", "ambient", "downtempo"],
       moodTags: ["relaxed", "atmospheric", "dreamy"],
@@ -119,7 +123,10 @@ serve(async (req) => {
     })
   } catch (error) {
     console.error('Error in AI analysis:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: 'Failed to complete AI analysis', 
+      details: error.message 
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
