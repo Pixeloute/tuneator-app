@@ -10,6 +10,7 @@ import Metadata from "./pages/Metadata";
 import Catalog from "./pages/Catalog";
 import Analytics from "./pages/Analytics";
 import Team from "./pages/Team";
+import SmartMetadataAssistant from "./pages/SmartMetadataAssistant";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/team" element={<Team />} />
+          <Route path="/ai-assistant" element={<SmartMetadataAssistant />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
