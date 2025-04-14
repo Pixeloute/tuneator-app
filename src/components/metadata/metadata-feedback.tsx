@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { AlertCircle, CheckCircle, Info, RefreshCw } from "lucide-react";
+import { AlertCircle, CheckCircle, Info, RefreshCw, Save, Wand2 } from "lucide-react";
 import { useMetadata, IssueType } from "@/contexts/metadata";
 
 interface MetadataFeedbackProps {
@@ -46,8 +46,8 @@ export const MetadataFeedback = ({ score, issues, onValidate }: MetadataFeedback
   };
 
   return (
-    <Card className="sticky top-4">
-      <CardHeader className="pb-2">
+    <Card className="sticky top-4 max-h-[calc(100vh-6rem)] overflow-y-auto">
+      <CardHeader className="pb-2 sticky top-0 bg-card z-10">
         <CardTitle className="text-lg font-medium">Metadata Health</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -71,8 +71,8 @@ export const MetadataFeedback = ({ score, issues, onValidate }: MetadataFeedback
           {issues.length > 0 ? (
             <Accordion type="multiple" className="w-full">
               {issues.map((issue, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger className="py-2">
+                <AccordionItem key={index} value={`item-${index}`} className="border-b-0 mb-1">
+                  <AccordionTrigger className="py-2 px-3 rounded-md hover:bg-muted/50 data-[state=open]:bg-muted/40">
                     <div className="flex items-center gap-2">
                       {getIssueIcon(issue.type)}
                       <span className={`text-xs ${getIssueColor(issue.type)}`}>
@@ -80,7 +80,7 @@ export const MetadataFeedback = ({ score, issues, onValidate }: MetadataFeedback
                       </span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="text-xs text-muted-foreground">
+                  <AccordionContent className="text-xs text-muted-foreground px-3 pt-1 pb-2">
                     {issue.type === "error" && "This issue must be fixed before distribution."}
                     {issue.type === "warning" && "This issue should be fixed for optimal distribution."}
                     {issue.type === "info" && "Consider addressing this for better metadata quality."}
@@ -96,25 +96,24 @@ export const MetadataFeedback = ({ score, issues, onValidate }: MetadataFeedback
           )}
         </div>
         
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">AI Enhancement</span>
-          </div>
+        <div className="space-y-3 pt-2">
           <Button 
             onClick={handleAiAudit}
             variant="outline" 
-            className="w-full"
+            className="w-full flex items-center justify-center gap-2"
           >
+            <Wand2 className="h-4 w-4" />
             AI Audit &amp; Fix
           </Button>
+          
+          <Button 
+            onClick={handleSaveMetadata}
+            className="w-full bg-electric hover:bg-electric/90 flex items-center justify-center gap-2"
+          >
+            <Save className="h-4 w-4" />
+            Save Metadata
+          </Button>
         </div>
-        
-        <Button 
-          onClick={handleSaveMetadata}
-          className="w-full bg-electric hover:bg-electric/90"
-        >
-          Save Metadata
-        </Button>
       </CardContent>
     </Card>
   );

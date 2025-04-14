@@ -13,21 +13,34 @@ interface TrackInfoTabProps {
 
 export const TrackInfoTab = ({ formState, updateForm }: TrackInfoTabProps) => {
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TrackDetails formState={formState} updateForm={updateForm} />
-          <GenreAndMood formState={formState} updateForm={updateForm} />
-        </div>
-        
-        <div className="mt-6 space-y-2">
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-medium mb-4">Basic Track Information</h3>
+          <div className="space-y-6">
+            <TrackDetails formState={formState} updateForm={updateForm} />
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-medium mb-4">Genre & Descriptors</h3>
+          <div className="space-y-6">
+            <GenreAndMood formState={formState} updateForm={updateForm} />
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-lg font-medium mb-4">Lyrics</h3>
           <LyricsSection formState={formState} updateForm={updateForm} />
-        </div>
-        
-        <div className="mt-4">
-          <AiSuggestionsButton />
-        </div>
-      </CardContent>
-    </Card>
+          <div className="mt-4">
+            <AiSuggestionsButton />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
-}
+};

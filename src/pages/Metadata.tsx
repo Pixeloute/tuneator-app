@@ -27,7 +27,7 @@ const Metadata = () => {
         <AppSidebar />
         <div className="flex-1">
           <TopBar />
-          <main className="p-4 md:p-6 space-y-6 pb-16 max-w-[1920px] mx-auto">
+          <main className="p-4 md:p-6 space-y-6 pb-16 w-full mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h1 className="text-2xl font-bold">Metadata Management</h1>
               
@@ -69,8 +69,8 @@ const Metadata = () => {
             
             {activeView === "single" && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                  <div className="xl:col-span-2">
+                <div className="flex flex-col xl:flex-row gap-6">
+                  <div className="flex-[2] min-w-0">
                     <Tabs defaultValue="editor">
                       <TabsList className="grid w-full max-w-md grid-cols-3">
                         <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -89,9 +89,8 @@ const Metadata = () => {
                     </Tabs>
                   </div>
                   
-                  <div className="xl:col-span-1">
-                    {/* Metadata Health card will now take the full width of its column */}
-                    <div className="h-full">
+                  <div className="flex-1 xl:max-w-sm">
+                    <div className="sticky top-4">
                       {/* This is just a placeholder - the actual Metadata Health content comes from MetadataForm */}
                     </div>
                   </div>

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,10 +37,10 @@ const MetadataFormContent = () => {
     <div className="space-y-6">
       <MetadataHeader />
       
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        <div className="xl:col-span-3">
+      <div className="flex flex-col xl:flex-row gap-6">
+        <div className="flex-[2] min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-            <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full">
+            <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full max-w-full">
               <TabsTrigger value="track-info">Track Info</TabsTrigger>
               <TabsTrigger value="artist-details">Artist Details</TabsTrigger>
               <TabsTrigger value="release-info">Release Info</TabsTrigger>
@@ -48,7 +49,7 @@ const MetadataFormContent = () => {
               <TabsTrigger value="platforms">Platforms</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="track-info">
+            <TabsContent value="track-info" className="mt-4">
               <TrackInfoTab
                 formState={formState}
                 updateForm={updateForm}
@@ -92,7 +93,7 @@ const MetadataFormContent = () => {
           </Tabs>
         </div>
         
-        <div className="xl:col-span-1">
+        <div className="flex-1 xl:max-w-sm">
           <MetadataFeedback 
             score={metadataQualityScore} 
             issues={validationIssues} 
