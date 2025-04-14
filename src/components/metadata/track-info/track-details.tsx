@@ -1,149 +1,94 @@
 
 import { Input } from "@/components/ui/input";
-import { MetadataFormState } from "@/contexts/metadata-context";
 import { FormFieldWithInfo } from "./form-field-with-info";
-import { validateBPM, validateFilename } from "@/lib/metadata-validator";
-import { useState, ChangeEvent } from "react";
+import { MetadataFormState } from "@/contexts/metadata";
 
 interface TrackDetailsProps {
   formState: MetadataFormState;
   updateForm: (field: keyof MetadataFormState, value: any) => void;
 }
 
-export function TrackDetails({ formState, updateForm }: TrackDetailsProps) {
-  // Local validation states
-  const [bpmError, setBpmError] = useState("");
-  const [fileNameError, setFileNameError] = useState("");
-  
-  // Handle BPM validation
-  const handleBpmChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    updateForm('bpm', value);
-    
-    if (!validateBPM(value)) {
-      setBpmError("BPM must be a positive number");
-    } else {
-      setBpmError("");
-    }
-  };
-  
-  // Handle file name validation
-  const handleFileNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    updateForm('audioFileName', value);
-    
-    if (!validateFilename(value)) {
-      setFileNameError("Invalid filename format");
-    } else {
-      setFileNameError("");
-    }
-  };
-
+export const TrackDetails = ({ formState, updateForm }: TrackDetailsProps) => {
   return (
     <div className="space-y-4">
       <FormFieldWithInfo
         id="title"
-        label="Song Title"
-        tooltip="The main title of the track as it should appear on platforms. Required for distribution."
-        required
-      >
-        <Input
-          id="title"
-          value={formState.title}
-          onChange={(e) => updateForm('title', e.target.value)}
-          className={!formState.title ? "border-destructive" : ""}
-          placeholder="Enter song title"
-        />
-        {!formState.title && (
-          <p className="text-xs text-destructive">Required field</p>
-        )}
-      </FormFieldWithInfo>
+        label="Track Title"
+        required={true}
+        tooltipText="The primary title of the track as it should appear on platforms."
+        value={formState.title}
+        onChange={(e) => updateForm('title', e.target.value)}
+        placeholder="e.g., Song Title"
+      />
       
       <FormFieldWithInfo
         id="altTitle"
         label="Alternative Title"
-        tooltip="Optional alternative title for the track, such as translated titles or alternate spellings."
-      >
-        <Input
-          id="altTitle"
-          value={formState.altTitle}
-          onChange={(e) => updateForm('altTitle', e.target.value)}
-          placeholder="Optional alternative title"
-        />
-      </FormFieldWithInfo>
+        tooltipText="Alternative or international title variations."
+        value={formState.altTitle}
+        onChange={(e) => updateForm('altTitle', e.target.value)}
+        placeholder="e.g., Title in another language"
+      />
       
-      <FormFieldWithInfo
-        id="trackPosition"
-        label="Track Position"
-        tooltip="The position of this track within an album or EP."
-      >
-        <Input
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormFieldWithInfo
+          id="version"
+          label="Version"
+          tooltipText="Version type for this track (Original, Remix, Edit, etc.)"
+          value={formState.version}
+          onChange={(e) => updateForm('version', e.target.value)}
+          placeholder="e.g., Original Mix, Radio Edit"
+        />
+        
+        <FormFieldWithInfo
           id="trackPosition"
+          label="Track Number"
+          tooltipText="The position of this track in the album/EP."
           value={formState.trackPosition}
           onChange={(e) => updateForm('trackPosition', e.target.value)}
-          placeholder="e.g., 1"
+          placeholder="e.g., 1, 2, 3"
         />
-      </FormFieldWithInfo>
+      </div>
       
-      <FormFieldWithInfo
-        id="duration"
-        label="Duration"
-        tooltip="The track's duration in minutes and seconds (MM:SS)."
-      >
-        <Input
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormFieldWithInfo
           id="duration"
+          label="Duration"
+          tooltipText="Length of the track in minutes:seconds format."
           value={formState.duration}
           onChange={(e) => updateForm('duration', e.target.value)}
           placeholder="e.g., 3:45"
         />
-      </FormFieldWithInfo>
-      
-      <FormFieldWithInfo
-        id="bpm"
-        label="BPM"
-        tooltip="Beats Per Minute - the tempo of the track. Must be a positive number."
-      >
-        <Input
+        
+        <FormFieldWithInfo
           id="bpm"
+          label="BPM"
+          tooltipText="Beats per minute - the tempo of the track."
           value={formState.bpm}
-          onChange={handleBpmChange}
-          className={bpmError ? "border-destructive" : ""}
+          onChange={(e) => updateForm('bpm', e.target.value)}
           placeholder="e.g., 120"
         />
-        {bpmError && (
-          <p className="text-xs text-destructive">{bpmError}</p>
-        )}
-      </FormFieldWithInfo>
+      </div>
       
-      <FormFieldWithInfo
-        id="key"
-        label="Musical Key"
-        tooltip="The musical key of the track (e.g., C Major, A Minor)."
-      >
-        <Input
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormFieldWithInfo
           id="key"
+          label="Key"
+          tooltipText="Musical key of the track."
           value={formState.key}
           onChange={(e) => updateForm('key', e.target.value)}
-          placeholder="e.g., C Major"
+          placeholder="e.g., C Major, A Minor"
         />
-      </FormFieldWithInfo>
-      
-      <FormFieldWithInfo
-        id="audioFileName"
-        label="Audio File Name"
-        tooltip="Name of the audio file including extension (e.g. .wav, .mp3)."
-      >
-        <Input
-          id="audioFileName"
-          value={formState.audioFileName}
-          onChange={handleFileNameChange}
-          className={fileNameError ? "border-destructive" : ""}
-          placeholder="e.g., track_name.wav"
+        
+        <FormFieldWithInfo
+          id="language"
+          label="Language"
+          tooltipText="Primary language of the lyrics."
+          value={formState.language}
+          onChange={(e) => updateForm('language', e.target.value)}
+          placeholder="e.g., English, Spanish"
         />
-        {fileNameError && (
-          <p className="text-xs text-destructive">{fileNameError}</p>
-        )}
-      </FormFieldWithInfo>
+      </div>
     </div>
   );
-}
+};
