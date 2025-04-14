@@ -7,7 +7,7 @@ import { MetadataForm } from "@/components/metadata/metadata-form";
 import { BatchEditor } from "@/components/metadata/batch-editor";
 import { HealthReport } from "@/components/metadata/health-report";
 import { ValidationPanel } from "@/components/metadata/validation-panel";
-import { ExternalLookupPanel } from "@/components/metadata/external-lookup-panel";
+import { ExternalLookupPanel } from "@/components/metadata/external-lookup";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
