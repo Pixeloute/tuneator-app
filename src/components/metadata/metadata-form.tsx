@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
@@ -45,16 +44,13 @@ export const MetadataForm = () => {
   ]);
 
   const handleSaveMetadata = () => {
-    // Calculate metadata quality based on fields filled
-    const totalFields = 12; // count of important fields
+    const totalFields = 12;
     const filledFields = [title, artist, album, genre, isrc, iswc, release, description, bpm, key, p_line, c_line]
       .filter(field => field && field.trim() !== "").length;
     
-    // Update quality score
     const newScore = Math.floor((filledFields / totalFields) * 100);
     setMetadataQualityScore(newScore);
     
-    // Show feedback based on score improvement
     if (newScore > metadataQualityScore) {
       toast({
         title: "Metadata Quality Improved",
@@ -70,7 +66,6 @@ export const MetadataForm = () => {
   };
 
   const handleAiSuggestions = () => {
-    // Simulate AI suggesting improvements
     const newValidationIssues: IssueType[] = [
       ...validationIssues.filter(issue => issue.type !== "success"),
       { type: "success", message: "AI suggested genre tags added" }
@@ -106,21 +101,17 @@ export const MetadataForm = () => {
   const validateMetadata = () => {
     const newIssues: IssueType[] = [];
     
-    // Validate ISRC format
     if (isrc && !/^[A-Z]{2}[A-Z0-9]{3}\d{7}$/.test(isrc)) {
       newIssues.push({ type: "error", message: "ISRC format is invalid" });
     }
     
-    // Check for required fields
     if (!title.trim()) newIssues.push({ type: "error", message: "Title is required" });
     if (!artist.trim()) newIssues.push({ type: "error", message: "Artist is required" });
     
-    // Check for recommended fields
     if (!iswc) newIssues.push({ type: "warning", message: "ISWC code missing" });
     if (!p_line) newIssues.push({ type: "warning", message: "P-Line info missing" });
     if (!c_line) newIssues.push({ type: "warning", message: "C-Line info missing" });
     
-    // Contributor share validation
     const totalShare = contributors.reduce((sum, c) => sum + (c.share || 0), 0);
     if (totalShare !== 100 && contributors.length > 0) {
       newIssues.push({ type: "warning", message: `Contributor shares total ${totalShare}%, should be 100%` });

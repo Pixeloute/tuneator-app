@@ -1,159 +1,66 @@
+
 import { useState } from "react";
-import { FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
+import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { AudioWaveform, Info } from "lucide-react";
 
 interface TechnicalMetadataProps {
-  initialValues: {
-    duration: number;
-    sampleRate: number;
-    bitDepth: number;
-    codec: string;
-    channels: number;
-  };
-  onSubmit: (values: any) => void;
+  bpm: string;
+  setBpm: (value: string) => void;
+  key: string;
+  setKey: (value: string) => void;
 }
 
-export const TechnicalMetadata = ({ initialValues, onSubmit }: TechnicalMetadataProps) => {
-  const [values, setValues] = useState(initialValues);
-
-  const handleChange = (key: string, value: any) => {
-    setValues({ ...values, [key]: value });
-  };
-
+export const TechnicalMetadata = ({ bpm, setBpm, key: musicKey, setKey }: TechnicalMetadataProps) => {
   return (
     <div className="grid gap-4">
-      <FormField>
-        <FormItem>
-          <FormLabel>Duration (seconds)</FormLabel>
-          <FormControl>
-            <div className="flex items-center space-x-2">
-              <Input
-                type="number"
-                value={values.duration}
-                onChange={(e) => handleChange("duration", parseFloat(e.target.value))}
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Total length of the audio track.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </FormControl>
-          <FormDescription>The total length of the audio track in seconds.</FormDescription>
-        </FormItem>
-      </FormField>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <label htmlFor="bpm" className="text-sm font-medium">BPM (Beats Per Minute)</label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>The tempo of the track measured in beats per minute</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Input
+          id="bpm"
+          type="text"
+          value={bpm}
+          onChange={(e) => setBpm(e.target.value)}
+          placeholder="e.g. 120"
+        />
+        <p className="text-sm text-muted-foreground">The speed or tempo of the track</p>
+      </div>
 
-      <FormField>
-        <FormItem>
-          <FormLabel>Sample Rate (Hz)</FormLabel>
-          <FormControl>
-            <div className="flex items-center space-x-2">
-              <Input
-                type="number"
-                value={values.sampleRate}
-                onChange={(e) => handleChange("sampleRate", parseInt(e.target.value))}
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Number of samples per second.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </FormControl>
-          <FormDescription>The number of samples of audio carried per second.</FormDescription>
-        </FormItem>
-      </FormField>
-
-      <FormField>
-        <FormItem>
-          <FormLabel>Bit Depth</FormLabel>
-          <FormControl>
-            <div className="flex items-center space-x-2">
-              <Input
-                type="number"
-                value={values.bitDepth}
-                onChange={(e) => handleChange("bitDepth", parseInt(e.target.value))}
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Number of bits used per sample.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </FormControl>
-          <FormDescription>The number of bits used for each audio sample.</FormDescription>
-        </FormItem>
-      </FormField>
-
-      <FormField>
-        <FormItem>
-          <FormLabel>Audio Codec</FormLabel>
-          <FormControl>
-            <div className="flex items-center space-x-2">
-              <Input
-                type="text"
-                value={values.codec}
-                onChange={(e) => handleChange("codec", e.target.value)}
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>The method used to compress the audio data.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </FormControl>
-          <FormDescription>The method used to compress and decompress the audio data.</FormDescription>
-        </FormItem>
-      </FormField>
-
-      <FormField>
-        <FormItem>
-          <FormLabel>Channels</FormLabel>
-          <FormControl>
-            <div className="flex items-center space-x-2">
-              <Input
-                type="number"
-                value={values.channels}
-                onChange={(e) => handleChange("channels", parseInt(e.target.value))}
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>The number of independent audio channels.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </FormControl>
-          <FormDescription>The number of independent audio channels in the file.</FormDescription>
-        </FormItem>
-      </FormField>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <label htmlFor="key" className="text-sm font-medium">Musical Key</label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>The musical key of the track (e.g. C Major, A Minor)</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Input
+          id="key"
+          type="text"
+          value={musicKey}
+          onChange={(e) => setKey(e.target.value)}
+          placeholder="e.g. C Major"
+        />
+        <p className="text-sm text-muted-foreground">The musical key of the track</p>
+      </div>
     </div>
   );
 };
