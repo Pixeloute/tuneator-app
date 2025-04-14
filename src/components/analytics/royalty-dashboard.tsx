@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
-import { DollarSign, Calendar, BarChart3 } from "lucide-react";
+import { DollarSign, Calendar, BarChart3, Download, LineChart } from "lucide-react";
 import { fetchAllRoyaltyData, downloadRoyaltyReport, PlatformRoyaltyData } from "@/services/revenue-service";
 import { CustomAnalyticsModal } from "./custom-analytics-modal";
 import { ScheduleReportModal } from "./schedule-report-modal";
@@ -51,7 +51,7 @@ export function RoyaltyDashboard() {
   };
   
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-background border-border">
       <CardHeader>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -126,10 +126,10 @@ export function RoyaltyDashboard() {
             </Tabs>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleDownloadReport}>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow dark:hover:bg-secondary/5" onClick={handleDownloadReport}>
                 <CardContent className="flex items-center gap-4 p-6">
-                  <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
-                    <DollarSign className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                    <Download className="h-6 w-6 text-secondary-foreground" />
                   </div>
                   <div>
                     <h3 className="font-medium">Download Royalty Report</h3>
@@ -138,10 +138,10 @@ export function RoyaltyDashboard() {
                 </CardContent>
               </Card>
               
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowScheduleModal(true)}>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow dark:hover:bg-secondary/5" onClick={() => setShowScheduleModal(true)}>
                 <CardContent className="flex items-center gap-4 p-6">
-                  <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
-                    <Calendar className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                    <Calendar className="h-6 w-6 text-secondary-foreground" />
                   </div>
                   <div>
                     <h3 className="font-medium">Schedule Monthly Report</h3>
@@ -150,10 +150,10 @@ export function RoyaltyDashboard() {
                 </CardContent>
               </Card>
               
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setShowAnalyticsModal(true)}>
+              <Card className="cursor-pointer hover:shadow-md transition-shadow dark:hover:bg-secondary/5" onClick={() => setShowAnalyticsModal(true)}>
                 <CardContent className="flex items-center gap-4 p-6">
-                  <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
-                    <BarChart3 className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                    <LineChart className="h-6 w-6 text-secondary-foreground" />
                   </div>
                   <div>
                     <h3 className="font-medium">Custom Analytics</h3>
