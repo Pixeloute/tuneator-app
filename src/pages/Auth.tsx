@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/contexts/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
+import { supabase } from "@/integrations/supabase/client";
+import { Google } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -79,6 +80,48 @@ const Auth = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsSubmitting(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin // Use current origin as redirect
+        }
+      });
+      
+      if (error) {
+        console.error('Google Sign In Error:', error);
+        // Handle error (e.g., show toast)
+      }
+    } catch (error) {
+      console.error('Unexpected error during Google Sign In:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      setIsSubmitting(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin // Use current origin as redirect
+        }
+      });
+      
+      if (error) {
+        console.error('Google Sign Up Error:', error);
+        // Handle error (e.g., show toast)
+      }
+    } catch (error) {
+      console.error('Unexpected error during Google Sign Up:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -113,7 +156,7 @@ const Auth = () => {
                   Sign in to your account to continue
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <Form {...loginForm}>
                   <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                     <FormField
@@ -148,6 +191,27 @@ const Auth = () => {
                     </Button>
                   </form>
                 </Form>
+                
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={handleGoogleSignIn}
+                  disabled={isSubmitting}
+                >
+                  <Google className="mr-2 h-4 w-4" />
+                  Sign in with Google
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -160,7 +224,7 @@ const Auth = () => {
                   Enter your information to get started
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <Form {...registerForm}>
                   <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -236,6 +300,27 @@ const Auth = () => {
                     </Button>
                   </form>
                 </Form>
+                
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={handleGoogleSignUp}
+                  disabled={isSubmitting}
+                >
+                  <Google className="mr-2 h-4 w-4" />
+                  Sign up with Google
+                </Button>
               </CardContent>
               <CardFooter className="text-sm text-muted-foreground text-center">
                 By creating an account, you agree to our Terms of Service and Privacy Policy.
