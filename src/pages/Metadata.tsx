@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/app-sidebar";
@@ -12,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Sparkles, Search, Database } from "lucide-react";
+import { InsightPulseFeed } from "@/components/metadata/insight-pulse-feed";
 
 const Metadata = () => {
   const [activeView, setActiveView] = useState<"single" | "batch" | "lookup">("single");
@@ -67,22 +67,29 @@ const Metadata = () => {
             </div>
             
             {activeView === "single" && (
-              <Tabs defaultValue="editor">
-                <TabsList className="grid w-full max-w-md grid-cols-3">
-                  <TabsTrigger value="editor">Editor</TabsTrigger>
-                  <TabsTrigger value="health">Health Report</TabsTrigger>
-                  <TabsTrigger value="validation">Validation</TabsTrigger>
-                </TabsList>
-                <TabsContent value="editor" className="mt-4">
-                  <MetadataForm />
-                </TabsContent>
-                <TabsContent value="health" className="mt-4">
-                  <HealthReport />
-                </TabsContent>
-                <TabsContent value="validation" className="mt-4">
-                  <ValidationPanel />
-                </TabsContent>
-              </Tabs>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
+                  <Tabs defaultValue="editor">
+                    <TabsList className="grid w-full max-w-md grid-cols-3">
+                      <TabsTrigger value="editor">Editor</TabsTrigger>
+                      <TabsTrigger value="health">Health Report</TabsTrigger>
+                      <TabsTrigger value="validation">Validation</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="editor" className="mt-4">
+                      <MetadataForm />
+                    </TabsContent>
+                    <TabsContent value="health" className="mt-4">
+                      <HealthReport />
+                    </TabsContent>
+                    <TabsContent value="validation" className="mt-4">
+                      <ValidationPanel />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+                <div className="md:col-span-1 space-y-4">
+                  <InsightPulseFeed />
+                </div>
+              </div>
             )}
             
             {activeView === "batch" && <BatchEditor />}

@@ -51,6 +51,79 @@ export type Database = {
         }
         Relationships: []
       }
+      insight_alerts: {
+        Row: {
+          created_at: string
+          details: Json
+          id: string
+          is_read: boolean
+          message: string
+          severity: string
+          track_id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          id?: string
+          is_read?: boolean
+          message: string
+          severity: string
+          track_id: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          id?: string
+          is_read?: boolean
+          message?: string
+          severity?: string
+          track_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insight_alerts_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      metadata_events: {
+        Row: {
+          created_at: string
+          details: Json
+          event_type: string
+          id: string
+          track_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          event_type: string
+          id?: string
+          track_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          event_type?: string
+          id?: string
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "metadata_events_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -81,6 +154,62 @@ export type Database = {
           last_name?: string | null
           role?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      stream_stats: {
+        Row: {
+          date: string
+          id: string
+          listener_count: number
+          platform: string
+          playlist_count: number
+          track_id: string
+        }
+        Insert: {
+          date?: string
+          id?: string
+          listener_count?: number
+          platform: string
+          playlist_count?: number
+          track_id: string
+        }
+        Update: {
+          date?: string
+          id?: string
+          listener_count?: number
+          platform?: string
+          playlist_count?: number
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stream_stats_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracks: {
+        Row: {
+          artist_id: string
+          created_at: string
+          id: string
+          title: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          id?: string
+          title: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          id?: string
+          title?: string
         }
         Relationships: []
       }
