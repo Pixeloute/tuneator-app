@@ -118,9 +118,6 @@ export const AssetUploadCard = () => {
     if (!user) return;
     
     const file = fileWithPreview.file;
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-    const filePath = `${user.id}/${fileName}`;
     
     setFiles(prev => {
       const newFiles = [...prev];
@@ -129,39 +126,24 @@ export const AssetUploadCard = () => {
     });
     
     try {
-      let uploadProgress = 0;
-      const updateProgress = (progress: number) => {
-        uploadProgress = progress;
+      const { path } = await uploadAssetToStorage(file, user.id, (progress) => {
         setFiles(prev => {
           const newFiles = [...prev];
           newFiles[index].progress = progress;
           return newFiles;
         });
-      };
+      });
       
-      const { error: uploadError, data } = await supabase.storage
-        .from('assets')
-        .upload(filePath, file, {
-          cacheControl: '3600'
-        });
-      
-      if (uploadError) throw uploadError;
-      
-      updateProgress(100);
-      
-      let fileType: "audio" | "image" | "video" | "document" = "document";
-      if (file.type.startsWith('audio/')) fileType = "audio";
-      else if (file.type.startsWith('image/')) fileType = "image";
-      else if (file.type.startsWith('video/')) fileType = "video";
+      let fileType = getAssetType(file.name);
       
       const { error: assetError } = await supabase
         .from('assets')
         .insert({
           name: file.name,
           type: fileType,
-          file_path: filePath,
+          file_path: path,
           file_size: file.size,
-          thumbnail_path: fileType === "image" ? filePath : null,
+          thumbnail_path: fileType === "image" ? path : null,
           user_id: user.id,
           metadata_score: 0
         });

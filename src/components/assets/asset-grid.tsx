@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getAssetUrl, deleteAssetFromStorage } from "@/lib/asset-utils";
 
 export interface Asset {
   id: string;
@@ -92,12 +92,7 @@ export const AssetGrid = ({ assets, isLoading, onAssetDeleted }: AssetGridProps)
     
     try {
       // Delete the file from storage
-      const { error: storageError } = await supabase
-        .storage
-        .from('assets')
-        .remove([asset.file_path]);
-      
-      if (storageError) throw storageError;
+      await deleteAssetFromStorage(asset.file_path);
       
       // Delete the asset record from the database
       const { error: dbError } = await supabase
@@ -164,14 +159,8 @@ export const AssetGrid = ({ assets, isLoading, onAssetDeleted }: AssetGridProps)
     
     if (asset.type === "image") {
       try {
-        const { data, error } = await supabase
-          .storage
-          .from('assets')
-          .createSignedUrl(asset.file_path, 3600);
-        
-        if (error) throw error;
-        
-        return data.signedUrl;
+        const signedUrl = await getAssetUrl(asset.file_path);
+        return signedUrl;
       } catch (error) {
         console.error("Error getting thumbnail URL:", error);
         return null;

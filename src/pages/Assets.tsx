@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/app-sidebar";
@@ -64,20 +63,12 @@ const Assets = () => {
       const assetsWithThumbnails = await Promise.all(
         (data as Asset[]).map(async (asset) => {
           if (asset.type === "image" && asset.thumbnail_path) {
-            try {
-              const { data: urlData, error: urlError } = await supabase
-                .storage
-                .from('assets')
-                .createSignedUrl(asset.file_path, 3600);
-              
-              if (!urlError && urlData) {
-                return {
-                  ...asset,
-                  thumbnail: urlData.signedUrl
-                };
-              }
-            } catch (error) {
-              console.error("Error creating signed URL:", error);
+            const signedUrl = await getAssetUrl(asset.file_path);
+            if (signedUrl) {
+              return {
+                ...asset,
+                thumbnail: signedUrl
+              };
             }
           }
           return asset;
