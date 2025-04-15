@@ -1,6 +1,8 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
+export type AssetType = "audio" | "image" | "video" | "document";
+
 export const uploadAssetToStorage = async (
   file: File,
   userId: string,
@@ -36,7 +38,7 @@ export const deleteAssetFromStorage = async (filePath: string) => {
   if (error) throw error;
 };
 
-export const getAssetType = (fileName: string): "audio" | "image" | "video" | "document" => {
+export const getAssetType = (fileName: string): AssetType => {
   const ext = fileName.toLowerCase().split('.').pop() || '';
   
   if (['mp3', 'wav', 'm4a', 'aac', 'ogg'].includes(ext)) return "audio";
@@ -44,4 +46,3 @@ export const getAssetType = (fileName: string): "audio" | "image" | "video" | "d
   if (['mp4', 'mov', 'avi', 'webm'].includes(ext)) return "video";
   return "document";
 };
-
