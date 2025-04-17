@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { 
@@ -94,10 +95,10 @@ const Auth = () => {
               </CardContent>
               <CardFooter className="flex justify-center">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
-                  <RainbowButton onClick={() => navigate('/login')}>
+                  <RainbowButton onClick={() => navigate('/dashboard')}>
                     Sign In
                   </RainbowButton>
-                  <RainbowButton onClick={() => navigate('/register')}>
+                  <RainbowButton onClick={() => navigate('/auth?tab=register')}>
                     Sign Up
                   </RainbowButton>
                 </div>
@@ -118,10 +119,10 @@ const Auth = () => {
               </CardContent>
               <CardFooter className="flex justify-center">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
-                  <RainbowButton onClick={() => navigate('/login')}>
+                  <RainbowButton onClick={() => navigate('/auth?tab=login')}>
                     Sign In
                   </RainbowButton>
-                  <RainbowButton onClick={() => navigate('/register')}>
+                  <RainbowButton onClick={() => navigate('/dashboard')}>
                     Sign Up
                   </RainbowButton>
                 </div>

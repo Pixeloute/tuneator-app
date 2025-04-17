@@ -5,44 +5,30 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 5%;
     --foreground: 0 0% 98%;
-
-    --card: 240 10% 3.9%;
+    --card: 0 0% 7%;
     --card-foreground: 0 0% 98%;
-
-    --popover: 240 10% 3.9%;
+    --popover: 0 0% 7%;
     --popover-foreground: 0 0% 98%;
-
-    --primary: 185 100% 50%;
-    --primary-foreground: 240 10% 3.9%;
-
-    --secondary: 240 3.7% 15.9%;
+    --primary: 191 100% 50%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 163 100% 48%;
     --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-
-    --accent: 160 100% 48.2%;
-    --accent-foreground: 240 10% 3.9%;
-
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 12 100% 50%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 185 100% 50%;
-
-    --radius: 0.5rem;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
     
-    --sidebar-background: 240 10% 3.9%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 185 100% 50%;
-    --sidebar-primary-foreground: 240 10% 3.9%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 185 100% 50%;
+    /* Custom colors for Tuneator */
+    --electric: 191 100% 50%;
+    --mint: 163 100% 48%;
+    --bright-purple: 262 83% 58%;
   }
 }
 
@@ -50,44 +36,39 @@
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-charcoal text-foreground font-sans;
+    @apply bg-background text-foreground;
   }
-  
-  ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
-  }
+}
 
-  ::-webkit-scrollbar-track {
-    @apply bg-muted/30 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded-full hover:bg-muted/70 transition-colors;
-  }
-  
-  .glow-effect {
-    @apply relative;
-  }
-  
-  .glow-effect::after {
-    content: '';
-    @apply absolute inset-0 rounded-md bg-electric opacity-0 blur transition-opacity duration-300;
-    z-index: -1;
-  }
-  
-  .glow-effect:hover::after {
-    @apply opacity-20;
-  }
-  
+@layer utilities {
   .gradient-text {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-electric to-mint;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-electric to-mint;
   }
+}
 
-  /* Font utility classes */
-  .font-heading {
-    @apply font-poppins font-semibold;
+@layer components {
+  .text-electric {
+    color: hsl(var(--electric));
+  }
+  
+  .text-mint {
+    color: hsl(var(--mint));
+  }
+  
+  .text-bright-purple {
+    color: hsl(var(--bright-purple));
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
