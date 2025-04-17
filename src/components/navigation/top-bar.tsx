@@ -51,7 +51,7 @@ export const TopBar = () => {
     <div className="flex items-center justify-between border-b border-secondary p-4 h-16">
       <div className="flex items-center gap-3">
         <SidebarTrigger className="hover:bg-accent" />
-        <h1 className="text-xl font-bold hidden md:block">
+        <h1 className="text-xl font-heading hidden md:block">
           <span className="gradient-text">Tuneator</span>
         </h1>
       </div>
