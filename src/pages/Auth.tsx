@@ -10,7 +10,6 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RainbowButton } from "@/components/ui/rainbow-button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
 import { AuthHeader } from "@/components/auth/AuthHeader";
@@ -93,16 +92,6 @@ const Auth = () => {
               <CardContent className="space-y-4">
                 <LoginForm onSubmit={onLoginSubmit} isSubmitting={isSubmitting} />
               </CardContent>
-              <CardFooter className="flex justify-center">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
-                  <RainbowButton onClick={() => navigate('/dashboard')}>
-                    Sign In
-                  </RainbowButton>
-                  <RainbowButton onClick={() => navigate('/auth?tab=register')}>
-                    Sign Up
-                  </RainbowButton>
-                </div>
-              </CardFooter>
             </Card>
           </TabsContent>
           
@@ -117,15 +106,8 @@ const Auth = () => {
               <CardContent className="space-y-4">
                 <RegisterForm onSubmit={onRegisterSubmit} isSubmitting={isSubmitting} />
               </CardContent>
-              <CardFooter className="flex justify-center">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
-                  <RainbowButton onClick={() => navigate('/auth?tab=login')}>
-                    Sign In
-                  </RainbowButton>
-                  <RainbowButton onClick={() => navigate('/dashboard')}>
-                    Sign Up
-                  </RainbowButton>
-                </div>
+              <CardFooter className="text-sm text-muted-foreground text-center">
+                By creating an account, you agree to our Terms of Service and Privacy Policy.
               </CardFooter>
             </Card>
           </TabsContent>
