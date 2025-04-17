@@ -18,7 +18,7 @@ interface AccountSettingsFormProps {
 }
 
 const accountFormSchema = z.object({
-  email: z.string().email().disabled(),
+  email: z.string().email().optional(),
   bio: z.string().max(500, "Bio must not exceed 500 characters").optional(),
   username: z.string().min(3, "Username must be at least 3 characters").max(50).optional(),
 });
