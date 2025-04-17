@@ -1,60 +1,47 @@
-
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-
-// Create a theme provider component
-import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import Metadata from "./pages/Metadata";
 import Catalog from "./pages/Catalog";
 import Assets from "./pages/Assets";
+import Metadata from "./pages/Metadata";
 import Analytics from "./pages/Analytics";
-import SmartMetadataAssistant from "./pages/SmartMetadataAssistant";
-import Team from "./pages/Team";
-import NotFound from "./pages/NotFound";
 import RoyaltyInsights from "./pages/RoyaltyInsights";
+import Team from "./pages/Team";
+import SmartMetadataAssistant from "./pages/SmartMetadataAssistant";
+import NotFound from "./pages/NotFound";
+import ArtworkGenerator from "./pages/ArtworkGenerator";
+import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
 
-// Create a ThemeProvider component
-const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
-      {children}
-    </NextThemesProvider>
-  );
-};
-
 function App() {
   return (
-    <BrowserRouter>
+    <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ThemeProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/metadata" element={<Metadata />} />
-              <Route path="/catalog" element={<Catalog />} />
-              <Route path="/assets" element={<Assets />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/royalty-insights" element={<RoyaltyInsights />} />
-              <Route path="/ai-assistant" element={<SmartMetadataAssistant />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-          </ThemeProvider>
-        </AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/catalog" element={<Catalog />} />
+            <Route path="/assets" element={<Assets />} />
+            <Route path="/metadata" element={<Metadata />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/insights" element={<RoyaltyInsights />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/assistant" element={<SmartMetadataAssistant />} />
+            <Route path="/artwork-generator" element={<ArtworkGenerator />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+        <Toaster />
       </QueryClientProvider>
-    </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -1,3 +1,6 @@
 
 [functions.metadata-search]
 verify_jwt = true
+
+[functions.artwork-generator]
+verify_jwt = true
