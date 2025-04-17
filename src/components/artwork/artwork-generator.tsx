@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface GeneratedImage {
   url: string;
@@ -22,6 +24,7 @@ export function ArtworkGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [isPromptEditorOpen, setIsPromptEditorOpen] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const handleGenerate = async (formData: {
     trackName: string;
@@ -34,20 +37,25 @@ export function ArtworkGenerator() {
     setIsGenerating(true);
     
     try {
-      // API call would go here
-      const response = await fetch("/api/artwork-generator", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to generate artwork");
+      // Make sure user is authenticated
+      if (!user) {
+        throw new Error("You must be logged in to generate artwork");
       }
       
-      const data = await response.json();
+      // Call the Supabase Edge Function directly
+      const { data, error: functionError } = await supabase.functions.invoke('artwork-generator', {
+        body: {
+          user_id: user.id,
+          track_name: formData.trackName,
+          description: formData.description,
+          mood: formData.mood,
+          genre: formData.genre
+        }
+      });
+      
+      if (functionError) {
+        throw new Error(functionError.message || "Failed to generate artwork");
+      }
       
       // Update states with generated images
       setGeneratedImages(data.images || []);
@@ -59,7 +67,7 @@ export function ArtworkGenerator() {
       });
     } catch (err) {
       console.error("Error generating artwork:", err);
-      setError("An error occurred while generating your artwork. Please try again.");
+      setError(err instanceof Error ? err.message : "An error occurred while generating your artwork. Please try again.");
       
       toast({
         title: "Generation Failed",
@@ -97,20 +105,21 @@ export function ArtworkGenerator() {
     setError(null);
     
     try {
-      // API call would go here with the edited prompt
-      const response = await fetch("/api/artwork-generator", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ customPrompt: editedPrompt }),
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to regenerate artwork");
+      if (!user) {
+        throw new Error("You must be logged in to generate artwork");
       }
       
-      const data = await response.json();
+      // Call the edge function with the edited prompt
+      const { data, error: functionError } = await supabase.functions.invoke('artwork-generator', {
+        body: {
+          user_id: user.id,
+          custom_prompt: editedPrompt
+        }
+      });
+      
+      if (functionError) {
+        throw new Error(functionError.message || "Failed to regenerate artwork");
+      }
       
       setGeneratedImages(data.images || []);
       setEnhancedPrompt(editedPrompt);
@@ -121,7 +130,7 @@ export function ArtworkGenerator() {
       });
     } catch (err) {
       console.error("Error regenerating artwork:", err);
-      setError("An error occurred while regenerating your artwork. Please try again.");
+      setError(err instanceof Error ? err.message : "An error occurred while regenerating your artwork. Please try again.");
       
       toast({
         title: "Regeneration Failed",
@@ -152,6 +161,16 @@ export function ArtworkGenerator() {
             </TabsList>
             
             <TabsContent value="generate" className="space-y-4 mt-4">
+              {!user && (
+                <Alert variant="warning" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Authentication Required</AlertTitle>
+                  <AlertDescription>
+                    Please sign in to use the artwork generator.
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <ArtGeneratorForm onSubmit={handleGenerate} isLoading={isGenerating} />
               
               {error && (
