@@ -1,8 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/navigation/app-sidebar";
-import { TopBar } from "@/components/navigation/top-bar";
+import { PageLayout } from "@/components/layout/page-layout";
 import { RoyaltyDashboard } from "@/components/analytics/royalty-dashboard";
 import { RoyaltyInsightsPanel } from "@/components/analytics/royalty-insights-panel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -78,105 +76,104 @@ const RoyaltyInsights = () => {
   };
   
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <div className="flex-1">
-          <TopBar />
-          <main className="p-4 md:p-6 space-y-6 pb-16 max-w-[1920px] mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button asChild variant="ghost" size="sm">
-                  <Link to="/analytics">
-                    <ArrowLeft className="h-4 w-4 mr-1" />
-                    Back to Analytics
-                  </Link>
+    <PageLayout>
+      <div className="space-y-6 pb-16 max-w-[1920px] mx-auto">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/analytics">
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Back to Analytics
+              </Link>
+            </Button>
+            <h1 className="text-2xl font-bold">Royalty Insights AI Analyzer</h1>
+          </div>
+        </div>
+        
+        {/* Analysis Controls moved above as filters */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Analysis Filters</CardTitle>
+            <CardDescription>Customize your royalty data view and analysis</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4">
+              <div className="w-full sm:w-auto flex-1 min-w-[200px]">
+                <label className="text-sm font-medium block mb-2">Time Range</label>
+                <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select time range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1month">Last Month</SelectItem>
+                    <SelectItem value="3months">Last 3 Months</SelectItem>
+                    <SelectItem value="6months">Last 6 Months</SelectItem>
+                    <SelectItem value="1year">Last Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="w-full sm:w-auto flex-1 min-w-[200px]">
+                <label className="text-sm font-medium block mb-2">Primary Genre</label>
+                <Select value={artistGenre} onValueChange={setArtistGenre}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select genre" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pop">Pop</SelectItem>
+                    <SelectItem value="Rock">Rock</SelectItem>
+                    <SelectItem value="Hip-Hop">Hip-Hop</SelectItem>
+                    <SelectItem value="Electronic">Electronic</SelectItem>
+                    <SelectItem value="R&B">R&B</SelectItem>
+                    <SelectItem value="Country">Country</SelectItem>
+                    <SelectItem value="Jazz">Jazz</SelectItem>
+                    <SelectItem value="Classical">Classical</SelectItem>
+                    <SelectItem value="Folk">Folk</SelectItem>
+                    <SelectItem value="Metal">Metal</SelectItem>
+                    <SelectItem value="Indie">Indie</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="w-full sm:w-auto flex items-end">
+                <Button 
+                  className="w-full" 
+                  onClick={handleAnalyzeRoyalties} 
+                  disabled={isLoading || isAnalyzing || !platformData}
+                >
+                  {isAnalyzing ? (
+                    <>Analyzing Royalties...</>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Generate AI Insights
+                    </>
+                  )}
                 </Button>
-                <h1 className="text-2xl font-bold">Royalty Insights AI Analyzer</h1>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="md:col-span-1">
-                <CardHeader>
-                  <CardTitle>Analysis Controls</CardTitle>
-                  <CardDescription>Customize your AI royalty analysis</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Time Range</label>
-                    <Select value={timeRange} onValueChange={setTimeRange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select time range" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1month">Last Month</SelectItem>
-                        <SelectItem value="3months">Last 3 Months</SelectItem>
-                        <SelectItem value="6months">Last 6 Months</SelectItem>
-                        <SelectItem value="1year">Last Year</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Primary Genre</label>
-                    <Select value={artistGenre} onValueChange={setArtistGenre}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select genre" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Pop">Pop</SelectItem>
-                        <SelectItem value="Rock">Rock</SelectItem>
-                        <SelectItem value="Hip-Hop">Hip-Hop</SelectItem>
-                        <SelectItem value="Electronic">Electronic</SelectItem>
-                        <SelectItem value="R&B">R&B</SelectItem>
-                        <SelectItem value="Country">Country</SelectItem>
-                        <SelectItem value="Jazz">Jazz</SelectItem>
-                        <SelectItem value="Classical">Classical</SelectItem>
-                        <SelectItem value="Folk">Folk</SelectItem>
-                        <SelectItem value="Metal">Metal</SelectItem>
-                        <SelectItem value="Indie">Indie</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <Button 
-                    className="w-full mt-4" 
-                    onClick={handleAnalyzeRoyalties} 
-                    disabled={isLoading || isAnalyzing || !platformData}
-                  >
-                    {isAnalyzing ? (
-                      <>Analyzing Royalties...</>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Generate AI Insights
-                      </>
-                    )}
-                  </Button>
-                  
-                  {analysisTime && (
-                    <p className="text-xs text-muted-foreground text-center mt-2">
-                      Analysis completed in {analysisTime} seconds
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-              
-              <div className="md:col-span-2 space-y-6">
-                {platformData && (
-                  <RoyaltyDashboard />
-                )}
-                
-                {insightsData && (
-                  <RoyaltyInsightsPanel insightsData={insightsData} />
-                )}
-              </div>
-            </div>
-          </main>
+            {analysisTime && (
+              <p className="text-xs text-muted-foreground mt-4">
+                Analysis completed in {analysisTime} seconds
+              </p>
+            )}
+          </CardContent>
+        </Card>
+            
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+          {/* Royalty Dashboard */}
+          {platformData && (
+            <RoyaltyDashboard />
+          )}
+          
+          {/* Insights Panel */}
+          {insightsData && (
+            <RoyaltyInsightsPanel insightsData={insightsData} />
+          )}
         </div>
       </div>
-    </SidebarProvider>
+    </PageLayout>
   );
 };
 
