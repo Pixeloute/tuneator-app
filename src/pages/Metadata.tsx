@@ -10,11 +10,9 @@ import { ValidationPanel } from "@/components/metadata/validation-panel";
 import { ExternalLookupPanel } from "@/components/metadata/external-lookup";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Sparkles, Search, Database, MessageSquare } from "lucide-react";
+import { Search } from "lucide-react";
 import { InsightPulseFeed } from "@/components/metadata/insight-pulse-feed";
 import { MetadataProvider } from "@/contexts/metadata";
-import { AIAssistantChat } from "@/components/metadata/ai-assistant-chat";
 
 const Metadata = () => {
   const [activeView, setActiveView] = useState<"single" | "batch" | "lookup">("single");
@@ -61,8 +59,8 @@ const Metadata = () => {
             
             {activeView === "single" && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
+                <div className="grid grid-cols-1 gap-6">
+                  <div>
                     <Tabs defaultValue="editor">
                       <TabsList className="grid w-full max-w-full grid-cols-3">
                         <TabsTrigger value="editor">Editor</TabsTrigger>
@@ -87,7 +85,7 @@ const Metadata = () => {
                     </Tabs>
                   </div>
                   
-                  <div className="lg:col-span-1">
+                  <div className="w-full">
                     <MetadataProvider>
                       <InsightPulseFeed />
                     </MetadataProvider>
