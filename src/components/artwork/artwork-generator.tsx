@@ -162,8 +162,8 @@ export function ArtworkGenerator() {
             
             <TabsContent value="generate" className="space-y-4 mt-4">
               {!user && (
-                <Alert variant="warning" className="mb-4">
-                  <AlertCircle className="h-4 w-4" />
+                <Alert variant="default" className="mb-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20">
+                  <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                   <AlertTitle>Authentication Required</AlertTitle>
                   <AlertDescription>
                     Please sign in to use the artwork generator.
