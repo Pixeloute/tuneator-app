@@ -1,5 +1,5 @@
 
-import { Bell, Menu, Settings, User, LogOut } from "lucide-react";
+import { Bell, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -50,14 +50,7 @@ export const TopBar = () => {
   return (
     <div className="flex items-center justify-between border-b border-secondary p-4 h-16">
       <div className="flex items-center gap-3">
-        <SidebarTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <span className="flex items-center justify-center">
-              <Menu size={20} />
-              <span className="sr-only">Toggle sidebar</span>
-            </span>
-          </Button>
-        </SidebarTrigger>
+        <SidebarTrigger className="hover:bg-accent" />
         <h1 className="text-xl font-bold hidden md:block">
           <span className="gradient-text">Tuneator</span>
         </h1>
@@ -119,4 +112,4 @@ export const TopBar = () => {
       </div>
     </div>
   );
-};
+}
