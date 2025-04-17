@@ -11,12 +11,14 @@ import { ExternalLookupPanel } from "@/components/metadata/external-lookup";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Sparkles, Search, Database } from "lucide-react";
+import { Sparkles, Search, Database, MessageSquare } from "lucide-react";
 import { InsightPulseFeed } from "@/components/metadata/insight-pulse-feed";
 import { MetadataProvider } from "@/contexts/metadata";
+import { AIAssistantChat } from "@/components/metadata/ai-assistant-chat";
 
 const Metadata = () => {
   const [activeView, setActiveView] = useState<"single" | "batch" | "lookup">("single");
+  const [showAIChat, setShowAIChat] = useState(false);
   
   useEffect(() => {
     document.title = "Tuneator - Metadata Management";
@@ -55,6 +57,14 @@ const Metadata = () => {
                   <Search className="h-4 w-4 mr-2" />
                   Lookup
                 </Button>
+                <Button 
+                  variant={showAIChat ? "default" : "outline"} 
+                  onClick={() => setShowAIChat(!showAIChat)}
+                  className={showAIChat ? "bg-electric hover:bg-electric/90" : "border-electric text-electric"}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  AI Chat
+                </Button>
                 <Button variant="outline" className="ml-2 border-electric text-electric" asChild>
                   <Link to="/ai-assistant">
                     <Sparkles className="h-4 w-4 mr-2" />
@@ -66,34 +76,42 @@ const Metadata = () => {
             
             {activeView === "single" && (
               <div className="space-y-6">
-                <div className="w-full">
-                  <Tabs defaultValue="editor">
-                    <TabsList className="grid w-full max-w-full grid-cols-3">
-                      <TabsTrigger value="editor">Editor</TabsTrigger>
-                      <TabsTrigger value="health">Health Report</TabsTrigger>
-                      <TabsTrigger value="validation">Validation</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="editor" className="mt-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <Tabs defaultValue="editor">
+                      <TabsList className="grid w-full max-w-full grid-cols-3">
+                        <TabsTrigger value="editor">Editor</TabsTrigger>
+                        <TabsTrigger value="health">Health Report</TabsTrigger>
+                        <TabsTrigger value="validation">Validation</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="editor" className="mt-4">
+                        <MetadataProvider>
+                          <MetadataForm />
+                        </MetadataProvider>
+                      </TabsContent>
+                      <TabsContent value="health" className="mt-4">
+                        <MetadataProvider>
+                          <HealthReport />
+                        </MetadataProvider>
+                      </TabsContent>
+                      <TabsContent value="validation" className="mt-4">
+                        <MetadataProvider>
+                          <ValidationPanel />
+                        </MetadataProvider>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                  
+                  <div className="lg:col-span-1">
+                    {showAIChat ? (
+                      <AIAssistantChat />
+                    ) : (
                       <MetadataProvider>
-                        <MetadataForm />
+                        <InsightPulseFeed />
                       </MetadataProvider>
-                    </TabsContent>
-                    <TabsContent value="health" className="mt-4">
-                      <MetadataProvider>
-                        <HealthReport />
-                      </MetadataProvider>
-                    </TabsContent>
-                    <TabsContent value="validation" className="mt-4">
-                      <MetadataProvider>
-                        <ValidationPanel />
-                      </MetadataProvider>
-                    </TabsContent>
-                  </Tabs>
+                    )}
+                  </div>
                 </div>
-                
-                <MetadataProvider>
-                  <InsightPulseFeed />
-                </MetadataProvider>
               </div>
             )}
             
