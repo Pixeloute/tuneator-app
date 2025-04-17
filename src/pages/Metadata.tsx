@@ -18,7 +18,6 @@ import { AIAssistantChat } from "@/components/metadata/ai-assistant-chat";
 
 const Metadata = () => {
   const [activeView, setActiveView] = useState<"single" | "batch" | "lookup">("single");
-  const [showAIChat, setShowAIChat] = useState(false);
   
   useEffect(() => {
     document.title = "Tuneator - Metadata Management";
@@ -57,20 +56,6 @@ const Metadata = () => {
                   <Search className="h-4 w-4 mr-2" />
                   Lookup
                 </Button>
-                <Button 
-                  variant={showAIChat ? "default" : "outline"} 
-                  onClick={() => setShowAIChat(!showAIChat)}
-                  className={showAIChat ? "bg-electric hover:bg-electric/90" : "border-electric text-electric"}
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  AI Chat
-                </Button>
-                <Button variant="outline" className="ml-2 border-electric text-electric" asChild>
-                  <Link to="/ai-assistant">
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    AI Assistant
-                  </Link>
-                </Button>
               </div>
             </div>
             
@@ -103,13 +88,9 @@ const Metadata = () => {
                   </div>
                   
                   <div className="lg:col-span-1">
-                    {showAIChat ? (
-                      <AIAssistantChat />
-                    ) : (
-                      <MetadataProvider>
-                        <InsightPulseFeed />
-                      </MetadataProvider>
-                    )}
+                    <MetadataProvider>
+                      <InsightPulseFeed />
+                    </MetadataProvider>
                   </div>
                 </div>
               </div>
@@ -137,3 +118,4 @@ const Metadata = () => {
 };
 
 export default Metadata;
+
