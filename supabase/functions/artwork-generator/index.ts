@@ -15,7 +15,7 @@ serve(async (req) => {
 
   try {
     // Extract data from request
-    const { user_id, track_name, description, mood, genre } = await req.json();
+    const { user_id, track_name, description, mood, genre, custom_prompt } = await req.json();
 
     // Validate user authentication
     if (!user_id) {
@@ -25,19 +25,21 @@ serve(async (req) => {
       });
     }
 
-    // Generate enhanced prompt with GPT-4o
-    const enhancedPrompt = await generateEnhancedPrompt(track_name, description, mood, genre);
+    // Use either custom prompt or generate one
+    let prompt;
+    if (custom_prompt) {
+      prompt = custom_prompt;
+    } else {
+      prompt = await generateEnhancedPrompt(track_name, description, mood, genre);
+    }
     
-    // Generate images using the enhanced prompt
-    const imageUrls = await generateImages(enhancedPrompt);
-    
-    // Log the generation to Supabase
-    await logArtGeneration(user_id, track_name, description, enhancedPrompt, imageUrls, mood, genre);
+    // Generate images using the prompt
+    const imageUrls = await generateImages(prompt);
     
     // Return the generated images and prompt
     return new Response(JSON.stringify({ 
       images: imageUrls,
-      enhancedPrompt,
+      enhancedPrompt: prompt,
       timestamp: new Date().toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -62,17 +64,14 @@ async function generateEnhancedPrompt(trackName: string, description: string, mo
     throw new Error('OpenAI API key not configured');
   }
   
-  const systemPrompt = `You are an expert in creating descriptive prompts for AI image generation. 
-  Your task is to transform music descriptions into detailed visual prompts that will produce high-quality, 
-  album cover-worthy artwork. Focus on visual elements, style, colors, composition, and mood. 
-  Do not include any explanations, just return the enhanced prompt text.`;
+  const systemPrompt = `You are an expert in creating descriptive prompts for album artwork. 
+  Create a detailed prompt that will produce high-quality album cover art based on the provided information.
+  Focus on visual elements only - colors, style, composition, and mood. Keep it concise (100 words max).`;
   
-  const userPrompt = `Track name: ${trackName || 'Untitled'}
-  Description: ${description}
-  Mood: ${mood}
-  Genre: ${genre}
-  
-  Create a detailed, visually rich prompt for album artwork that captures the essence of this music.`;
+  const userPrompt = `Track: "${trackName || 'Untitled'}"
+  Description: ${description || ''}
+  Mood: ${mood || ''}
+  Genre: ${genre || ''}`;
   
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -98,8 +97,7 @@ async function generateEnhancedPrompt(trackName: string, description: string, mo
       throw new Error(`OpenAI API error: ${data.error.message}`);
     }
     
-    const enhancedPrompt = data.choices[0].message.content.trim();
-    return enhancedPrompt;
+    return data.choices[0].message.content.trim();
   } catch (error) {
     console.error('Error generating enhanced prompt:', error);
     throw error;
@@ -107,7 +105,7 @@ async function generateEnhancedPrompt(trackName: string, description: string, mo
 }
 
 // Function to generate images using the DALL-E API
-async function generateImages(prompt: string, n: number = 2) {
+async function generateImages(prompt: string) {
   const openAiKey = Deno.env.get('OPENAI_API_KEY');
   
   if (!openAiKey) {
@@ -115,6 +113,8 @@ async function generateImages(prompt: string, n: number = 2) {
   }
   
   try {
+    console.log("Generating images with prompt:", prompt);
+    
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -122,18 +122,18 @@ async function generateImages(prompt: string, n: number = 2) {
         'Authorization': `Bearer ${openAiKey}`
       },
       body: JSON.stringify({
-        model: 'dall-e-3',
+        model: 'dall-e-2',  // Using DALL-E 2 instead of DALL-E 3 for more reliable results
         prompt: prompt,
-        n: n,
+        n: 2,
         size: '1024x1024',
-        quality: 'standard'
+        response_format: 'url'
       })
     });
     
     const data = await response.json();
     
     if (data.error) {
-      throw new Error(`DALL-E API error: ${data.error.message}`);
+      throw new Error(`DALL-E API error: ${data.error.message || JSON.stringify(data.error)}`);
     }
     
     // Extract the image URLs from the response
@@ -142,48 +142,5 @@ async function generateImages(prompt: string, n: number = 2) {
   } catch (error) {
     console.error('Error generating images:', error);
     throw error;
-  }
-}
-
-// Function to log the generation to Supabase
-async function logArtGeneration(
-  userId: string, 
-  trackName: string, 
-  rawInput: string, 
-  enhancedPrompt: string, 
-  imageUrls: string[], 
-  mood: string, 
-  genre: string
-) {
-  try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-    
-    if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error('Supabase credentials not configured');
-    }
-    
-    await fetch(`${supabaseUrl}/rest/v1/art_generation_logs`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        user_id: userId,
-        track_name: trackName,
-        raw_input: rawInput,
-        enhanced_prompt: enhancedPrompt,
-        image_urls: imageUrls,
-        mood: mood,
-        genre: genre,
-        timestamp: new Date().toISOString()
-      })
-    });
-  } catch (error) {
-    console.error('Error logging art generation:', error);
-    // Don't throw here - we still want to return the images even if logging fails
   }
 }

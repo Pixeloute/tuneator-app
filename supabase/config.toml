@@ -3,4 +3,5 @@
 verify_jwt = true
 
 [functions.artwork-generator]
-verify_jwt = true
+verify_jwt = false
+

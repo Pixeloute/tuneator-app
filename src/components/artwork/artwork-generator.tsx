@@ -42,7 +42,15 @@ export function ArtworkGenerator() {
         throw new Error("You must be logged in to generate artwork");
       }
       
-      // Call the Supabase Edge Function directly
+      console.log("Sending request to artwork-generator with data:", {
+        user_id: user.id,
+        track_name: formData.trackName,
+        description: formData.description,
+        mood: formData.mood,
+        genre: formData.genre
+      });
+      
+      // Call the Supabase Edge Function
       const { data, error: functionError } = await supabase.functions.invoke('artwork-generator', {
         body: {
           user_id: user.id,
@@ -54,8 +62,15 @@ export function ArtworkGenerator() {
       });
       
       if (functionError) {
+        console.error("Function error:", functionError);
         throw new Error(functionError.message || "Failed to generate artwork");
       }
+      
+      if (!data) {
+        throw new Error("No data returned from the function");
+      }
+      
+      console.log("Response from artwork-generator:", data);
       
       // Update states with generated images
       setGeneratedImages(data.images || []);
@@ -108,6 +123,8 @@ export function ArtworkGenerator() {
       if (!user) {
         throw new Error("You must be logged in to generate artwork");
       }
+      
+      console.log("Regenerating with custom prompt:", editedPrompt);
       
       // Call the edge function with the edited prompt
       const { data, error: functionError } = await supabase.functions.invoke('artwork-generator', {
