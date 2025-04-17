@@ -145,6 +145,36 @@ export type Database = {
           },
         ]
       }
+      metadata_search_logs: {
+        Row: {
+          audit_status: string
+          id: string
+          results: Json
+          search_context: Json
+          search_query: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          audit_status?: string
+          id?: string
+          results: Json
+          search_context?: Json
+          search_query: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          audit_status?: string
+          id?: string
+          results?: Json
+          search_context?: Json
+          search_query?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
