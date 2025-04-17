@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const TopBar = () => {
   const { toast } = useToast();
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleNotificationClick = () => {
     toast({
@@ -29,6 +30,7 @@ export const TopBar = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
+      navigate("/auth");
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -76,6 +78,7 @@ export const TopBar = () => {
                 <Button variant="ghost" size="icon">
                   <span className="flex items-center justify-center">
                     <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.user_metadata?.avatar_url} />
                       <AvatarFallback className="bg-muted text-sm">
                         {getInitials()}
                       </AvatarFallback>
@@ -88,11 +91,11 @@ export const TopBar = () => {
                   {user.email}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/settings")}>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>

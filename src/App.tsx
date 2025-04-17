@@ -1,3 +1,4 @@
+
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -15,6 +16,8 @@ import Team from "./pages/Team";
 import SmartMetadataAssistant from "./pages/SmartMetadataAssistant";
 import NotFound from "./pages/NotFound";
 import ArtworkGenerator from "./pages/ArtworkGenerator";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,8 @@ function App() {
             <Route path="/team" element={<Team />} />
             <Route path="/assistant" element={<SmartMetadataAssistant />} />
             <Route path="/artwork-generator" element={<ArtworkGenerator />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
