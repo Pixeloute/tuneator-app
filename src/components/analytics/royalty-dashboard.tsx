@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +12,7 @@ import { KpiCards } from "./dashboard/kpi-cards";
 import { RevenueOverview } from "./dashboard/revenue-overview";
 import { StreamsAnalysis } from "./dashboard/streams-analysis";
 import { RevenueProjection } from "./dashboard/revenue-projection";
+import { PlatformPerformance } from "./dashboard/platform-performance";
 import { toast } from "sonner";
 
 export function RoyaltyDashboard() {
@@ -122,7 +122,9 @@ export function RoyaltyDashboard() {
           <>
             <KpiCards platformData={platformData} />
             
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <PlatformPerformance platformData={platformData} />
+            
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-6">
               <TabsList className="grid w-full max-w-md grid-cols-3">
                 <TabsTrigger value="overview">Revenue Overview</TabsTrigger>
                 <TabsTrigger value="streams">Streams Analysis</TabsTrigger>

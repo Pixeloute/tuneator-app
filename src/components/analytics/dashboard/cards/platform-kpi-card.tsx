@@ -15,6 +15,17 @@ interface PlatformKpiCardProps {
 }
 
 export function PlatformKpiCard({ config, revenue, streams }: PlatformKpiCardProps) {
+  // Using inline style instead of class to set dynamic background color
+  const iconBgStyle = {
+    backgroundColor: `${config.color}20`, // Adding 20 for opacity
+  };
+  
+  const badgeStyle = {
+    backgroundColor: `${config.color}20`,
+    color: config.color,
+    borderColor: `${config.color}30`
+  };
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -23,12 +34,12 @@ export function PlatformKpiCard({ config, revenue, streams }: PlatformKpiCardPro
             <p className="text-sm font-medium text-muted-foreground">{config.name}</p>
             <h3 className="text-2xl font-bold mt-1">${revenue}</h3>
           </div>
-          <div className={`h-12 w-12 rounded-full bg-[${config.color}]/10 flex items-center justify-center`}>
+          <div className="h-12 w-12 rounded-full flex items-center justify-center" style={iconBgStyle}>
             <config.icon />
           </div>
         </div>
         <div className="mt-3 flex items-center text-xs">
-          <Badge variant="outline" className={`bg-[${config.color}]/10 text-[${config.color}]`}>
+          <Badge variant="outline" style={badgeStyle}>
             {streams} streams
           </Badge>
         </div>
