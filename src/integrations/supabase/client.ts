@@ -2,10 +2,27 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://vnndkvnmxbdgpitomxzk.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZubmRrdm5teGJkZ3BpdG9teHprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MTEwOTAsImV4cCI6MjA2MDE4NzA5MH0.xRp-Awem1RsTfnPaEOPom8nW9AkgInwxgC0Kia2KFLE";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  throw new Error('Missing Supabase environment variables. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+// Debug/test connection
+if (import.meta.env.DEV) {
+  (async () => {
+    try {
+      const { error } = await supabase.from('tracks').select('id').limit(1);
+      if (error) console.error('Supabase test connection error:', error);
+      else console.log('Supabase test connection successful');
+    } catch (err) {
+      console.error('Supabase test connection threw:', err);
+    }
+  })();
+}

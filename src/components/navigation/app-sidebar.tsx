@@ -1,4 +1,3 @@
-
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +39,7 @@ const sidebarLinks = [
   { name: "Metadata", path: "/metadata", icon: <FileText className="h-5 w-5" /> },
   { name: "Analytics", path: "/analytics", icon: <BarChart className="h-5 w-5" /> },
   { name: "Royalty Insights", path: "/insights", icon: <DollarSign className="h-5 w-5" /> },
+  { name: "Pricing Engine", path: "/pricing-engine", icon: <DollarSign className="h-5 w-5" /> },
   { name: "Team", path: "/team", icon: <Users className="h-5 w-5" /> },
   { name: "AI Assistant", path: "/assistant", icon: <Bot className="h-5 w-5" /> },
   { name: "Art Generator", path: "/artwork-generator", icon: <PaintBucket className="h-5 w-5" /> },
