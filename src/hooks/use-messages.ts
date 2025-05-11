@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,6 +9,9 @@ export interface Message {
   created_at: string;
 }
 
+/**
+ * useMessages provides real-time messages and sendMessage for chat features.
+ */
 export const useMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);

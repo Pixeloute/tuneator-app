@@ -1,0 +1,25 @@
+name: Security
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g snyk
+      - run: snyk test || true
+      - run: snyk monitor || true
+    env:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  dependabot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dependabot/fetch-metadata@v2 

@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
@@ -347,14 +346,50 @@ const CreateContactDrawer: React.FC<{ open: boolean; onOpenChange: (v: boolean) 
 };
 
 const Team = () => {
-  const { messages, sendMessage, loading: messagesLoading } = useMessages();
   const { user, loading: authLoading } = useAuth();
-
-  // Redirect to auth if not logged in
-  if (!authLoading && !user) {
-    return <Navigate to="/auth" />;
-  }
-
+  const [viewMode, setViewMode] = useState("table");
+  const params = useParams();
+  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
+  const [role, setRole] = useState('all');
+  const [sort, setSort] = useState('az');
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState<string[]>([]);
+  const pageSize = viewMode === 'grid' ? 12 : 10;
+  const { data = [], isLoading, error } = useQuery<TeamMember[]>({
+    queryKey: ['team-members'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('team_members')
+        .select('*');
+      if (error) throw error;
+      return Array.isArray(data) ? data : [];
+    },
+  });
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const filtered = (data as TeamMember[]).filter(m => {
+    const matchesSearch =
+      !search ||
+      (m.full_name && m.full_name.toLowerCase().includes(search.toLowerCase())) ||
+      (m.email && m.email.toLowerCase().includes(search.toLowerCase()));
+    const matchesRole = role === 'all' || m.role === role;
+    return matchesSearch && matchesRole;
+  });
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === 'az') return (a.full_name).localeCompare(b.full_name);
+    if (sort === 'role') return (a.role || '').localeCompare(b.role || '');
+    return 0;
+  });
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const paged = sorted.slice((page - 1) * pageSize, page * pageSize);
+  const uniqueRoles = Array.from(new Set((data as TeamMember[]).map(m => m.role).filter(Boolean)));
+  const handleSelect = (id: string) => {
+    navigate(`/team/${id}`);
+  };
+  const handleBulkSelect = (id: string, checked: boolean) => {
+    setSelected(checked ? [...selected, id] : selected.filter(x => x !== id));
+  };
+  if (!authLoading && !user) return <Navigate to="/auth" />;
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background text-foreground font-inter">

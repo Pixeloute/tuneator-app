@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tuneator-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tuneator-app
+  template:
+    metadata:
+      labels:
+        app: tuneator-app
+    spec:
+      containers:
+        - name: tuneator-app
+          image: your-docker-repo/tuneator-app:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tuneator-app
+spec:
+  type: ClusterIP
+  selector:
+    app: tuneator-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000 

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { User } from "@supabase/supabase-js";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +5,7 @@ import { AccountSettingsForm } from "./account-settings-form";
 import { AppearanceSettingsForm } from "./appearance-settings-form";
 import { SecuritySettingsForm } from "./security-settings-form";
 import { NotificationsSettingsForm } from "./notifications-settings-form";
+import { FeatureFlag } from '@/lib/feature-flags';
 
 interface SettingsTabsProps {
   user: User;
@@ -19,6 +19,9 @@ export function SettingsTabs({ user }: SettingsTabsProps) {
         <TabsTrigger value="appearance">Appearance</TabsTrigger>
         <TabsTrigger value="security">Security</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        {FeatureFlag.ONBOARDING === 'onboarding' && (
+          <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
+        )}
       </TabsList>
       
       <TabsContent value="account" className="space-y-4">
@@ -36,6 +39,12 @@ export function SettingsTabs({ user }: SettingsTabsProps) {
       <TabsContent value="notifications" className="space-y-4">
         <NotificationsSettingsForm />
       </TabsContent>
+      
+      {FeatureFlag.ONBOARDING === 'onboarding' && (
+        <TabsContent value="onboarding" className="space-y-4">
+          <div className="p-4">Onboarding coming soon.</div>
+        </TabsContent>
+      )}
     </Tabs>
   );
 }

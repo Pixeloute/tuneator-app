@@ -1,5 +1,6 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/navigation/app-sidebar";
+import { TopBar } from "@/components/navigation/top-bar";
 import { StatusCardsSection } from "@/components/dashboard/StatusCardsSection";
 import { MetadataAndAssetsSection } from "@/components/dashboard/MetadataAndAssetsSection";
 import { RevenueChartCard } from "@/components/dashboard/revenue-chart-card";

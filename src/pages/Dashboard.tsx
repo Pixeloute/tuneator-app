@@ -1,13 +1,11 @@
-
 import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
 import { StatusCardsSection } from "@/components/dashboard/StatusCardsSection";
 import { MetadataAndAssetsSection } from "@/components/dashboard/MetadataAndAssetsSection";
 import { RevenueChartCard } from "@/components/dashboard/revenue-chart-card";
 import { RoyaltyAndInsightsSection } from "@/components/dashboard/RoyaltyAndInsightsSection";
-import { AppSidebar } from "@/components/navigation/app-sidebar";
-import { PageLayout } from "@/components/layout/page-layout";
 
 // Mock data for revenue chart
 const revenueData = [

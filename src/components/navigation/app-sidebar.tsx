@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,8 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
-  SidebarProvider
+  SidebarRail
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,7 +28,9 @@ import {
   LogOut,
 } from "lucide-react";
 
-const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
+interface AppSidebarProps {
+  className?: string;
+}
 
 const sidebarLinks = [
   { name: "Dashboard", path: "/dashboard", icon: <Home className="h-5 w-5" /> },
@@ -45,19 +45,9 @@ const sidebarLinks = [
   { name: "Art Generator", path: "/artwork-generator", icon: <PaintBucket className="h-5 w-5" /> },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ className }: AppSidebarProps) {
   const { user, signOut } = useAuth();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(SIDEBAR_COLLAPSED_KEY);
-    setCollapsed(stored === "true");
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(collapsed));
-  }, [collapsed]);
 
   return (
     <Sidebar className={className} data-testid="app-sidebar">

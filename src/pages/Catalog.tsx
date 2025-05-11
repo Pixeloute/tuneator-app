@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
 import { CatalogHeader } from "@/components/catalog/catalog-header";
 import { CatalogTabs } from "@/components/catalog/catalog-tabs";
@@ -19,6 +19,73 @@ const Catalog = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTracks, setFilteredTracks] = useState<TrackData[]>(mockTrackData);
+  const [showSpotifyModal, setShowSpotifyModal] = useState(false);
+  const [spotifyLink, setSpotifyLink] = useState("");
+  const [playlistLoading, setPlaylistLoading] = useState(false);
+  const [playlistError, setPlaylistError] = useState<string | null>(null);
+  const [playlistData, setPlaylistData] = useState<SpotifyPlaylist | null>(null);
+  const [selectedTracks, setSelectedTracks] = useState<string[]>([]);
+
+  // Extract playlist ID from URL (robust for any Spotify playlist link)
+  const extractPlaylistId = (url: string) => {
+    // Handles open.spotify.com/playlist/ and spotify:playlist:
+    const match = url.match(/(?:playlist[/:])([a-zA-Z0-9]{22})/);
+    return match ? match[1] : null;
+  };
+
+  // Fetch playlist when a valid link is entered
+  useEffect(() => {
+    const id = extractPlaylistId(spotifyLink);
+    if (!id || id.length !== 22) {
+      setPlaylistData(null);
+      setPlaylistError(spotifyLink ? "Please enter a valid Spotify playlist link." : null);
+      return;
+    }
+    setPlaylistLoading(true);
+    setPlaylistError(null);
+    getSpotifyPlaylist(id)
+      .then((data) => {
+        if (!data) {
+          setPlaylistError("Could not fetch playlist. It may be private or unavailable.");
+          setPlaylistData(null);
+        } else {
+          setPlaylistData(data);
+          setSelectedTracks(data.tracks.items.map(item => item.track.id)); // Select all by default
+        }
+      })
+      .catch(() => {
+        setPlaylistError("Could not fetch playlist. It may be private or unavailable.");
+        setPlaylistData(null);
+      })
+      .finally(() => setPlaylistLoading(false));
+  }, [spotifyLink]);
+
+  // Select all toggle
+  const allSelected = playlistData && selectedTracks.length === playlistData.tracks.items.length;
+  const toggleSelectAll = () => {
+    if (!playlistData) return;
+    if (allSelected) {
+      setSelectedTracks([]);
+    } else {
+      setSelectedTracks(playlistData.tracks.items.map(item => item.track.id));
+    }
+  };
+
+  // Individual track toggle
+  const toggleTrack = (id: string) => {
+    setSelectedTracks((prev) =>
+      prev.includes(id) ? prev.filter(tid => tid !== id) : [...prev, id]
+    );
+  };
+
+  // Mocked preview data
+  const mockPreview = spotifyLink
+    ? {
+        coverArt: "https://i.scdn.co/image/ab67616d0000b273e0e0e0e0e0e0e0e0e0e0e0e0", // placeholder
+        name: "My Awesome Playlist",
+        trackCount: 15,
+      }
+    : null;
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -148,5 +215,12 @@ const Catalog = () => {
     </SidebarProvider>
   );
 };
+
+// Helper to format ms to mm:ss
+function msToMinSec(ms: number) {
+  const min = Math.floor(ms / 60000);
+  const sec = Math.floor((ms % 60000) / 1000);
+  return `${min}:${sec.toString().padStart(2, "0")}`;
+}
 
 export default Catalog;

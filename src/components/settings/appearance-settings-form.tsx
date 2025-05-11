@@ -1,14 +1,20 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from '@/components/ui/switch';
+import { FeatureFlag } from '@/lib/feature-flags';
 
 export function AppearanceSettingsForm() {
   const { toast } = useToast();
   
+  // In a real app, this would come from user settings or context
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
   const handleThemeChange = (theme: string) => {
     // This would change the theme in a real implementation
     toast({
@@ -16,6 +22,15 @@ export function AppearanceSettingsForm() {
       description: `Theme switched to ${theme}. This is a placeholder for future functionality.`,
     });
   };
+
+  const handleToggle = (checked: boolean) => {
+    setDarkMode(checked);
+    document.documentElement.classList.toggle('dark', checked);
+    localStorage.setItem('theme', checked ? 'dark' : 'light');
+  };
+
+  // Feature flag check (expand as needed)
+  if (FeatureFlag.DARK_MODE !== 'dark_mode') return null;
 
   return (
     <Card>
@@ -28,20 +43,15 @@ export function AppearanceSettingsForm() {
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label>Theme</Label>
-          <RadioGroup defaultValue="dark" className="grid grid-cols-1 gap-4 pt-2">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="dark" id="dark" onClick={() => handleThemeChange("dark")} />
-              <Label htmlFor="dark">Dark (Default)</Label>
+          <div className="flex items-center gap-6 py-2">
+            <span className="text-sm">Theme</span>
+            <div className="flex items-center gap-2">
+              <Switch checked={darkMode} onCheckedChange={handleToggle} />
+              <span className="text-xs">Dark</span>
+              <Switch checked={!darkMode} onCheckedChange={v => handleToggle(!v)} />
+              <span className="text-xs">Light</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="light" id="light" onClick={() => handleThemeChange("light")} />
-              <Label htmlFor="light">Light</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="system" id="system" onClick={() => handleThemeChange("system")} />
-              <Label htmlFor="system">System</Label>
-            </div>
-          </RadioGroup>
+          </div>
         </div>
         
         <div className="space-y-2">

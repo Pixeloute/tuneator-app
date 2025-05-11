@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
 import { RoyaltyDashboard } from "@/components/analytics/royalty-dashboard";
 import { GeographicalInsights } from "@/components/analytics/geographical-insights";
@@ -7,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, Share2, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { AppSidebar } from "@/components/navigation/app-sidebar";
-import { PageLayout } from "@/components/layout/page-layout";
 
 const Analytics = () => {
   const [activeView, setActiveView] = useState<"royalties" | "geography">("royalties");
