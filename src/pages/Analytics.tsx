@@ -19,32 +19,30 @@ const Analytics = () => {
 
   return (
     <SidebarProvider>
-      <PageLayout>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <div className="flex-1 grow">
-            <TopBar />
-            <main className="p-4 md:p-6 space-y-6 pb-16 max-w-[1920px] mx-auto">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h1 className="text-2xl font-bold">Analytics</h1>
-                
-                <Button asChild>
-                  <Link to="/royalty-insights">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    AI Royalty Insights
-                  </Link>
-                </Button>
-              </div>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex-1 grow">
+          <TopBar />
+          <main className="p-4 md:p-6 space-y-6 pb-16 max-w-[1920px] mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h1 className="text-2xl font-bold">Analytics</h1>
               
-              {activeView === "royalties" ? (
-                <RoyaltyDashboard />
-              ) : (
-                <GeographicalInsights />
-              )}
-            </main>
-          </div>
+              <Button asChild>
+                <Link to="/royalty-insights">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  AI Royalty Insights
+                </Link>
+              </Button>
+            </div>
+            
+            {activeView === "royalties" ? (
+              <RoyaltyDashboard />
+            ) : (
+              <GeographicalInsights />
+            )}
+          </main>
         </div>
-      </PageLayout>
+      </div>
     </SidebarProvider>
   );
 };

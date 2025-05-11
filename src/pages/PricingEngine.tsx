@@ -15,7 +15,6 @@ export default function PricingEngine() {
   const [margin, setMargin] = useState(0.5);
   const [tax, setTax] = useState(0.25);
   const [variantToSong, setVariantToSong] = useState(6);
-  const [songs, setSongs] = useState(0);
 
   // Calculations
   const labourHours = (variants * avgTime) / 60;
@@ -26,7 +25,6 @@ export default function PricingEngine() {
   const netProfit = grossProfit - taxValue;
   const netMargin = (netProfit / revenue) * 100;
   const estimatedSongs = variants / variantToSong;
-  const songCount = songs > 0 ? songs : estimatedSongs;
   const pricePerVariant = revenue / variants;
 
   // Validation
@@ -57,17 +55,6 @@ export default function PricingEngine() {
             <TooltipContent>How many variants per song?</TooltipContent>
           </Tooltip>
           <Input type="number" value={variantToSong} min={1} step={0.1} onChange={e => setVariantToSong(+e.target.value)} />
-        </div>
-        <div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Label>Number of Songs (optional)</Label>
-            </TooltipTrigger>
-            <TooltipContent>
-              Enter the number of songs if you know it. If left blank or zero, it will be estimated from variants and ratio.
-            </TooltipContent>
-          </Tooltip>
-          <Input type="number" value={songs || ''} min={0} placeholder={Math.round(estimatedSongs).toString()} onChange={e => setSongs(+e.target.value)} />
         </div>
         <div>
           <Tooltip>
@@ -120,8 +107,7 @@ export default function PricingEngine() {
         <CardContent className="p-6 space-y-2">
           <h2 className="text-xl font-semibold">📊 Job Quote Summary</h2>
           <p>🧾 <strong>Variants:</strong> {variants.toLocaleString()}</p>
-          <p>🎵 <strong>Songs:</strong> {Math.round(songCount).toLocaleString()} {songs > 0 ? '' : `(estimated)`}</p>
-          {songs > 0 && <p className="text-xs text-muted-foreground">(Estimated: {Math.round(estimatedSongs).toLocaleString()})</p>}
+          <p>🎵 <strong>Estimated Songs:</strong> {Math.round(estimatedSongs).toLocaleString()}</p>
           <p>💸 <strong>Price/Variant:</strong> £{pricePerVariant.toFixed(2)}</p>
           <p>💼 <strong>Total Revenue:</strong> £{revenue.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</p>
           <p>🕒 <strong>Labour Cost:</strong> £{labourCost.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</p>

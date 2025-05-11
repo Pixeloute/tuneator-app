@@ -41,21 +41,6 @@ export interface SpotifyTrack {
   external_urls: { spotify: string };
 }
 
-// Add this type for playlist response
-export interface SpotifyPlaylist {
-  id: string;
-  name: string;
-  images: { url: string; height: number; width: number }[];
-  tracks: {
-    items: {
-      track: SpotifyTrack;
-    }[];
-    total: number;
-  };
-  external_urls: { spotify: string };
-  owner: { display_name: string };
-}
-
 // Utility to get Spotify access token
 const getSpotifyToken = async (): Promise<string> => {
   try {
@@ -169,29 +154,10 @@ export const getAudioFeatures = async (trackId: string): Promise<any> => {
   }
 };
 
-// Fetch playlist by ID
-export const getSpotifyPlaylist = async (playlistId: string): Promise<SpotifyPlaylist | null> => {
-  try {
-    const token = await getSpotifyToken();
-    if (!token) return null;
-    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    if (!response.ok) throw new Error('Failed to fetch playlist');
-    return await response.json();
-  } catch (error) {
-    console.error('Error getting Spotify playlist:', error);
-    return null;
-  }
-};
-
 export default {
   searchSpotifyTracks,
   getSpotifyTrackDetails,
   getSpotifyArtistDetails,
   getRelatedArtists,
-  getAudioFeatures,
-  getSpotifyPlaylist,
+  getAudioFeatures
 };

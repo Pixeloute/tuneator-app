@@ -1,5 +1,8 @@
-import React from "react";
+
+import React from 'react';
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/navigation/app-sidebar";
+import { TopBar } from "@/components/navigation/top-bar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -21,8 +24,6 @@ import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
-import { AppSidebar } from "@/components/navigation/app-sidebar";
-import { PageLayout } from "@/components/layout/page-layout";
 
 const TeamTableView = ({ members, selected, onSelect, onRowClick, search, onSearch, role, onRoleChange, sort, onSortChange, page, totalPages, onPageChange, roles }: any) => (
   <>
@@ -346,77 +347,41 @@ const CreateContactDrawer: React.FC<{ open: boolean; onOpenChange: (v: boolean) 
 };
 
 const Team = () => {
+  const { messages, sendMessage, loading: messagesLoading } = useMessages();
   const { user, loading: authLoading } = useAuth();
-  const [viewMode, setViewMode] = useState("table");
-  const params = useParams();
-  const navigate = useNavigate();
-  const [search, setSearch] = useState('');
-  const [role, setRole] = useState('all');
-  const [sort, setSort] = useState('az');
-  const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState<string[]>([]);
-  const pageSize = viewMode === 'grid' ? 12 : 10;
-  const { data = [], isLoading, error } = useQuery<TeamMember[]>({
-    queryKey: ['team-members'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('team_members')
-        .select('*');
-      if (error) throw error;
-      return Array.isArray(data) ? data : [];
-    },
-  });
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const filtered = (data as TeamMember[]).filter(m => {
-    const matchesSearch =
-      !search ||
-      (m.full_name && m.full_name.toLowerCase().includes(search.toLowerCase())) ||
-      (m.email && m.email.toLowerCase().includes(search.toLowerCase()));
-    const matchesRole = role === 'all' || m.role === role;
-    return matchesSearch && matchesRole;
-  });
-  const sorted = [...filtered].sort((a, b) => {
-    if (sort === 'az') return (a.full_name).localeCompare(b.full_name);
-    if (sort === 'role') return (a.role || '').localeCompare(b.role || '');
-    return 0;
-  });
-  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
-  const paged = sorted.slice((page - 1) * pageSize, page * pageSize);
-  const uniqueRoles = Array.from(new Set((data as TeamMember[]).map(m => m.role).filter(Boolean)));
-  const handleSelect = (id: string) => {
-    navigate(`/team/${id}`);
-  };
-  const handleBulkSelect = (id: string, checked: boolean) => {
-    setSelected(checked ? [...selected, id] : selected.filter(x => x !== id));
-  };
-  if (!authLoading && !user) return <Navigate to="/auth" />;
+
+  // Redirect to auth if not logged in
+  if (!authLoading && !user) {
+    return <Navigate to="/auth" />;
+  }
+
   return (
-    <PageLayout>
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background text-foreground font-inter">
-          <div className="flex-1 flex flex-col">
-            <main className="flex-1 flex flex-row gap-0 p-0 md:p-0">
-              <section className="w-full md:w-2/3 xl:w-3/5 flex flex-col border-r border-border h-full flex-grow relative">
-                <div className="flex items-center justify-between p-4 border-b border-border relative">
-                  <h1 className="text-xl font-bold">Team Directory</h1>
-                  <div className="flex gap-2">
-                    <button className={`btn btn-xs ${viewMode === "table" ? "btn-primary" : "btn-secondary"}`} onClick={() => setViewMode("table")}>Table</button>
-                    <button className={`btn btn-xs ${viewMode === "grid" ? "btn-primary" : "btn-secondary"}`} onClick={() => setViewMode("grid")}>Grid</button>
-                    <Button onClick={() => setDrawerOpen(true)} className="ml-2">Create Contact</Button>
-                  </div>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-background text-foreground font-inter">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <TopBar />
+          <main className="flex-1 flex flex-row gap-0 p-0 md:p-0">
+            <section className="w-full md:w-2/3 xl:w-3/5 flex flex-col border-r border-border h-full flex-grow relative">
+              <div className="flex items-center justify-between p-4 border-b border-border relative">
+                <h1 className="text-xl font-bold">Team Directory</h1>
+                <div className="flex gap-2">
+                  <button className={`btn btn-xs ${viewMode === "table" ? "btn-primary" : "btn-secondary"}`} onClick={() => setViewMode("table")}>Table</button>
+                  <button className={`btn btn-xs ${viewMode === "grid" ? "btn-primary" : "btn-secondary"}`} onClick={() => setViewMode("grid")}>Grid</button>
+                  <Button onClick={() => setDrawerOpen(true)} className="ml-2">Create Contact</Button>
                 </div>
-                {isLoading ? <div className="p-4">Loading...</div> : error ? <div className="p-4 text-destructive">Error loading team members.</div> : !paged.length ? <div className="p-4 text-muted-foreground">No team members found.</div> : (
-                  viewMode === "table"
-                    ? <TeamTableView members={paged} selected={selected} onSelect={handleBulkSelect} onRowClick={handleSelect} search={search} onSearch={setSearch} role={role} onRoleChange={setRole} sort={sort} onSortChange={setSort} page={page} totalPages={totalPages} onPageChange={setPage} roles={uniqueRoles} />
-                    : <TeamGridView members={paged} selected={selected} onSelect={handleBulkSelect} onRowClick={handleSelect} search={search} onSearch={setSearch} role={role} onRoleChange={setRole} sort={sort} onSortChange={setSort} page={page} totalPages={totalPages} onPageChange={setPage} roles={uniqueRoles} />
-                )}
-                <CreateContactDrawer open={drawerOpen} onOpenChange={setDrawerOpen} onCreated={() => { setDrawerOpen(false); /* Optionally refetch team list here */ }} roles={uniqueRoles} />
-              </section>
-            </main>
-          </div>
+              </div>
+              {isLoading ? <div className="p-4">Loading...</div> : error ? <div className="p-4 text-destructive">Error loading team members.</div> : !paged.length ? <div className="p-4 text-muted-foreground">No team members found.</div> : (
+                viewMode === "table"
+                  ? <TeamTableView members={paged} selected={selected} onSelect={handleBulkSelect} onRowClick={handleSelect} search={search} onSearch={setSearch} role={role} onRoleChange={setRole} sort={sort} onSortChange={setSort} page={page} totalPages={totalPages} onPageChange={setPage} roles={uniqueRoles} />
+                  : <TeamGridView members={paged} selected={selected} onSelect={handleBulkSelect} onRowClick={handleSelect} search={search} onSearch={setSearch} role={role} onRoleChange={setRole} sort={sort} onSortChange={setSort} page={page} totalPages={totalPages} onPageChange={setPage} roles={uniqueRoles} />
+              )}
+              <CreateContactDrawer open={drawerOpen} onOpenChange={setDrawerOpen} onCreated={() => { setDrawerOpen(false); /* Optionally refetch team list here */ }} roles={uniqueRoles} />
+            </section>
+          </main>
         </div>
-      </SidebarProvider>
-    </PageLayout>
+      </div>
+    </SidebarProvider>
   );
 };
 

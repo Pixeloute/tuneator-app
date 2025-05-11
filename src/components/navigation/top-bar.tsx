@@ -1,3 +1,4 @@
+
 import { Bell, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -49,7 +50,7 @@ export const TopBar = () => {
   };
 
   return (
-    <div className="flex items-center justify-between border-b border-secondary p-4 h-16" data-testid="app-topbar">
+    <div className="flex items-center justify-between border-b border-secondary p-4 h-16">
       <div className="flex items-center gap-3">
         <SidebarTrigger className="hover:bg-accent" />
         <h1 className="text-xl font-heading hidden md:block">

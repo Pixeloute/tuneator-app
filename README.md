@@ -71,19 +71,3 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
-
-## Development Workflow
-
-1. Clone repo, install deps: `npm install`
-2. Start dev server: `npm run dev`
-3. Run tests: `npm test`
-4. Lint: `npm run lint`
-5. Build: `npm run build`
-
-## Maintenance
-
-- Add/clean up data: use Supabase dashboard or SQL scripts
-- Optimize images: compress before upload
-- Monitor health: check `/health` endpoint
-- Update dependencies: `npm update`
-- For production deploy: run tests, then `npm run build` and deploy `dist/`

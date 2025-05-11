@@ -60,69 +60,51 @@ export function AppSidebar() {
   }, [collapsed]);
 
   return (
-    <SidebarProvider>
-      <Sidebar className={`fixed left-0 top-0 z-40 h-screen bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col transition-all duration-200 ease-in-out
-      ${collapsed ? "w-[47px]" : "w-64"}`} data-testid="app-sidebar">
-        <SidebarRail />
-        <SidebarHeader className="border-b border-sidebar-border">
-          <div className={`flex items-center gap-2 px-3 py-4 ${collapsed ? "justify-center" : "justify-start"}`}>
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.user_metadata?.avatar_url} />
-              <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            {!collapsed && <span className="font-semibold text-lg">Tuneator</span>}
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {sidebarLinks.map((link) => (
-                  <SidebarMenuItem key={link.name}>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={location.pathname === link.path}
-                      tooltip={link.name}
-                    >
-                      <Link
-                        to={link.path}
-                        className={`group flex items-center w-full px-2 py-2 rounded-md transition-colors
-                          ${collapsed ? "justify-center" : "justify-start"}
-                          ${location.pathname === link.path ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold" : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"}
-                          focus:outline-none focus:ring-2 focus:ring-primary`}
-                      >
-                        <span className="flex items-center justify-center w-8 h-8">
-                          {link.icon}
-                        </span>
-                        {!collapsed && <span className="ml-2 truncate">{link.name}</span>}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter className="border-t border-sidebar-border p-2">
-          <SidebarMenuButton asChild tooltip="Sign Out">
-            <button
-              onClick={() => signOut()}
-              className={`flex items-center w-full px-2 py-2 rounded-md text-sm transition-colors
-                ${collapsed ? "justify-center" : "justify-start"}
-                hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary`}
-            >
-              <LogOut className="h-5 w-5" />
-              {!collapsed && <span className="ml-2">Sign Out</span>}
-            </button>
-          </SidebarMenuButton>
-          {!collapsed && (
-            <div className="text-xs text-muted-foreground mt-2 text-center w-full">
-              © {new Date().getFullYear()} Tuneator
-            </div>
-          )}
-        </SidebarFooter>
-      </Sidebar>
-    </SidebarProvider>
+    <Sidebar className={className} data-testid="app-sidebar">
+      <SidebarRail />
+      <SidebarHeader className="border-b border-sidebar-border">
+        <div className="flex items-center gap-2 px-2">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
+            <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <span className="font-semibold text-lg">Tuneator</span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {sidebarLinks.map((link) => (
+                <SidebarMenuItem key={link.name}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === link.path}
+                    tooltip={link.name}
+                  >
+                    <Link to={link.path}>
+                      {link.icon}
+                      <span>{link.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter className="border-t border-sidebar-border p-2">
+        <SidebarMenuButton asChild tooltip="Sign Out">
+          <button onClick={() => signOut()} className="w-full">
+            <LogOut className="h-5 w-5" />
+            <span>Sign Out</span>
+          </button>
+        </SidebarMenuButton>
+        <div className="text-xs text-muted-foreground mt-2 text-center">
+          © {new Date().getFullYear()} Tuneator
+        </div>
+      </SidebarFooter>
+    </Sidebar>
   );
 }

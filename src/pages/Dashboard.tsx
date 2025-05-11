@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
@@ -54,14 +55,25 @@ const revenueData = [
   },
 ];
 
-const Dashboard = () => (
-  <PageLayout>
-    <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-    <StatusCardsSection />
-    <MetadataAndAssetsSection />
-    <RevenueChartCard data={revenueData} />
-    <RoyaltyAndInsightsSection />
-  </PageLayout>
-);
+const Dashboard = () => {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex-1 grow">
+          <TopBar />
+          <main className="p-4 md:p-6 space-y-6 pb-16">
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            
+            <StatusCardsSection />
+            <MetadataAndAssetsSection />
+            <RevenueChartCard data={revenueData} />
+            <RoyaltyAndInsightsSection />
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+};
 
 export default Dashboard;
