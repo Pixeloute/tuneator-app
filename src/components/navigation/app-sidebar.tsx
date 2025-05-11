@@ -50,7 +50,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
   const location = useLocation();
 
   return (
-    <Sidebar className={className}>
+    <Sidebar className={className} data-testid="app-sidebar">
       <SidebarRail />
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2">

@@ -1,7 +1,9 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import posthog from 'posthog-js';
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -18,15 +20,22 @@ import ArtworkGenerator from "./pages/ArtworkGenerator";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import PricingEngine from "./pages/PricingEngine";
+import TeamProfilePage from "./pages/TeamProfilePage";
 import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
 
 function App() {
+  const location = useLocation();
+
+  React.useEffect(() => {
+    posthog.capture('$pageview');
+  }, [location.pathname]);
+
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <Router>
+        <SidebarProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
@@ -38,14 +47,15 @@ function App() {
             <Route path="/insights" element={<RoyaltyInsights />} />
             <Route path="/pricing-engine" element={<PricingEngine />} />
             <Route path="/team" element={<Team />} />
+            <Route path="/team/:id" element={<TeamProfilePage />} />
             <Route path="/assistant" element={<SmartMetadataAssistant />} />
             <Route path="/artwork-generator" element={<ArtworkGenerator />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </Router>
-        <Toaster />
+          <Toaster />
+        </SidebarProvider>
       </QueryClientProvider>
     </AuthProvider>
   );

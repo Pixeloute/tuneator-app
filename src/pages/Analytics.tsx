@@ -20,7 +20,7 @@ const Analytics = () => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex-1 grow">
           <TopBar />
           <main className="p-4 md:p-6 space-y-6 pb-16 max-w-[1920px] mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
