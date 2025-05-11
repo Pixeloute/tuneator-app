@@ -2,8 +2,8 @@ import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import posthog from 'posthog-js';
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -54,8 +54,8 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Toaster />
         </SidebarProvider>
+        <Toaster />
       </QueryClientProvider>
     </AuthProvider>
   );

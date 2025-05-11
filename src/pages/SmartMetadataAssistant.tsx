@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
 import { AudioUploadSection } from "@/components/ai-assistant/audio-upload-section";
 import { MetadataEnrichmentPanel } from "@/components/ai-assistant/metadata-enrichment-panel";
@@ -12,6 +11,8 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { MetadataProvider } from "@/contexts/metadata";
 import { analyzeAudio } from "@/services/google-api";
+import { AppSidebar } from "@/components/navigation/app-sidebar";
+import { PageLayout } from "@/components/layout/page-layout";
 
 const SmartMetadataAssistant = () => {
   const { toast } = useToast();
@@ -87,7 +88,7 @@ const SmartMetadataAssistant = () => {
   };
   
   return (
-    <SidebarProvider>
+    <PageLayout>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <div className="flex-1">
@@ -141,7 +142,7 @@ const SmartMetadataAssistant = () => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
+    </PageLayout>
   );
 };
 

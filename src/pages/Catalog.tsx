@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/navigation/app-sidebar";
 import { TopBar } from "@/components/navigation/top-bar";
 import { CatalogHeader } from "@/components/catalog/catalog-header";
 import { CatalogTabs } from "@/components/catalog/catalog-tabs";
@@ -11,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SpotifyIcon } from "@/components/icons/SpotifyIcon";
 import { getSpotifyPlaylist, SpotifyPlaylist, SpotifyTrack } from "@/services/spotify-api";
+import { AppSidebar } from "@/components/navigation/app-sidebar";
+import { PageLayout } from "@/components/layout/page-layout";
 
 const Catalog = () => {
   useEffect(() => {
@@ -113,23 +114,17 @@ const Catalog = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <div className="flex-1 grow overflow-hidden">
-          <TopBar />
-          <main className="container mx-auto p-4 md:p-6 space-y-6 pb-16">
-            <div className="flex items-center justify-between">
-              <CatalogHeader searchTerm={searchTerm} onSearch={handleSearch} />
-              <Button onClick={() => setShowSpotifyModal(true)} className="flex items-center gap-2" variant="secondary">
-                <SpotifyIcon />
-                + Add from Spotify
-              </Button>
-            </div>
-            <CatalogTabs tracks={filteredTracks} />
-          </main>
+    <PageLayout>
+      <main className="container mx-auto p-4 md:p-6 space-y-6 pb-16">
+        <div className="flex items-center justify-between">
+          <CatalogHeader searchTerm={searchTerm} onSearch={handleSearch} />
+          <Button onClick={() => setShowSpotifyModal(true)} className="flex items-center gap-2" variant="secondary">
+            <SpotifyIcon />
+            + Add from Spotify
+          </Button>
         </div>
-      </div>
+        <CatalogTabs tracks={filteredTracks} />
+      </main>
       <Dialog open={showSpotifyModal} onOpenChange={setShowSpotifyModal}>
         <DialogContent className="max-w-2xl w-full p-0 sm:p-6">
           <DialogHeader>
@@ -212,7 +207,7 @@ const Catalog = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </SidebarProvider>
+    </PageLayout>
   );
 };
 

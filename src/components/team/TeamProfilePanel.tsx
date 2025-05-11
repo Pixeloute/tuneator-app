@@ -8,8 +8,6 @@ import TeamProfileTabs from "./TeamProfileTabs";
 import CRMModule from "./CRMModule";
 import NoteDrawer from "./NoteDrawer";
 import { useToast } from "@/hooks/use-toast";
-import { AppSidebar } from "@/components/navigation/app-sidebar";
-import { TopBar } from "@/components/navigation/top-bar";
 import { useNavigate } from "react-router-dom";
 
 interface TeamProfilePanelProps {
@@ -88,9 +86,7 @@ const TeamProfilePanel: React.FC<TeamProfilePanelProps> = ({ id }) => {
 
   return (
     <div className="flex h-screen w-full bg-background">
-      <AppSidebar />
       <div className="flex flex-col flex-1 min-h-screen">
-        <TopBar />
         <div className="grid grid-cols-1 md:grid-cols-[18rem_1fr_18rem] flex-1 min-h-0">
           {/* Left: Profile Overview */}
           <TeamProfileOverview member={member} />
