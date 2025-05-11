@@ -6,6 +6,7 @@ import { AppearanceSettingsForm } from "./appearance-settings-form";
 import { SecuritySettingsForm } from "./security-settings-form";
 import { NotificationsSettingsForm } from "./notifications-settings-form";
 import { FeatureFlag } from '@/lib/feature-flags';
+import { EnterpriseSettingsPanel } from "./enterprise-settings-panel";
 
 interface SettingsTabsProps {
   user: User;
@@ -19,6 +20,9 @@ export function SettingsTabs({ user }: SettingsTabsProps) {
         <TabsTrigger value="appearance">Appearance</TabsTrigger>
         <TabsTrigger value="security">Security</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        {FeatureFlag.ENTERPRISE_SETTINGS === 'enterprise_settings' && (
+          <TabsTrigger value="enterprise">Enterprise</TabsTrigger>
+        )}
         {FeatureFlag.ONBOARDING === 'onboarding' && (
           <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
         )}
@@ -39,6 +43,12 @@ export function SettingsTabs({ user }: SettingsTabsProps) {
       <TabsContent value="notifications" className="space-y-4">
         <NotificationsSettingsForm />
       </TabsContent>
+      
+      {FeatureFlag.ENTERPRISE_SETTINGS === 'enterprise_settings' && (
+        <TabsContent value="enterprise" className="space-y-4">
+          <EnterpriseSettingsPanel />
+        </TabsContent>
+      )}
       
       {FeatureFlag.ONBOARDING === 'onboarding' && (
         <TabsContent value="onboarding" className="space-y-4">
