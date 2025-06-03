@@ -5,3 +5,9 @@ verify_jwt = true
 [functions.artwork-generator]
 verify_jwt = false
 
+[functions.spotify-oauth]
+verify_jwt = true
+
+[functions.apple-music-oauth]
+verify_jwt = true
+

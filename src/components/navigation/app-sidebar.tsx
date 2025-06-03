@@ -4,12 +4,12 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail
+  SidebarRail,
+  useSidebar
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,6 +26,7 @@ import {
   DollarSign,
   Settings,
   LogOut,
+  Link as LinkIcon,
 } from "lucide-react";
 
 interface AppSidebarProps {
@@ -43,39 +44,45 @@ const sidebarLinks = [
   { name: "Team", path: "/team", icon: <Users className="h-5 w-5" /> },
   { name: "AI Assistant", path: "/assistant", icon: <Bot className="h-5 w-5" /> },
   { name: "Art Generator", path: "/artwork-generator", icon: <PaintBucket className="h-5 w-5" /> },
+  { name: "Sources", path: "/sources", icon: <LinkIcon className="h-5 w-5" /> },
 ];
 
 export function AppSidebar({ className }: AppSidebarProps) {
   const { user, signOut } = useAuth();
   const location = useLocation();
+  const { state } = useSidebar();
+
+  const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar className={className} data-testid="app-sidebar">
+    <Sidebar
+      className={className}
+      data-testid="app-sidebar"
+      collapsible="icon"
+      data-collapsible={isCollapsed ? "icon" : ""}
+    >
       <SidebarRail />
-      <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <span className="font-semibold text-lg">Tuneator</span>
+      <SidebarHeader className="border-b border-sidebar-border h-16">
+        <div className="flex items-center gap-2 px-2 h-full">
+          {!isCollapsed && (
+            <span className="font-semibold text-lg">Tuneator</span>
+          )}
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {sidebarLinks.map((link) => (
                 <SidebarMenuItem key={link.name}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     isActive={location.pathname === link.path}
                     tooltip={link.name}
                   >
                     <Link to={link.path}>
                       {link.icon}
-                      <span>{link.name}</span>
+                      {!isCollapsed && <span>{link.name}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -88,12 +95,9 @@ export function AppSidebar({ className }: AppSidebarProps) {
         <SidebarMenuButton asChild tooltip="Sign Out">
           <button onClick={() => signOut()} className="w-full">
             <LogOut className="h-5 w-5" />
-            <span>Sign Out</span>
+            {!isCollapsed && <span>Sign Out</span>}
           </button>
         </SidebarMenuButton>
-        <div className="text-xs text-muted-foreground mt-2 text-center">
-          © {new Date().getFullYear()} Tuneator
-        </div>
       </SidebarFooter>
     </Sidebar>
   );

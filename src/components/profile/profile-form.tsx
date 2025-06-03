@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
@@ -11,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 interface ProfileFormProps {
   user: User;
@@ -29,10 +29,10 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export function ProfileForm({ user, onCancel, onSuccess }: ProfileFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Get user metadata
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const metadata = user.user_metadata || {};
-  
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -45,26 +45,19 @@ export function ProfileForm({ user, onCancel, onSuccess }: ProfileFormProps) {
   const onSubmit = async (data: ProfileFormValues) => {
     try {
       setIsSubmitting(true);
-      
       const { error } = await supabase.auth.updateUser({
         data: {
           first_name: data.firstName,
           last_name: data.lastName,
         },
       });
-      
-      if (error) {
-        throw error;
-      }
-      
+      if (error) throw error;
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
-      
       onSuccess();
     } catch (error) {
-      console.error("Error updating profile:", error);
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
@@ -75,11 +68,45 @@ export function ProfileForm({ user, onCancel, onSuccess }: ProfileFormProps) {
     }
   };
 
-  // Get initials for avatar fallback
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${uuidv4()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      if (!data?.publicUrl) throw new Error("No public URL returned");
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: data.publicUrl },
+      });
+      if (updateError) throw updateError;
+      // Force refresh session to update user context everywhere
+      await supabase.auth.refreshSession();
+      toast({
+        title: "Profile image updated",
+        description: "Your profile image has been updated.",
+      });
+      setAvatarFile(null);
+      onSuccess();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
   const getInitials = () => {
     const firstName = form.getValues().firstName;
     const lastName = form.getValues().lastName;
-    
     if (firstName && lastName) {
       return `${firstName.charAt(0)}${lastName.charAt(0)}`;
     }
@@ -91,14 +118,23 @@ export function ProfileForm({ user, onCancel, onSuccess }: ProfileFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex flex-col items-center mb-6">
           <Avatar className="h-24 w-24 mb-4">
-            <AvatarImage src={metadata.avatar_url} />
+            <AvatarImage src={avatarFile ? URL.createObjectURL(avatarFile) : metadata.avatar_url} />
             <AvatarFallback className="text-lg">{getInitials()}</AvatarFallback>
           </Avatar>
-          <p className="text-sm text-muted-foreground">
-            Profile image support will be coming soon
-          </p>
+          <label htmlFor="avatar-upload" className="sr-only">Upload profile image</label>
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            className="mt-2"
+            onChange={e => {
+              setAvatarFile(e.target.files?.[0] || null);
+              if (e.target.files?.[0]) handleAvatarChange(e);
+            }}
+            disabled={avatarUploading}
+          />
+          {avatarUploading && <Loader2 className="animate-spin h-4 w-4 mt-2" />}
         </div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -113,7 +149,6 @@ export function ProfileForm({ user, onCancel, onSuccess }: ProfileFormProps) {
               </FormItem>
             )}
           />
-          
           <FormField
             control={form.control}
             name="lastName"
@@ -128,7 +163,6 @@ export function ProfileForm({ user, onCancel, onSuccess }: ProfileFormProps) {
             )}
           />
         </div>
-        
         <FormField
           control={form.control}
           name="email"
@@ -142,7 +176,6 @@ export function ProfileForm({ user, onCancel, onSuccess }: ProfileFormProps) {
             </FormItem>
           )}
         />
-        
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel

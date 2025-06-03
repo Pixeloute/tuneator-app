@@ -46,9 +46,16 @@ export function AppearanceSettingsForm() {
           <div className="flex items-center gap-6 py-2">
             <span className="text-sm">Theme</span>
             <div className="flex items-center gap-2">
-              <Switch checked={darkMode} onCheckedChange={handleToggle} />
               <span className="text-xs">Dark</span>
-              <Switch checked={!darkMode} onCheckedChange={v => handleToggle(!v)} />
+              <Switch
+                checked={!darkMode}
+                onCheckedChange={(checked) => {
+                  setDarkMode(!checked);
+                  document.documentElement.classList.remove('dark', 'light');
+                  document.documentElement.classList.add(checked ? 'light' : 'dark');
+                  localStorage.setItem('theme', checked ? 'light' : 'dark');
+                }}
+              />
               <span className="text-xs">Light</span>
             </div>
           </div>

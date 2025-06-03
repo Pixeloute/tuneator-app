@@ -1,4 +1,3 @@
-
 // Metadata service for Tuneator
 // Handles comprehensive metadata operations across platforms
 
@@ -178,3 +177,30 @@ export const getComprehensiveMetadata = async (
     return {};
   }
 };
+
+// Minimal utility for /api/metadata-transform
+export async function fetchMetadataTransform({ files, spreadsheet, text, original, variant, mode, prompt }: {
+  files?: File[];
+  spreadsheet?: File;
+  text?: string;
+  original?: string;
+  variant?: string;
+  mode: string;
+  prompt: string;
+}): Promise<any> {
+  const form = new FormData();
+  if (files) files.forEach(f => form.append('files', f));
+  if (spreadsheet) form.append('spreadsheet', spreadsheet);
+  if (text) form.append('text', text);
+  if (original) form.append('original', original);
+  if (variant) form.append('variant', variant);
+  form.append('mode', mode);
+  form.append('prompt', prompt);
+
+  const res = await fetch('/api/metadata-transform', {
+    method: 'POST',
+    body: form
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}

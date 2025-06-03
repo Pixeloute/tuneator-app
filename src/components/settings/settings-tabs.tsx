@@ -15,46 +15,42 @@ interface SettingsTabsProps {
 export function SettingsTabs({ user }: SettingsTabsProps) {
   return (
     <Tabs defaultValue="account" className="space-y-4">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:w-[600px]">
-        <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="appearance">Appearance</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
+      <TabsList className="w-full flex overflow-x-auto space-x-2 bg-muted p-1 rounded-md text-muted-foreground scrollbar-hide" role="tablist">
+        <TabsTrigger value="account" className="min-w-[110px] whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-sm transition-all">Account</TabsTrigger>
+        <TabsTrigger value="appearance" className="min-w-[110px] whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-sm transition-all">Appearance</TabsTrigger>
+        <TabsTrigger value="security" className="min-w-[110px] whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-sm transition-all">Security</TabsTrigger>
+        <TabsTrigger value="notifications" className="min-w-[110px] whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-sm transition-all">Notifications</TabsTrigger>
         {FeatureFlag.ENTERPRISE_SETTINGS === 'enterprise_settings' && (
-          <TabsTrigger value="enterprise">Enterprise</TabsTrigger>
+          <TabsTrigger value="enterprise" className="min-w-[110px] whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-sm transition-all">Enterprise</TabsTrigger>
         )}
         {FeatureFlag.ONBOARDING === 'onboarding' && (
-          <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
+          <TabsTrigger value="onboarding" className="min-w-[110px] whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-sm transition-all">Onboarding</TabsTrigger>
         )}
       </TabsList>
-      
-      <TabsContent value="account" className="space-y-4">
-        <AccountSettingsForm user={user} />
-      </TabsContent>
-      
-      <TabsContent value="appearance" className="space-y-4">
-        <AppearanceSettingsForm />
-      </TabsContent>
-      
-      <TabsContent value="security" className="space-y-4">
-        <SecuritySettingsForm user={user} />
-      </TabsContent>
-      
-      <TabsContent value="notifications" className="space-y-4">
-        <NotificationsSettingsForm />
-      </TabsContent>
-      
-      {FeatureFlag.ENTERPRISE_SETTINGS === 'enterprise_settings' && (
-        <TabsContent value="enterprise" className="space-y-4">
-          <EnterpriseSettingsPanel />
+      <div className="mt-4 space-y-4">
+        <TabsContent value="account">
+          <AccountSettingsForm user={user} />
         </TabsContent>
-      )}
-      
-      {FeatureFlag.ONBOARDING === 'onboarding' && (
-        <TabsContent value="onboarding" className="space-y-4">
-          <div className="p-4">Onboarding coming soon.</div>
+        <TabsContent value="appearance">
+          <AppearanceSettingsForm />
         </TabsContent>
-      )}
+        <TabsContent value="security">
+          <SecuritySettingsForm user={user} />
+        </TabsContent>
+        <TabsContent value="notifications">
+          <NotificationsSettingsForm />
+        </TabsContent>
+        {FeatureFlag.ENTERPRISE_SETTINGS === 'enterprise_settings' && (
+          <TabsContent value="enterprise">
+            <EnterpriseSettingsPanel />
+          </TabsContent>
+        )}
+        {FeatureFlag.ONBOARDING === 'onboarding' && (
+          <TabsContent value="onboarding">
+            <div className="p-4">Onboarding coming soon.</div>
+          </TabsContent>
+        )}
+      </div>
     </Tabs>
   );
 }

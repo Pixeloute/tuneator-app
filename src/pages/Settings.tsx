@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { SettingsTabs } from "@/components/settings/settings-tabs";
@@ -48,10 +47,12 @@ const Settings = () => {
 
   return (
     <PageLayout>
-      <div className="container max-w-4xl py-6">
-        <h1 className="text-3xl font-bold mb-6">Settings</h1>
-        <SettingsTabs user={user} />
-      </div>
+      <main className="flex-1 overflow-auto p-4 font-sans">
+        <div className="space-y-6">
+          <h1 className="text-3xl font-bold">Settings</h1>
+          <SettingsTabs user={user} />
+        </div>
+      </main>
     </PageLayout>
   );
 };

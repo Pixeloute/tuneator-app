@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import NotificationCenter from "@/components/dashboard/NotificationCenter";
 
 export const TopBar = () => {
   const { toast } = useToast();
@@ -49,7 +50,7 @@ export const TopBar = () => {
   };
 
   return (
-    <div className="flex items-center justify-between border-b border-secondary p-4 h-16" data-testid="app-topbar">
+    <div className="flex items-center justify-between border-b border-[hsl(var(--border))] p-4 h-16 bg-[hsl(var(--background))] text-[hsl(var(--foreground))]" data-testid="app-topbar">
       <div className="flex items-center gap-3">
         <SidebarTrigger className="hover:bg-accent" />
         <h1 className="text-xl font-heading hidden md:block">
@@ -60,18 +61,7 @@ export const TopBar = () => {
       <div className="flex items-center gap-2">
         {user ? (
           <>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="relative"
-              onClick={handleNotificationClick}
-            >
-              <span className="flex items-center justify-center relative">
-                <Bell size={20} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-mint rounded-full"></span>
-              </span>
-            </Button>
-            
+            <NotificationCenter />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">

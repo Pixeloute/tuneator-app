@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { ProfileSection } from "@/components/profile/profile-section";
@@ -13,10 +12,7 @@ const Profile = () => {
 
   useEffect(() => {
     document.title = "Tuneator - Profile";
-    // When the auth system is done loading, we can finish our loading state
-    if (!loading) {
-      setIsLoading(false);
-    }
+    if (!loading) setIsLoading(false);
   }, [loading]);
 
   if (isLoading || loading) {
@@ -30,7 +26,6 @@ const Profile = () => {
   }
 
   if (!user) {
-    // Handle the case where the user is not logged in
     toast({
       title: "Authentication required",
       description: "Please log in to view your profile",
@@ -48,10 +43,12 @@ const Profile = () => {
 
   return (
     <PageLayout>
-      <div className="container max-w-4xl py-6">
-        <h1 className="text-3xl font-bold mb-6">My Profile</h1>
-        <ProfileSection user={user} />
-      </div>
+      <main className="flex-1 overflow-auto p-4 font-sans">
+        <div className="space-y-6">
+          <h1 className="text-3xl font-bold">My Profile</h1>
+          <ProfileSection user={user} />
+        </div>
+      </main>
     </PageLayout>
   );
 };

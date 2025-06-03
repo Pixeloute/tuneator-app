@@ -21,6 +21,8 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import PricingEngine from "./pages/PricingEngine";
 import TeamProfilePage from "./pages/TeamProfilePage";
+import Sources from "./pages/Sources";
+import SpotifyCallback from "./pages/SpotifyCallback";
 import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient();
@@ -50,6 +52,8 @@ function App() {
             <Route path="/team/:id" element={<TeamProfilePage />} />
             <Route path="/assistant" element={<SmartMetadataAssistant />} />
             <Route path="/artwork-generator" element={<ArtworkGenerator />} />
+            <Route path="/sources" element={<Sources />} />
+            <Route path="/spotify/callback" element={<SpotifyCallback />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
