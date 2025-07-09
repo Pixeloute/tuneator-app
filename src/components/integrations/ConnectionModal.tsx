@@ -234,11 +234,12 @@ const platformConfigs: Record<string, PlatformConfig> = {
     authMethod: 'credentials',
     category: 'PRO',
     fields: [
-      { name: 'memberNumber', label: 'Member Number', type: 'text', placeholder: 'Your PRS member number', required: true },
+      { name: 'membershipNumber', label: 'Membership Number', type: 'text', placeholder: 'Your PRS membership number', required: true },
       { name: 'password', label: 'Password', type: 'password', placeholder: 'Your PRS password', required: true },
     ],
     instructions: 'Connect your PRS account to track UK performance royalties.',
     helpUrl: 'https://www.prsformusic.com/',
+    warningText: 'We\'ll access your royalty statements and performance data.',
   },
 
   // Publishers

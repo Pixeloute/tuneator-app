@@ -27,6 +27,7 @@ import {
   Settings,
   LogOut,
   Link as LinkIcon,
+  User,
 } from "lucide-react";
 
 interface AppSidebarProps {
@@ -35,6 +36,7 @@ interface AppSidebarProps {
 
 const sidebarLinks = [
   { name: "Dashboard", path: "/dashboard", icon: <Home className="h-5 w-5" /> },
+  { name: "Artist Profile", path: "/artist", icon: <User className="h-5 w-5" /> },
   { name: "Catalog", path: "/catalog", icon: <Library className="h-5 w-5" /> },
   { name: "Assets", path: "/assets", icon: <ImageIcon className="h-5 w-5" /> },
   { name: "Metadata", path: "/metadata", icon: <FileText className="h-5 w-5" /> },

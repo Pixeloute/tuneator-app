@@ -1,0 +1,158 @@
+// schema.prisma
+// Prisma schema for Tuneator Artist Analytics System
+// PostgreSQL as primary DB
+// See JSDoc comments for model/field explanations
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Supported streaming/distribution platforms
+enum PlatformType {
+  SPOTIFY
+  APPLE_MUSIC
+  YOUTUBE
+  DISTROKID
+  TUNECORE
+  CD_BABY
+  OTHER
+}
+
+enum RevenueType {
+  STREAMING
+  DOWNLOAD
+  PHYSICAL
+  SYNC
+  OTHER
+}
+
+enum MetadataStatus {
+  COMPLETE
+  INCOMPLETE
+  PARTIAL
+}
+
+/// Artist profile with metadata completeness
+model Artist {
+  id                String   @id @default(uuid())
+  name              String
+  spotifyArtistId   String?  @unique
+  appleMusicId      String?  @unique
+  youtubeChannelId  String?  @unique
+  metadataScore     Int      // 0-100
+  metadataStatus    MetadataStatus
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  tracks            Track[]
+  collaborators     Collaborator[]
+  aiInsights        AIInsight[]
+  lostRevenueEvents LostRevenueEvent[]
+  geoPerformances   GeoPerformance[]
+  @@index([metadataScore], name: "artist_metadata_idx")
+}
+
+/// Track/Release with ISRC/ISWC, metadata completeness
+model Track {
+  id                String   @id @default(uuid())
+  artistId          String
+  title             String
+  isrc              String?  @unique
+  iswc              String?  @unique
+  releaseDate       DateTime?
+  metadataScore     Int      // 0-100
+  metadataStatus    MetadataStatus
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  artist            Artist   @relation(fields: [artistId], references: [id])
+  revenues          Revenue[]
+  geoPerformances   GeoPerformance[]
+  lostRevenueEvents LostRevenueEvent[]
+  aiInsights        AIInsight[]
+  collaborators     Collaborator[]
+}
+
+/// Revenue streams from multiple platforms
+model Revenue {
+  id          String       @id @default(uuid())
+  trackId     String
+  platform    PlatformType
+  revenueType RevenueType
+  amount      Decimal      @db.Decimal(12, 4)
+  currency    String       // ISO 4217
+  periodStart DateTime
+  periodEnd   DateTime
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  track       Track        @relation(fields: [trackId], references: [id])
+  @@index([platform, periodStart], name: "revenue_platform_period_idx")
+}
+
+/// Normalized geographic performance data
+model GeoPerformance {
+  id          String   @id @default(uuid())
+  artistId    String?
+  trackId     String?
+  country     String   // ISO 3166-1 alpha-2
+  region      String?  // Optional subdivision
+  streams     Int
+  revenue     Decimal  @db.Decimal(12, 4)
+  periodStart DateTime
+  periodEnd   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  artist      Artist?  @relation(fields: [artistId], references: [id])
+  track       Track?   @relation(fields: [trackId], references: [id])
+  @@index([country, periodStart], name: "geo_artist_country_idx")
+}
+
+/// Metadata validation and lost revenue tracking
+model LostRevenueEvent {
+  id              String   @id @default(uuid())
+  artistId        String?
+  trackId         String?
+  issueType       String   // e.g. "MISSING_ISRC", "INCOMPLETE_CREDITS"
+  description     String
+  estimatedLoss   Decimal  @db.Decimal(12, 4)
+  detectedAt      DateTime @default(now())
+  resolved        Boolean  @default(false)
+  resolvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  artist          Artist?  @relation(fields: [artistId], references: [id])
+  track           Track?   @relation(fields: [trackId], references: [id])
+  @@index([issueType, resolved], name: "lost_revenue_issue_idx")
+}
+
+/// AI insights with structured recommendation types
+model AIInsight {
+  id            String   @id @default(uuid())
+  artistId      String?
+  trackId       String?
+  type          String   // e.g. "REVENUE_OPTIMIZATION", "METADATA_FIX"
+  confidence    Float    // 0-1
+  data          Json
+  createdAt     DateTime @default(now())
+  artist        Artist?  @relation(fields: [artistId], references: [id])
+  track         Track?   @relation(fields: [trackId], references: [id])
+  @@index([type, confidence], name: "ai_insight_type_idx")
+}
+
+/// Collaborator management with split tracking
+model Collaborator {
+  id            String   @id @default(uuid())
+  artistId      String
+  trackId       String
+  name          String
+  role          String   // e.g. "Composer", "Producer"
+  splitPercent  Float    // 0-100
+  verified      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  artist        Artist   @relation(fields: [artistId], references: [id])
+  track         Track    @relation(fields: [trackId], references: [id])
+} 

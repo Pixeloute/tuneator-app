@@ -8,12 +8,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Download, Globe } from "lucide-react";
+import { scheduleMonthlyReport } from '@/services/revenue-service';
+import { toast } from 'sonner';
 
-export function GeographicalInsights() {
-  const [geoData, setGeoData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export function GeographicalInsights({ geoData: propGeoData }: { geoData?: any }) {
+  const [geoData, setGeoData] = useState<any>(propGeoData || null);
+  const [isLoading, setIsLoading] = useState<boolean>(!propGeoData);
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false);
+  const [email, setEmail] = useState('');
   
   useEffect(() => {
+    if (propGeoData) return;
     const loadGeoData = async () => {
       setIsLoading(true);
       try {
@@ -25,9 +30,8 @@ export function GeographicalInsights() {
         setIsLoading(false);
       }
     };
-    
     loadGeoData();
-  }, []);
+  }, [propGeoData]);
   
   // Format data for pie chart
   const getPieChartData = () => {
@@ -42,13 +46,41 @@ export function GeographicalInsights() {
   // Generate colors for pie chart
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
   
+  function exportGeoDataToCSV(geoData: any) {
+    if (!geoData || !geoData.regions) return;
+    const header = 'Country,Streams,Revenue\n';
+    const rows = geoData.regions.map((r: any) => `${r.country},${r.streams},${r.revenue}`).join('\n');
+    const csv = header + rows;
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'geo-insights.csv';
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+  
   const renderDownloadReport = () => {
     return (
-      <Button variant="outline" size="sm" className="flex items-center gap-1">
+      <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={() => exportGeoDataToCSV(geoData)}>
         <Download className="h-4 w-4" />
-        <span>Export Report</span>
+        <span>Export CSV</span>
       </Button>
     );
+  };
+
+  const handleScheduleReport = async () => {
+    if (!email) return;
+    const ok = await scheduleMonthlyReport(email, 'geo-analytics');
+    if (ok) {
+      toast.success('Geo analytics report scheduled!');
+      setShowEmailPrompt(false);
+      setEmail('');
+    } else {
+      toast.error('Failed to schedule report');
+    }
   };
   
   return (
@@ -62,10 +94,34 @@ export function GeographicalInsights() {
               <CardDescription>Revenue and streaming patterns by region</CardDescription>
             </div>
           </div>
-          
-          {!isLoading && renderDownloadReport()}
+          <div className="flex gap-2">
+            {!isLoading && renderDownloadReport()}
+            <Button variant="outline" size="sm" onClick={() => setShowEmailPrompt(true)}>
+              Schedule Geo Analytics Report
+            </Button>
+          </div>
         </div>
       </CardHeader>
+      {/* Email prompt modal */}
+      {showEmailPrompt && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded shadow-lg flex flex-col gap-4 min-w-[320px]">
+            <h3 className="text-lg font-semibold">Schedule Geo Analytics Report</h3>
+            <input
+              type="email"
+              className="border rounded px-3 py-2"
+              placeholder="Enter your email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              autoFocus
+            />
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowEmailPrompt(false)}>Cancel</Button>
+              <Button onClick={handleScheduleReport} disabled={!email}>Schedule</Button>
+            </div>
+          </div>
+        </div>
+      )}
       
       <CardContent className="space-y-6">
         {isLoading ? (

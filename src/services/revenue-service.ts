@@ -145,10 +145,10 @@ export const downloadRoyaltyReport = async (data: PlatformRoyaltyData): Promise<
 };
 
 // Schedule monthly report
-export const scheduleMonthlyReport = async (email: string): Promise<boolean> => {
+export const scheduleMonthlyReport = async (email: string, reportType: string = 'monthly'): Promise<boolean> => {
   try {
     const { data, error } = await supabase.functions.invoke('schedule-report', {
-      body: { email, reportType: 'monthly' }
+      body: { email, reportType }
     });
     
     if (error) {

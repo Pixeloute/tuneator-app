@@ -23,6 +23,7 @@ import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from 'uuid';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const TeamTableView = ({ members, selected, onSelect, onRowClick, search, onSearch, role, onRoleChange, sort, onSortChange, page, totalPages, onPageChange, roles }: any) => (
   <>
@@ -345,7 +346,7 @@ const CreateContactDrawer: React.FC<{ open: boolean; onOpenChange: (v: boolean) 
   );
 };
 
-const Team = () => {
+const Team: React.FC = () => {
   const { user, loading: authLoading } = useAuth();
   const [viewMode, setViewMode] = useState("table");
   const params = useParams();
@@ -367,6 +368,23 @@ const Team = () => {
     },
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = React.useState(false);
+  const [inviteEmail, setInviteEmail] = React.useState('');
+  const [inviteRole, setInviteRole] = React.useState('member');
+  const { toast } = useToast();
+
+  const handleInvite = async () => {
+    if (!inviteEmail) return;
+    const { error } = await supabase.from('team_members').insert({ email: inviteEmail, role: inviteRole, status: 'invited' });
+    if (error) {
+      toast({ title: 'Invite failed', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Invite sent', description: `Invitation sent to ${inviteEmail}` });
+      setInviteOpen(false);
+      setInviteEmail('');
+      setInviteRole('member');
+    }
+  };
   const filtered = (data as TeamMember[]).filter(m => {
     const matchesSearch =
       !search ||
@@ -416,6 +434,40 @@ const Team = () => {
           </main>
         </div>
       </div>
+      {/* Invite Team Member Dialog */}
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Invite Team Member</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <input
+              type="email"
+              placeholder="Email address"
+              className="border rounded px-2 py-1 w-full"
+              value={inviteEmail}
+              onChange={e => setInviteEmail(e.target.value)}
+            />
+            <select
+              className="border rounded px-2 py-1 w-full"
+              value={inviteRole}
+              onChange={e => setInviteRole(e.target.value)}
+              title="Role"
+            >
+              <option value="member">Member</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <DialogFooter>
+            <button className="bg-mint px-4 py-2 rounded text-white font-semibold" onClick={handleInvite}>
+              Send Invite
+            </button>
+            <button className="text-muted-foreground underline text-sm ml-2" onClick={() => setInviteOpen(false)}>
+              Cancel
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 };
