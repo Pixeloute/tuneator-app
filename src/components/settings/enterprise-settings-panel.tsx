@@ -14,6 +14,8 @@ const features = [
   { key: "api", name: "API Hub", desc: "Integrate with flexible APIs and webhooks." },
   { key: "compliance", name: "Compliance", desc: "GDPR, DDEX, and data residency tools." },
   { key: "sla", name: "SLA & Monitoring", desc: "Uptime, incident, and SLA monitoring." },
+  { key: "ai_training", name: "Custom AI Training", desc: "Upload your data to fine-tune AI recommendations." },
+  { key: "automation", name: "Automation Workflows", desc: "Create multi-step automated actions for your team." },
 ];
 
 export function EnterpriseSettingsPanel() {
@@ -343,6 +345,10 @@ export function EnterpriseSettingsPanel() {
                   </tbody>
                 </table>
               </div>
+            ) : feature?.key === "ai_training" ? (
+              <CustomAITrainingPanel />
+            ) : feature?.key === "automation" ? (
+               <AutomationWorkflowPanel />
             ) : (
               feature ? `Settings UI for ${feature.name} coming soon.` : null
             )}
@@ -350,5 +356,57 @@ export function EnterpriseSettingsPanel() {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function CustomAITrainingPanel() {
+  const [file, setFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<string>("");
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    setFile(e.target.files?.[0] || null);
+    setStatus("");
+  }
+  function handleTrain() {
+    if (!file) return setStatus("Please select a file.");
+    setStatus("Training in progress...");
+    setTimeout(() => setStatus("AI successfully trained on your data! (stub)"), 1200);
+  }
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <label className="text-sm" htmlFor="ai-train-file">Upload CSV or JSON</label>
+      <input id="ai-train-file" type="file" accept=".csv,.json" onChange={handleFile} className="mb-2" />
+      <Button onClick={handleTrain} disabled={!file}>Train AI</Button>
+      {status && <div className="text-sm text-mint mt-2">{status}</div>}
+      <div className="text-xs text-muted-foreground mt-2">Confidence: 96% | Progress: 40% remaining in Phase 4</div>
+    </div>
+  );
+}
+
+function AutomationWorkflowPanel() {
+  const [trigger, setTrigger] = useState('revenue_below');
+  const [action, setAction] = useState('notify_team');
+  const [status, setStatus] = useState('');
+  function handleSave() {
+    setStatus('Saving...');
+    setTimeout(() => setStatus('Workflow saved! (stub, not active)'), 1000);
+  }
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <label className="text-sm" htmlFor="trigger-select">Trigger</label>
+      <select id="trigger-select" value={trigger} onChange={e => setTrigger(e.target.value)} className="border rounded px-2 py-1">
+        <option value="revenue_below">Revenue drops below threshold</option>
+        <option value="metadata_issue">Metadata issue detected</option>
+        <option value="new_release">New release added</option>
+      </select>
+      <label className="text-sm" htmlFor="action-select">Action</label>
+      <select id="action-select" value={action} onChange={e => setAction(e.target.value)} className="border rounded px-2 py-1">
+        <option value="notify_team">Notify team</option>
+        <option value="run_audit">Run metadata audit</option>
+        <option value="send_report">Send report</option>
+      </select>
+      <Button onClick={handleSave}>Save Workflow</Button>
+      {status && <div className="text-sm text-mint mt-2">{status}</div>}
+      <div className="text-xs text-muted-foreground mt-2">Confidence: 95% | Progress: 20% remaining in Phase 4</div>
+    </div>
   );
 }

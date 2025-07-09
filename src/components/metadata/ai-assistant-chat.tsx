@@ -19,7 +19,13 @@ interface Message {
   timestamp: Date;
 }
 
-export function AIAssistantChat() {
+interface AIAssistantChatProps {
+  artistId?: string;
+  trackId?: string;
+  contextData?: any;
+}
+
+export function AIAssistantChat({ artistId, trackId, contextData }: AIAssistantChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -28,55 +34,67 @@ export function AIAssistantChat() {
       timestamp: new Date(),
     },
   ]);
-
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-
     const userMessage: Message = {
       id: Date.now(),
       content: input.trim(),
       sender: "user",
       timestamp: new Date(),
     };
-
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponses: Record<string, string> = {
-        default: "I'll analyze your metadata and provide recommendations to improve its quality.",
-        genre: "Based on your track's characteristics, I'd recommend adding 'Electronic', 'Ambient', and 'Downtempo' as genres. This will optimize your metadata for better discoverability.",
-        isrc: "Your track needs an ISRC code. This is a unique identifier that ensures your track can be properly tracked across platforms for royalty collection.",
-        missing: "I've detected missing fields in your metadata. Adding complete artist information, ISRC codes, and proper genre tagging will improve your metadata score significantly.",
-      };
-
-      // Determine which response to use based on user input
-      let responseContent = aiResponses.default;
-      if (input.toLowerCase().includes("genre")) {
-        responseContent = aiResponses.genre;
-      } else if (input.toLowerCase().includes("isrc")) {
-        responseContent = aiResponses.isrc;
-      } else if (input.toLowerCase().includes("missing")) {
-        responseContent = aiResponses.missing;
+    try {
+      const res = await fetch("/functions/v1/ai-metadata-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userMessage.content,
+          artistId,
+          trackId,
+          contextData,
+        }),
+      });
+      const data = await res.json();
+      let aiContent = data?.response || "Sorry, I couldn't find an answer.";
+      if (typeof data?.revenueImpact === 'number' && data.revenueImpact > 0) {
+        aiContent += `\n\nEstimated revenue recovery: $${Math.round(data.revenueImpact).toLocaleString()}/month`;
       }
-
+      if (Array.isArray(data?.validationIssues) && data.validationIssues.length > 0) {
+        aiContent += `\n\nMetadata issues detected:`;
+        data.validationIssues.forEach((issue: any) => {
+          aiContent += `\n- ${issue.field}: ${issue.issue}`;
+        });
+      }
+      if (data?.fixResult && data.fixResult.message) {
+        aiContent += `\n\n${data.fixResult.message}`;
+      }
       const aiMessage: Message = {
         id: Date.now(),
-        content: responseContent,
+        content: aiContent,
         sender: "ai",
         timestamp: new Date(),
       };
-
       setMessages((prev) => [...prev, aiMessage]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          content: "Sorry, there was an error connecting to the AI service.",
+          sender: "ai",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleAttachFile = () => {
